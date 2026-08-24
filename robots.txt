@@ -1,0 +1,17 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+
+# Allow indexable pages
+Allow: /
+Allow: /produtos
+Allow: /produto/*
+Allow: /sobre
+Allow: /contato
+
+# Disallow checkouts & confirmation pages
+Disallow: /checkout
+Disallow: /confirmacao
+
+# Host & Sitemap
+Host: https://bleachco.com.br
+Sitemap: https://bleachco.com.br/sitemap.xml
