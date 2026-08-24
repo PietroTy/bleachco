@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spy — Bleach.Co | Camiseta artesanal feita à mão</title>
+  <meta name="description" content="Spy: um olho aberto feito com água sanitária sobre algodão preto. Cada peça é única. Feito à mão em São Paulo." />
+  <link rel="canonical" href="https://bleachco.com.br/produto-spy.html" />
+  <meta property="og:title" content="Spy — Bleach.Co" />
+  <meta property="og:description" content="Um olho que observa — alvejado à mão. Peça única, irrepetível." />
+  <meta property="og:type" content="product" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Spy — Bleach.Co",
+    "description": "Camiseta artesanal com estampa de olho (Spy) feita com água sanitária sobre algodão preto 100%. Peça única.",
+    "brand": { "@type": "Brand", "name": "Bleach.Co" },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "BRL",
+      "price": "89.00",
+      "availability": "https://schema.org/InStock",
+      "url": "https://bleachco.com.br/produto-spy.html"
+    }
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body data-product="spy" data-name="Spy" data-price="89">
+
+  <div id="toast"></div>
+  <button id="back-to-top" aria-label="Voltar ao topo">↑</button>
+
+  <div id="cart-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header">
+      <h3>CARRINHO</h3>
+      <button class="cart-close-btn" id="cart-close-btn">✕</button>
+    </div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-footer">
+      <div class="cart-handmade-note">✦ Cada peça é feita à mão após o pedido. Prazo: 5–10 dias úteis.</div>
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-value" id="cart-subtotal">R$ 0,00</span>
+      </div>
+      <a href="checkout.html" class="btn btn-primary btn-full">Finalizar pedido →</a>
+    </div>
+  </aside>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="produtos.html" class="active">Estampas</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-cart-btn" id="nav-cart-btn">◎ Carrinho <span id="cart-count" style="display:none;">0</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── PRODUCT HERO com PARALLAX ── -->
+  <section class="product-hero parallax-section" aria-label="Spy">
+    <div class="product-hero-bg parallax-bg" data-speed="0.28" aria-hidden="true">
+      <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;min-height:120vh;">
+        <rect width="1200" height="900" fill="#080808"/>
+        <!-- Olho grande como fundo fullscreen -->
+        <!-- Pálpebra superior e inferior — formato amêndoa -->
+        <path d="M100,450 Q400,150 600,150 Q800,150 1100,450 Q800,750 600,750 Q400,750 100,450 Z"
+              fill="none" stroke="#D4521E" stroke-width="28" opacity="0.75"/>
+        <!-- Íris grande -->
+        <ellipse cx="600" cy="450" rx="170" ry="170" fill="#D4521E" opacity="0.82"/>
+        <!-- Pupila -->
+        <ellipse cx="600" cy="450" rx="85" ry="85" fill="#060606"/>
+        <!-- Reflexo de luz -->
+        <ellipse cx="648" cy="408" rx="28" ry="28" fill="#D4521E" opacity="0.55"/>
+        <ellipse cx="572" cy="478" rx="12" ry="12" fill="#D4521E" opacity="0.25"/>
+        <!-- Cílios superiores — traços de alvejante -->
+        <line x1="260" y1="230" x2="230" y2="175" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
+        <line x1="360" y1="185" x2="345" y2="130" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
+        <line x1="470" y1="162" x2="462" y2="106" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+        <line x1="600" y1="155" x2="600" y2="96" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
+        <line x1="730" y1="162" x2="738" y2="106" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
+        <line x1="840" y1="185" x2="855" y2="130" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
+        <line x1="940" y1="230" x2="970" y2="175" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
+        <!-- Cílios inferiores -->
+        <line x1="290" y1="660" x2="265" y2="710" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="460" y1="730" x2="452" y2="782" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="600" y1="745" x2="600" y2="800" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="740" y1="730" x2="748" y2="782" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="910" y1="660" x2="935" y2="710" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <!-- Respingos espalhados -->
+        <ellipse cx="180" cy="380" rx="22" ry="16" fill="#D4521E" opacity="0.25"/>
+        <ellipse cx="1020" cy="530" rx="18" ry="14" fill="#D4521E" opacity="0.22"/>
+        <ellipse cx="350" cy="700" rx="12" ry="9" fill="#D4521E" opacity="0.2"/>
+        <ellipse cx="850" cy="200" rx="10" ry="8" fill="#D4521E" opacity="0.22"/>
+        <circle cx="140" cy="600" r="8" fill="#D4521E" opacity="0.16"/>
+        <circle cx="1060" cy="280" r="6" fill="#D4521E" opacity="0.18"/>
+        <circle cx="700" cy="780" r="5" fill="#D4521E" opacity="0.16"/>
+        <!-- Sombra interna no canto do olho -->
+        <ellipse cx="100" cy="450" rx="40" ry="20" fill="#D4521E" opacity="0.18"/>
+        <ellipse cx="1100" cy="450" rx="40" ry="20" fill="#D4521E" opacity="0.18"/>
+      </svg>
+    </div>
+    <div class="product-hero-overlay"></div>
+
+    <div class="product-hero-content">
+      <div class="product-shirt-preview">
+        <div id="shirt-svg-thumb">
+          <svg viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+            <!-- Camiseta preta -->
+            <path d="M110,40 L30,130 L95,165 L95,420 L305,420 L305,165 L370,130 L290,40 L255,68 Q200,100 145,68 Z" fill="#111111" stroke="#222222" stroke-width="1.5"/>
+            <path d="M145,68 Q200,108 255,68" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <path d="M95,165 L30,130" fill="none" stroke="#1a1a1a" stroke-width="0.8" opacity="0.5"/>
+            <path d="M305,165 L370,130" fill="none" stroke="#1a1a1a" stroke-width="0.8" opacity="0.5"/>
+            <!-- Olho — estampa Spy -->
+            <path d="M118,252 Q200,192 282,252 Q200,312 118,252 Z" fill="none" stroke="#D4521E" stroke-width="9" opacity="0.8"/>
+            <!-- Íris -->
+            <ellipse cx="200" cy="252" rx="40" ry="40" fill="#D4521E" opacity="0.85"/>
+            <!-- Pupila -->
+            <ellipse cx="200" cy="252" rx="20" ry="20" fill="#080808"/>
+            <!-- Reflexo -->
+            <ellipse cx="212" cy="242" rx="6" ry="6" fill="#D4521E" opacity="0.6"/>
+            <!-- Cílios -->
+            <line x1="148" y1="216" x2="141" y2="200" stroke="#D4521E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            <line x1="174" y1="202" x2="171" y2="185" stroke="#D4521E" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+            <line x1="200" y1="197" x2="200" y2="180" stroke="#D4521E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            <line x1="226" y1="202" x2="229" y2="185" stroke="#D4521E" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+            <line x1="252" y1="216" x2="259" y2="200" stroke="#D4521E" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+            <!-- Respingos -->
+            <ellipse cx="115" cy="244" rx="7" ry="5" fill="#D4521E" opacity="0.25"/>
+            <ellipse cx="285" cy="260" rx="6" ry="4" fill="#D4521E" opacity="0.22"/>
+            <ellipse cx="165" cy="320" rx="4" ry="3" fill="#D4521E" opacity="0.2"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <span class="eyebrow">Estampa</span>
+        <h1 class="product-name">SPY</h1>
+        <p class="product-tagline">Um olho que observa — tudo que passa, tudo que existe. Feito com água sanitária sobre algodão preto. Cada olho tem seu próprio olhar.</p>
+
+        <div class="handmade-notice">
+          <span class="handmade-notice-icon">✦</span>
+          <p><strong>100% feito à mão.</strong> O formato do olho é criado com spray e pincel de alvejante. Nenhuma peça sai igual — a íris, os cílios e os respingos são sempre únicos.</p>
+        </div>
+
+        <div class="size-selector">
+          <span class="size-label">Tamanho</span>
+          <div class="size-options">
+            <button class="size-btn" data-size="P">P</button>
+            <button class="size-btn" data-size="M">M</button>
+            <button class="size-btn" data-size="G">G</button>
+            <button class="size-btn" data-size="GG">GG</button>
+          </div>
+        </div>
+
+        <div class="product-price-row">
+          <span class="product-price">R$ 89,00</span>
+          <span class="product-price-note">à vista · parcelamento disponível</span>
+        </div>
+
+        <button class="add-to-cart-btn" id="add-to-cart-btn" disabled>
+          Selecione um tamanho
+        </button>
+        <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;text-align:center;">
+          Produção: 5–10 dias úteis após pagamento confirmado
+        </p>
+      </div>
+    </div>
+
+    <div class="product-scroll-hint" aria-hidden="true">
+      <span>mais</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── DETALHES ── -->
+  <section class="product-info-section">
+    <div class="container">
+      <div class="product-info-grid">
+        <div class="info-block reveal">
+          <span class="eyebrow">Sobre a estampa</span>
+          <h3>O que é Spy</h3>
+          <p>A estampa Spy é um grande olho aberto — a íris laranja, a pupila negra e os cílios feitos com traços de água sanitária. Uma peça que observa e é observada.</p>
+          <p>O contorno do olho é traçado com spray de alvejante diluído, criando a forma característica de amêndoa. Os cílios são aplicados com pincel fino, um a um — por isso nenhum é igual.</p>
+          <ul class="info-list">
+            <li>Contorno da pálpebra em spray livre</li>
+            <li>Íris central alvejada em concentração alta</li>
+            <li>Cílios com pincel fino — posição única em cada peça</li>
+            <li>Foto da sua peça enviada antes do despacho</li>
+          </ul>
+        </div>
+        <div class="info-block reveal reveal-delay-1">
+          <span class="eyebrow">Especificações</span>
+          <h3>Produto</h3>
+          <ul class="info-list">
+            <li>Algodão penteado 100% — 180g/m²</li>
+            <li>Corte unissex — tabela de medidas abaixo</li>
+            <li>Costura dupla reforçada nas mangas</li>
+            <li>Água sanitária profissional — sem toxinas residuais após lavagem</li>
+            <li>Lavar à mão, virada ao avesso, água fria</li>
+            <li>Não usar alvejante na lavagem</li>
+          </ul>
+          <table style="margin-top:24px;width:100%;border-collapse:collapse;font-size:0.82rem;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--gray-lt);">
+                <th style="text-align:left;padding:10px 0;color:var(--gray);font-weight:500;">Tam.</th>
+                <th style="text-align:center;padding:10px 0;color:var(--gray);font-weight:500;">Tórax</th>
+                <th style="text-align:center;padding:10px 0;color:var(--gray);font-weight:500;">Comp.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">P</td><td style="text-align:center;color:var(--gray);">94cm</td><td style="text-align:center;color:var(--gray);">68cm</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">M</td><td style="text-align:center;color:var(--gray);">100cm</td><td style="text-align:center;color:var(--gray);">71cm</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">G</td><td style="text-align:center;color:var(--gray);">106cm</td><td style="text-align:center;color:var(--gray);">74cm</td></tr>
+              <tr><td style="padding:10px 0;color:var(--bone);">GG</td><td style="text-align:center;color:var(--gray);">112cm</td><td style="text-align:center;color:var(--gray);">77cm</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── VER ECLIPSE ── -->
+  <section style="padding:80px 0;background:var(--ink);">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Também disponível</span>
+        <h2>VER ECLIPSE →</h2>
+      </div>
+      <a href="produto-eclipse.html" class="product-tile reveal" style="max-width:520px;display:block;aspect-ratio:4/3;">
+        <div class="product-tile-bg" style="background:var(--ink2);">
+          <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="800" height="600" fill="#0c0c0c"/>
+            <ellipse cx="400" cy="300" rx="200" ry="200" fill="#D4521E" opacity="0.75"/>
+            <ellipse cx="400" cy="300" rx="138" ry="138" fill="#060606"/>
+            <ellipse cx="400" cy="300" rx="205" ry="205" fill="none" stroke="#D4521E" stroke-width="14" opacity="0.2"/>
+            <ellipse cx="240" cy="210" rx="20" ry="16" fill="#D4521E" opacity="0.3"/>
+            <ellipse cx="570" cy="390" rx="14" ry="11" fill="#D4521E" opacity="0.25"/>
+          </svg>
+        </div>
+        <div class="product-tile-info">
+          <div class="product-tile-name">ECLIPSE</div>
+          <div class="product-tile-price">A partir de R$ 89,00</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo">BLEACH<span class="logo-dot">.Co</span></span>
+          <p class="eyebrow" style="margin-bottom:12px;display:block;">A mancha é a arte.</p>
+          <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Estampas</h4>
+          <ul>
+            <li><a href="produto-eclipse.html">Eclipse</a></li>
+            <li><a href="produto-spy.html">Spy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>oi@bleachco.com.br</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Feito à mão ✦ SP</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

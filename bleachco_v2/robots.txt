@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /checkout.html
+Disallow: /pagamento.html
+Disallow: /confirmacao.html
+
+Sitemap: https://bleachco.com.br/sitemap.xml

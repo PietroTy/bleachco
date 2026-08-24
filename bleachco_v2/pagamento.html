@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagamento — Bleach.Co</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div id="toast"></div>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="checkout.html">← Voltar</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="payment-section">
+    <div class="payment-box">
+      <span class="eyebrow" style="display:block;text-align:center;margin-bottom:32px;">Pagamento seguro</span>
+      <h2 style="font-size:clamp(2rem,5vw,3.5rem);margin-bottom:16px;text-align:center;">QUASE LÁ.</h2>
+      <p style="text-align:center;margin-bottom:40px;">Revise o pedido abaixo e clique em <strong style="color:var(--bone);">Pagar com Mercado Pago</strong>. Você será redirecionado para o ambiente seguro de pagamento.</p>
+
+      <!-- Resumo compacto -->
+      <div class="order-summary" id="payment-summary" style="margin-bottom:32px;">
+        <h3>PEDIDO</h3>
+        <div id="payment-items"></div>
+        <div class="order-total">
+          <span class="order-total-label">Total</span>
+          <span class="order-total-value" id="payment-total">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- AVISO HANDMADE -->
+      <div class="handmade-notice" style="margin-bottom:32px;">
+        <span class="handmade-notice-icon">✦</span>
+        <p>
+          <strong>Importante:</strong> após a confirmação do seu pagamento, sua camiseta será produzida artesanalmente do zero. Cada peça leva de 5 a 10 dias úteis para ficar pronta. Você receberá a foto da sua peça antes do envio.
+        </p>
+      </div>
+
+      <!-- MÉTODOS -->
+      <div class="payment-methods">
+        <span class="payment-method">💳 Crédito</span>
+        <span class="payment-method">📱 Pix</span>
+        <span class="payment-method">🏦 Débito</span>
+        <span class="payment-method">📄 Boleto</span>
+      </div>
+
+      <!-- BOTÃO MERCADO PAGO -->
+      <button class="btn btn-primary btn-full btn-lg" id="btn-pagar" style="margin-top:32px;">
+        Pagar com Mercado Pago →
+      </button>
+
+      <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:20px;">
+        Ambiente seguro · SSL · Seus dados protegidos pelo Mercado Pago
+      </p>
+
+      <!-- PLACEHOLDER INTEGRAÇÃO -->
+      <details style="margin-top:40px;border:1px solid var(--gray-lt);border-radius:4px;padding:16px;">
+        <summary style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);cursor:pointer;">
+          ℹ Para desenvolvedores — integração Mercado Pago
+        </summary>
+        <div style="margin-top:16px;font-size:0.78rem;color:var(--gray);line-height:1.8;">
+          <p>Para ativar o pagamento real, substitua o placeholder no <code>js/main.js</code>:</p>
+          <ol style="margin:12px 0 0 20px;display:flex;flex-direction:column;gap:8px;">
+            <li>Crie uma conta no <a href="https://www.mercadopago.com.br/developers" style="color:var(--orange);" target="_blank">Mercado Pago Developers</a></li>
+            <li>Gere um <strong>Access Token</strong> de produção</li>
+            <li>No backend (Node/PHP/Python), faça POST para <code>/checkout/preferences</code> com os itens do carrinho</li>
+            <li>Retorne o <code>id</code> da preferência e monte a URL: <code>https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=SEU_PREF_ID</code></li>
+            <li>Configure o webhook de notificação para atualizar o status do pedido automaticamente</li>
+            <li>A URL de retorno após pagamento deve apontar para <code>confirmacao.html</code></li>
+          </ol>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer style="padding:32px 0 0;">
+    <div class="container">
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Compra segura via Mercado Pago ✦</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+  $(function () {
+    const cart = JSON.parse(localStorage.getItem('bleachco_cart') || '[]');
+    let html = '', total = 0;
+    cart.forEach(item => {
+      total += item.price * item.qty;
+      html += `<div class="order-item">
+        <div class="order-item-img"></div>
+        <div><div class="order-item-name">${item.name}</div><div class="order-item-detail">Tam. ${item.size} × ${item.qty}</div></div>
+        <span class="order-item-price">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</span>
+      </div>`;
+    });
+    $('#payment-items').html(html || '<p style="color:var(--gray);font-size:.85rem;padding:12px 0">Carrinho vazio</p>');
+    $('#payment-total').text('R$ ' + total.toFixed(2).replace('.',','));
+  });
+  </script>
+</body>
+</html>

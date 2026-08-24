@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finalizar Pedido — Bleach.Co</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div id="toast"></div>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">← Voltar à loja</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="checkout-section">
+    <div class="container">
+      <div class="checkout-grid">
+
+        <!-- FORMULÁRIO -->
+        <div class="checkout-form-block">
+          <span class="eyebrow">Finalizar pedido</span>
+          <h2>SEUS DADOS</h2>
+
+          <div class="form-section">
+            <div class="form-section-title">Informações de contato</div>
+            <div class="form-group">
+              <label for="checkout-nome">Nome completo *</label>
+              <input type="text" id="checkout-nome" placeholder="Seu nome" />
+              <span class="form-error" id="err-checkout-nome"></span>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkout-email">E-mail *</label>
+                <input type="email" id="checkout-email" placeholder="seu@email.com" />
+                <span class="form-error" id="err-checkout-email"></span>
+              </div>
+              <div class="form-group">
+                <label for="checkout-tel">Telefone / WhatsApp *</label>
+                <input type="tel" id="checkout-tel" placeholder="(11) 99999-9999" />
+                <span class="form-error" id="err-checkout-tel"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Endereço de entrega</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkout-cep">CEP *</label>
+                <input type="text" id="checkout-cep" placeholder="00000-000" maxlength="9" />
+                <span class="form-error" id="err-checkout-cep"></span>
+              </div>
+              <div class="form-group" style="flex:2;">
+                <label for="checkout-rua">Rua / Avenida *</label>
+                <input type="text" id="checkout-rua" placeholder="Nome da rua" />
+                <span class="form-error" id="err-checkout-rua"></span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkout-num">Número *</label>
+                <input type="text" id="checkout-num" placeholder="123" />
+              </div>
+              <div class="form-group" style="flex:2;">
+                <label for="checkout-comp">Complemento</label>
+                <input type="text" id="checkout-comp" placeholder="Apto, bloco..." />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="checkout-bairro">Bairro</label>
+              <input type="text" id="checkout-bairro" placeholder="Seu bairro" />
+            </div>
+            <div class="form-row">
+              <div class="form-group" style="flex:2;">
+                <label for="checkout-cidade">Cidade *</label>
+                <input type="text" id="checkout-cidade" placeholder="São Paulo" />
+                <span class="form-error" id="err-checkout-cidade"></span>
+              </div>
+              <div class="form-group">
+                <label for="checkout-estado">Estado *</label>
+                <select id="checkout-estado">
+                  <option value="">UF</option>
+                  <option value="SP">SP</option><option value="RJ">RJ</option>
+                  <option value="MG">MG</option><option value="RS">RS</option>
+                  <option value="PR">PR</option><option value="SC">SC</option>
+                  <option value="BA">BA</option><option value="GO">GO</option>
+                  <option value="DF">DF</option><option value="PE">PE</option>
+                  <option value="CE">CE</option><option value="AM">AM</option>
+                  <option value="PA">PA</option><option value="MT">MT</option>
+                  <option value="MS">MS</option><option value="ES">ES</option>
+                  <option value="MA">MA</option><option value="RN">RN</option>
+                  <option value="AL">AL</option><option value="PB">PB</option>
+                  <option value="SE">SE</option><option value="PI">PI</option>
+                  <option value="TO">TO</option><option value="RO">RO</option>
+                  <option value="AC">AC</option><option value="AP">AP</option>
+                  <option value="RR">RR</option>
+                </select>
+                <span class="form-error" id="err-checkout-estado"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-notice" style="margin-bottom:28px;">
+            ✦ <strong>Sobre sua encomenda:</strong> após a confirmação do pagamento, sua peça será produzida à mão. Você receberá uma foto da camiseta antes do despacho para sua aprovação. Enviamos via transportadora parceira (Correios / Jadlog / Total Express) — o método será definido conforme seu CEP.
+          </div>
+
+          <button class="btn btn-primary btn-full btn-lg" id="checkout-submit">
+            Ir para pagamento →
+          </button>
+        </div>
+
+        <!-- RESUMO DO PEDIDO -->
+        <div class="checkout-sidebar">
+          <div class="order-summary">
+            <h3>RESUMO DO PEDIDO</h3>
+            <div id="order-items-list">
+              <!-- populado via JS -->
+              <p style="color:var(--gray);font-size:0.85rem;padding:16px 0;">Carrinho vazio. <a href="produtos.html" style="color:var(--orange);">Ver estampas →</a></p>
+            </div>
+            <div class="order-total">
+              <span class="order-total-label">Total</span>
+              <span class="order-total-value" id="order-total-value">R$ 0,00</span>
+            </div>
+            <div class="order-notice">
+              ✦ Frete calculado após preenchimento do CEP. Parcelamento disponível no Mercado Pago.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer style="padding:32px 0 0;">
+    <div class="container">
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Compra segura via Mercado Pago ✦</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+  $(function () {
+    // Popula resumo do pedido
+    const cart = JSON.parse(localStorage.getItem('bleachco_cart') || '[]');
+    if (cart.length) {
+      let html = '';
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        html += `<div class="order-item">
+          <div class="order-item-img"></div>
+          <div>
+            <div class="order-item-name">${item.name}</div>
+            <div class="order-item-detail">Tam. ${item.size} × ${item.qty}</div>
+          </div>
+          <span class="order-item-price">R$ ${(item.price * item.qty).toFixed(2).replace('.',',')}</span>
+        </div>`;
+      });
+      $('#order-items-list').html(html);
+      $('#order-total-value').text('R$ ' + total.toFixed(2).replace('.',','));
+    }
+
+    // Máscara CEP
+    $('#checkout-cep').on('input', function () {
+      let v = $(this).val().replace(/\D/g, '').slice(0, 8);
+      if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+      $(this).val(v);
+    });
+  });
+  </script>
+</body>
+</html>

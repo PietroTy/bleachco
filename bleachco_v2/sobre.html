@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre — Bleach.Co | Quem somos</title>
+  <meta name="description" content="A Bleach.Co nasceu de uma garagem, água sanitária e a certeza de que arte não precisa de permissão. Conheça nossa história." />
+  <link rel="canonical" href="https://bleachco.com.br/sobre.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div id="toast"></div>
+  <button id="back-to-top" aria-label="Voltar ao topo">↑</button>
+  <div id="cart-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header"><h3>CARRINHO</h3><button class="cart-close-btn" id="cart-close-btn">✕</button></div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-footer">
+      <div class="cart-handmade-note">✦ Cada peça é feita à mão após o pedido.</div>
+      <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-value" id="cart-subtotal">R$ 0,00</span></div>
+      <a href="checkout.html" class="btn btn-primary btn-full">Finalizar pedido →</a>
+    </div>
+  </aside>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="produtos.html">Estampas</a></li>
+        <li><a href="sobre.html" class="active">Sobre</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-cart-btn" id="nav-cart-btn">◎ Carrinho <span id="cart-count" style="display:none;">0</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO PARALLAX -->
+  <section class="product-hero parallax-section" style="min-height:70vh;" aria-label="Sobre">
+    <div class="product-hero-bg parallax-bg" data-speed="0.25" aria-hidden="true">
+      <svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+        <rect width="1200" height="700" fill="#080808"/>
+        <!-- Eclipse grande desfocado no fundo -->
+        <ellipse cx="900" cy="350" rx="360" ry="360" fill="#D4521E" opacity="0.06"/>
+        <ellipse cx="900" cy="350" rx="260" ry="260" fill="#D4521E" opacity="0.08"/>
+        <ellipse cx="900" cy="350" rx="160" ry="160" fill="#080808" opacity="0.95"/>
+        <!-- Olho no lado esquerdo -->
+        <path d="M60,350 Q250,200 350,350 Q250,500 60,350 Z" fill="none" stroke="#D4521E" stroke-width="12" opacity="0.12"/>
+        <ellipse cx="220" cy="350" rx="50" ry="50" fill="#D4521E" opacity="0.08"/>
+        <!-- Respingos -->
+        <ellipse cx="420" cy="180" rx="18" ry="14" fill="#D4521E" opacity="0.1"/>
+        <ellipse cx="780" cy="580" rx="14" ry="10" fill="#D4521E" opacity="0.1"/>
+        <circle cx="1080" cy="150" r="8" fill="#D4521E" opacity="0.12"/>
+      </svg>
+    </div>
+    <div class="product-hero-overlay"></div>
+    <div style="position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:160px 28px 80px;width:100%;">
+      <span class="eyebrow reveal">Quem somos</span>
+      <h1 class="reveal reveal-delay-1">NASCEMOS<br/><span class="accent">DA MANCHA.</span></h1>
+      <p style="max-width:480px;margin-top:20px;" class="reveal reveal-delay-2">Uma garagem. Água sanitária. A pergunta certa.</p>
+    </div>
+  </section>
+
+  <!-- HISTÓRIA -->
+  <section class="about-section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <span class="eyebrow">Nossa história</span>
+          <h2 style="margin:12px 0 28px;">De acidente<br/>a identidade.</h2>
+          <p>Tudo começou sem intenção. Uma camiseta preta, um frasco de água sanitária e uma noite sem plano. O respingo que caiu no tecido não foi erro — foi revelação.</p>
+          <p>A bleach.co surgiu dessa descoberta: água sanitária não é produto de limpeza. É tinta. É ferramenta. É arte acidental com intenção.</p>
+          <p>Desde então, cada peça que sai aqui segue o mesmo processo: algodão preto, alvejante, mãos, tempo. Nenhuma fórmula. Nenhum molde. O resultado sempre surpreende — inclusive a gente.</p>
+          <p>Somos de São Paulo. Operamos pequenos de propósito. Sem linha de produção, sem estoque acumulado, sem pressa para escalar. Cada pedido é uma peça nova, feita para quem pediu.</p>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <div class="values-list">
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Cada peça é única — impossível de replicar</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Produção artesanal, sem linha de montagem</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Algodão 100%, fornecedor nacional</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Sem estoque — produzimos após o pedido</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Foto da peça enviada antes do despacho</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>Transparência no processo e no prazo</span>
+            </div>
+            <div class="value-item">
+              <span class="value-dot"></span>
+              <span>A mancha é intencional. A arte, inevitável.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO VISUAL -->
+  <section style="padding:0 0 120px;">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Como fazemos</span>
+        <h2>DO TECIDO<br/>À SUA PORTA.</h2>
+      </div>
+      <div class="processo-grid">
+        <div class="processo-step reveal">
+          <div class="step-num">01</div>
+          <h3>Algodão selecionado</h3>
+          <p>100% algodão penteado preto, 180g/m². A base escura é essencial — o alvejante só revela sua cor nesse contraste.</p>
+        </div>
+        <div class="processo-step reveal reveal-delay-1">
+          <div class="step-num">02</div>
+          <h3>Técnica aplicada</h3>
+          <p>Spray, drip, pincel ou imersão parcial. Cada estampa tem sua técnica específica, mas o resultado sempre carrega imprevisibilidade.</p>
+        </div>
+        <div class="processo-step reveal reveal-delay-2">
+          <div class="step-num">03</div>
+          <h3>Cura & aprovação</h3>
+          <p>24h de cura. Lavagem de neutralização. Foto enviada para você aprovar antes de qualquer coisa sair daqui.</p>
+        </div>
+        <div class="processo-step reveal reveal-delay-3">
+          <div class="step-num">04</div>
+          <h3>Empacotamos e enviamos</h3>
+          <p>Embalagem simples e eficiente. Enviamos via transportadora — Correios, Jadlog ou Total Express conforme seu CEP. Rastreio sempre incluído.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>BLEACH.CO</span><span class="marquee-dot">✦</span>
+      <span>FEITO À MÃO</span><span class="marquee-dot">✦</span>
+      <span>SÃO PAULO</span><span class="marquee-dot">✦</span>
+      <span>ÚNICO</span><span class="marquee-dot">✦</span>
+      <span>IRREPETÍVEL</span><span class="marquee-dot">✦</span>
+      <span>BLEACH ART</span><span class="marquee-dot">✦</span>
+      <span>BLEACH.CO</span><span class="marquee-dot">✦</span>
+      <span>FEITO À MÃO</span><span class="marquee-dot">✦</span>
+      <span>SÃO PAULO</span><span class="marquee-dot">✦</span>
+      <span>ÚNICO</span><span class="marquee-dot">✦</span>
+      <span>IRREPETÍVEL</span><span class="marquee-dot">✦</span>
+      <span>BLEACH ART</span><span class="marquee-dot">✦</span>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo">BLEACH<span class="logo-dot">.Co</span></span>
+          <p class="eyebrow" style="margin-bottom:12px;display:block;">A mancha é a arte.</p>
+          <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Estampas</h4>
+          <ul>
+            <li><a href="produto-eclipse.html">Eclipse</a></li>
+            <li><a href="produto-spy.html">Spy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>oi@bleachco.com.br</p>
+          <p style="margin-top:8px;">(11) 99999-0000</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Feito à mão ✦ SP</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

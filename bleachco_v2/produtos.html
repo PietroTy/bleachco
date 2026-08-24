@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estampas — Bleach.Co</title>
+  <meta name="description" content="Duas estampas. Infinitas manchas. Eclipse e Spy — feitas à mão com água sanitária sobre algodão preto. Cada peça é única." />
+  <link rel="canonical" href="https://bleachco.com.br/produtos.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <div id="toast"></div>
+  <button id="back-to-top" aria-label="Voltar ao topo">↑</button>
+  <div id="cart-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header"><h3>CARRINHO</h3><button class="cart-close-btn" id="cart-close-btn">✕</button></div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-footer">
+      <div class="cart-handmade-note">✦ Cada peça é feita à mão após o pedido. Prazo: 5–10 dias úteis.</div>
+      <div class="cart-total-row"><span class="cart-total-label">Total</span><span class="cart-total-value" id="cart-subtotal">R$ 0,00</span></div>
+      <a href="checkout.html" class="btn btn-primary btn-full">Finalizar pedido →</a>
+    </div>
+  </aside>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="produtos.html" class="active">Estampas</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-cart-btn" id="nav-cart-btn">◎ Carrinho <span id="cart-count" style="display:none;">0</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <span class="eyebrow reveal">Coleção 2025</span>
+    <h1 class="reveal reveal-delay-1">DUAS ESTAMPAS.<br/><span class="accent">INFINITAS MANCHAS.</span></h1>
+    <p class="reveal reveal-delay-2">Cada peça começa do zero — feita à mão com água sanitária depois que você faz o pedido. Sem estoque. Sem réplicas.</p>
+  </div>
+
+  <section class="products-section" style="padding-top:0;">
+    <div class="products-grid">
+      <a href="produto-eclipse.html" class="product-tile reveal" aria-label="Eclipse">
+        <div class="product-tile-bg">
+          <svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="800" height="1000" fill="#0c0c0c"/>
+            <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#111111" stroke="#1a1a1a" stroke-width="1"/>
+            <ellipse cx="400" cy="500" rx="145" ry="145" fill="#D4521E" opacity="0.82"/>
+            <ellipse cx="400" cy="500" rx="95" ry="95" fill="#0c0c0c" opacity="0.96"/>
+            <ellipse cx="400" cy="500" rx="168" ry="168" fill="none" stroke="#D4521E" stroke-width="12" opacity="0.18"/>
+            <ellipse cx="400" cy="500" rx="186" ry="186" fill="none" stroke="#D4521E" stroke-width="4" opacity="0.10"/>
+            <ellipse cx="260" cy="410" rx="22" ry="18" fill="#D4521E" opacity="0.35"/>
+            <ellipse cx="555" cy="580" rx="16" ry="13" fill="#D4521E" opacity="0.28"/>
+            <ellipse cx="310" cy="610" rx="10" ry="8" fill="#D4521E" opacity="0.22"/>
+            <ellipse cx="500" cy="390" rx="8" ry="6" fill="#D4521E" opacity="0.3"/>
+          </svg>
+        </div>
+        <span class="product-tile-label">Feito à mão</span>
+        <div class="product-tile-info">
+          <div class="product-tile-name">ECLIPSE</div>
+          <div class="product-tile-price">A partir de R$ 89,00</div>
+        </div>
+      </a>
+      <a href="produto-spy.html" class="product-tile reveal reveal-delay-1" aria-label="Spy">
+        <div class="product-tile-bg">
+          <svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="800" height="1000" fill="#0c0c0c"/>
+            <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#111111" stroke="#1a1a1a" stroke-width="1"/>
+            <path d="M188,500 Q400,340 612,500 Q400,660 188,500 Z" fill="none" stroke="#D4521E" stroke-width="22" opacity="0.8"/>
+            <ellipse cx="400" cy="500" rx="65" ry="65" fill="#D4521E" opacity="0.85"/>
+            <ellipse cx="400" cy="500" rx="33" ry="33" fill="#080808"/>
+            <ellipse cx="420" cy="484" rx="10" ry="10" fill="#D4521E" opacity="0.6"/>
+            <line x1="264" y1="390" x2="250" y2="352" stroke="#D4521E" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+            <line x1="334" y1="355" x2="326" y2="315" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.45"/>
+            <line x1="400" y1="342" x2="400" y2="300" stroke="#D4521E" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+            <line x1="466" y1="355" x2="474" y2="315" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.45"/>
+            <line x1="536" y1="390" x2="550" y2="352" stroke="#D4521E" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+            <ellipse cx="188" cy="496" rx="20" ry="14" fill="#D4521E" opacity="0.25"/>
+            <ellipse cx="612" cy="504" rx="18" ry="12" fill="#D4521E" opacity="0.22"/>
+          </svg>
+        </div>
+        <span class="product-tile-label">Feito à mão</span>
+        <div class="product-tile-info">
+          <div class="product-tile-name">SPY</div>
+          <div class="product-tile-price">A partir de R$ 89,00</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- AVISO HANDMADE -->
+  <section style="padding:80px 0;background:var(--ink2);">
+    <div class="container--narrow" style="text-align:center;">
+      <span class="eyebrow reveal">Importante</span>
+      <h2 class="reveal reveal-delay-1" style="margin:12px 0 24px;">Sem estoque.<br/>Sem pressa.</h2>
+      <p class="reveal reveal-delay-2" style="max-width:520px;margin:0 auto 40px;">
+        A Bleach.Co não tem peças prontas esperando. Cada camiseta é produzida do zero depois que você finaliza o pedido. Isso garante que sua peça seja verdadeiramente única — e que ninguém no mundo tenha exatamente a mesma que você.
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="reveal reveal-delay-3">
+        <span class="tag">Produção: 5–10 dias úteis</span>
+        <span class="tag">Foto antes do envio</span>
+        <span class="tag">100% algodão preto</span>
+        <span class="tag">Técnica artesanal</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo">BLEACH<span class="logo-dot">.Co</span></span>
+          <p class="eyebrow" style="margin-bottom:12px;display:block;">A mancha é a arte.</p>
+          <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Estampas</h4>
+          <ul>
+            <li><a href="produto-eclipse.html">Eclipse</a></li>
+            <li><a href="produto-spy.html">Spy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>oi@bleachco.com.br</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Feito à mão ✦ SP</span>
+      </div>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

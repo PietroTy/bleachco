@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eclipse — Bleach.Co | Camiseta artesanal feita à mão</title>
+  <meta name="description" content="Eclipse: a estampa de eclipse solar feita com água sanitária sobre algodão preto. Cada peça é única. Feito à mão em São Paulo." />
+  <link rel="canonical" href="https://bleachco.com.br/produto-eclipse.html" />
+  <meta property="og:title" content="Eclipse — Bleach.Co" />
+  <meta property="og:description" content="Eclipse solar alvejado à mão. Peça única, irrepetível." />
+  <meta property="og:type" content="product" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Eclipse — Bleach.Co",
+    "description": "Camiseta artesanal com estampa de eclipse solar feita com água sanitária sobre algodão preto 100%. Peça única.",
+    "brand": { "@type": "Brand", "name": "Bleach.Co" },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "BRL",
+      "price": "89.00",
+      "availability": "https://schema.org/InStock",
+      "url": "https://bleachco.com.br/produto-eclipse.html"
+    }
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body data-product="eclipse" data-name="Eclipse" data-price="89">
+
+  <div id="toast"></div>
+  <button id="back-to-top" aria-label="Voltar ao topo">↑</button>
+
+  <div id="cart-overlay"></div>
+  <aside id="cart-drawer">
+    <div class="cart-header">
+      <h3>CARRINHO</h3>
+      <button class="cart-close-btn" id="cart-close-btn">✕</button>
+    </div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-footer">
+      <div class="cart-handmade-note">✦ Cada peça é feita à mão após o pedido. Prazo: 5–10 dias úteis.</div>
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-value" id="cart-subtotal">R$ 0,00</span>
+      </div>
+      <a href="checkout.html" class="btn btn-primary btn-full">Finalizar pedido →</a>
+    </div>
+  </aside>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">BLEACH<span class="logo-dot">.Co</span></a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="produtos.html" class="active">Estampas</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-cart-btn" id="nav-cart-btn">◎ Carrinho <span id="cart-count" style="display:none;">0</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── PRODUCT HERO com PARALLAX ── -->
+  <section class="product-hero parallax-section" aria-label="Eclipse">
+    <!-- Fundo = a própria estampa em fullscreen, com parallax -->
+    <div class="product-hero-bg parallax-bg" data-speed="0.28" aria-hidden="true">
+      <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;min-height:120vh;">
+        <rect width="1200" height="900" fill="#080808"/>
+        <!-- Halo externo grande -->
+        <ellipse cx="600" cy="450" rx="380" ry="380" fill="#D4521E" opacity="0.07"/>
+        <ellipse cx="600" cy="450" rx="320" ry="320" fill="#D4521E" opacity="0.10"/>
+        <!-- Coroa solar -->
+        <ellipse cx="600" cy="450" rx="260" ry="260" fill="#D4521E" opacity="0.75"/>
+        <!-- Disco negro do eclipse -->
+        <ellipse cx="600" cy="450" rx="196" ry="196" fill="#060606"/>
+        <!-- Anel laranja interno (borda do eclipse) -->
+        <ellipse cx="600" cy="450" rx="200" ry="200" fill="none" stroke="#D4521E" stroke-width="22" opacity="0.3"/>
+        <!-- Centro luminoso pequeno -->
+        <ellipse cx="600" cy="450" rx="42" ry="42" fill="#D4521E" opacity="0.15"/>
+        <!-- Raios da coroa -->
+        <line x1="600" y1="150" x2="600" y2="200" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
+        <line x1="600" y1="700" x2="600" y2="750" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
+        <line x1="310" y1="450" x2="258" y2="450" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
+        <line x1="890" y1="450" x2="942" y2="450" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
+        <line x1="392" y1="242" x2="358" y2="208" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
+        <line x1="808" y1="242" x2="842" y2="208" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
+        <line x1="392" y1="658" x2="358" y2="692" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
+        <line x1="808" y1="658" x2="842" y2="692" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
+        <!-- Respingos irregulares de alvejante -->
+        <ellipse cx="340" cy="310" rx="28" ry="22" fill="#D4521E" opacity="0.3"/>
+        <ellipse cx="870" cy="580" rx="20" ry="16" fill="#D4521E" opacity="0.25"/>
+        <ellipse cx="420" cy="680" rx="14" ry="11" fill="#D4521E" opacity="0.22"/>
+        <ellipse cx="760" cy="220" rx="10" ry="8" fill="#D4521E" opacity="0.28"/>
+        <ellipse cx="200" cy="560" rx="8" ry="6" fill="#D4521E" opacity="0.18"/>
+        <ellipse cx="1000" cy="340" rx="6" ry="5" fill="#D4521E" opacity="0.2"/>
+        <!-- gotas pequenas espalhadas -->
+        <circle cx="480" cy="220" r="5" fill="#D4521E" opacity="0.22"/>
+        <circle cx="730" cy="700" r="4" fill="#D4521E" opacity="0.18"/>
+        <circle cx="150" cy="350" r="6" fill="#D4521E" opacity="0.15"/>
+        <circle cx="1050" cy="620" r="5" fill="#D4521E" opacity="0.16"/>
+      </svg>
+    </div>
+    <div class="product-hero-overlay"></div>
+
+    <div class="product-hero-content">
+      <div class="product-shirt-preview">
+        <!-- Camiseta com estampa Eclipse -->
+        <div id="shirt-svg-thumb">
+          <svg viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+            <!-- Camiseta preta -->
+            <path d="M110,40 L30,130 L95,165 L95,420 L305,420 L305,165 L370,130 L290,40 L255,68 Q200,100 145,68 Z" fill="#111111" stroke="#222222" stroke-width="1.5"/>
+            <!-- Gola arredondada -->
+            <path d="M145,68 Q200,108 255,68" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+            <!-- Costuras das mangas (detalhe realista) -->
+            <path d="M95,165 L30,130" fill="none" stroke="#1a1a1a" stroke-width="0.8" opacity="0.5"/>
+            <path d="M305,165 L370,130" fill="none" stroke="#1a1a1a" stroke-width="0.8" opacity="0.5"/>
+            <!-- Eclipse estampa -->
+            <ellipse cx="200" cy="250" rx="72" ry="72" fill="#D4521E" opacity="0.82"/>
+            <ellipse cx="200" cy="250" rx="50" ry="50" fill="#080808"/>
+            <ellipse cx="200" cy="250" rx="74" ry="74" fill="none" stroke="#D4521E" stroke-width="6" opacity="0.2"/>
+            <ellipse cx="200" cy="250" rx="82" ry="82" fill="none" stroke="#D4521E" stroke-width="2" opacity="0.1"/>
+            <!-- Respingos -->
+            <ellipse cx="132" cy="210" rx="11" ry="9" fill="#D4521E" opacity="0.35"/>
+            <ellipse cx="276" cy="290" rx="8" ry="6" fill="#D4521E" opacity="0.28"/>
+            <ellipse cx="156" cy="304" rx="5" ry="4" fill="#D4521E" opacity="0.22"/>
+            <ellipse cx="248" cy="196" rx="4" ry="3" fill="#D4521E" opacity="0.3"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <span class="eyebrow">Estampa</span>
+        <h1 class="product-name">ECLIPSE</h1>
+        <p class="product-tagline">Eclipse solar alvejado à mão. O disco negro que engole a chama laranja — cada peça com sua própria coroa, nunca igual à anterior.</p>
+
+        <div class="handmade-notice">
+          <span class="handmade-notice-icon">✦</span>
+          <p><strong>100% feito à mão.</strong> Sua peça só existe depois do seu pedido. A água sanitária é aplicada sobre algodão preto em uma única sessão — sem repetições, sem moldes.</p>
+        </div>
+
+        <div class="size-selector">
+          <span class="size-label">Tamanho</span>
+          <div class="size-options">
+            <button class="size-btn" data-size="P">P</button>
+            <button class="size-btn" data-size="M">M</button>
+            <button class="size-btn" data-size="G">G</button>
+            <button class="size-btn" data-size="GG">GG</button>
+          </div>
+        </div>
+
+        <div class="product-price-row">
+          <span class="product-price">R$ 89,00</span>
+          <span class="product-price-note">à vista · parcelamento disponível</span>
+        </div>
+
+        <button class="add-to-cart-btn" id="add-to-cart-btn" disabled>
+          Selecione um tamanho
+        </button>
+        <p style="font-size:0.78rem;color:var(--gray);margin-top:12px;text-align:center;">
+          Produção: 5–10 dias úteis após pagamento confirmado
+        </p>
+      </div>
+    </div>
+
+    <div class="product-scroll-hint" aria-hidden="true">
+      <span>mais</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── DETALHES ── -->
+  <section class="product-info-section">
+    <div class="container">
+      <div class="product-info-grid">
+        <div class="info-block reveal">
+          <span class="eyebrow">Sobre a estampa</span>
+          <h3>O que é Eclipse</h3>
+          <p>A estampa Eclipse é inspirada no eclipse solar total — o momento em que a lua cobre o sol e só a coroa de plasma permanece visível, laranja e feroz.</p>
+          <p>Aplicamos água sanitária em concentração variável para criar o halo externo, o anel de fogo e os respingos satélites. Nenhuma peça sai igual.</p>
+          <ul class="info-list">
+            <li>Disco central apagado pelo alvejante puro</li>
+            <li>Coroa em spray diluído — cria o degradê natural</li>
+            <li>Respingos livres à mão — posição sempre diferente</li>
+            <li>Cada camiseta é fotografada antes do envio</li>
+          </ul>
+        </div>
+        <div class="info-block reveal reveal-delay-1">
+          <span class="eyebrow">Especificações</span>
+          <h3>Produto</h3>
+          <ul class="info-list">
+            <li>Algodão penteado 100% — 180g/m²</li>
+            <li>Corte unissex — tabela de medidas abaixo</li>
+            <li>Costura dupla reforçada nas mangas</li>
+            <li>Água sanitária profissional — sem toxinas residuais após lavagem</li>
+            <li>Lavar à mão, virada ao avesso, água fria</li>
+            <li>Não usar alvejante na lavagem</li>
+          </ul>
+          <table style="margin-top:24px;width:100%;border-collapse:collapse;font-size:0.82rem;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--gray-lt);">
+                <th style="text-align:left;padding:10px 0;color:var(--gray);font-weight:500;">Tam.</th>
+                <th style="text-align:center;padding:10px 0;color:var(--gray);font-weight:500;">Tórax</th>
+                <th style="text-align:center;padding:10px 0;color:var(--gray);font-weight:500;">Comp.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">P</td><td style="text-align:center;color:var(--gray);">94cm</td><td style="text-align:center;color:var(--gray);">68cm</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">M</td><td style="text-align:center;color:var(--gray);">100cm</td><td style="text-align:center;color:var(--gray);">71cm</td></tr>
+              <tr style="border-bottom:1px solid var(--gray-lt);"><td style="padding:10px 0;color:var(--bone);">G</td><td style="text-align:center;color:var(--gray);">106cm</td><td style="text-align:center;color:var(--gray);">74cm</td></tr>
+              <tr><td style="padding:10px 0;color:var(--bone);">GG</td><td style="text-align:center;color:var(--gray);">112cm</td><td style="text-align:center;color:var(--gray);">77cm</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OUTRAS ESTAMPAS ── -->
+  <section style="padding:80px 0;background:var(--ink);">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Também disponível</span>
+        <h2>VER SPY →</h2>
+      </div>
+      <a href="produto-spy.html" class="product-tile reveal" style="max-width:520px;display:block;aspect-ratio:4/3;">
+        <div class="product-tile-bg" style="background:var(--ink2);">
+          <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+            <rect width="800" height="600" fill="#0c0c0c"/>
+            <ellipse cx="400" cy="300" rx="200" ry="100" fill="none" stroke="#D4521E" stroke-width="22" opacity="0.8"/>
+            <ellipse cx="400" cy="300" rx="65" ry="65" fill="#D4521E" opacity="0.85"/>
+            <ellipse cx="400" cy="300" rx="32" ry="32" fill="#080808"/>
+            <ellipse cx="418" cy="286" rx="10" ry="10" fill="#D4521E" opacity="0.6"/>
+            <line x1="260" y1="200" x2="250" y2="168" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="400" y1="200" x2="400" y2="166" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+            <line x1="540" y1="200" x2="550" y2="168" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="product-tile-info">
+          <div class="product-tile-name">SPY</div>
+          <div class="product-tile-price">A partir de R$ 89,00</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="logo">BLEACH<span class="logo-dot">.Co</span></span>
+          <p class="eyebrow" style="margin-bottom:12px;display:block;">A mancha é a arte.</p>
+          <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Estampas</h4>
+          <ul>
+            <li><a href="produto-eclipse.html">Eclipse</a></li>
+            <li><a href="produto-spy.html">Spy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <p>oi@bleachco.com.br</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Bleach.Co</span>
+        <span>Feito à mão ✦ SP</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
