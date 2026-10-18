@@ -1,9 +1,9 @@
 // Canais reais de contato da loja, na ordem em que aparecem. O que ficar vazio não aparece no site.
 export const CONTACT = {
-  email: 'bleach.co.br@gmail.com',  // canal preferido
-  instagram: 'usebleach.co',        // só o usuário, sem @
-  tiktok: 'usebleach.co',
-  whatsapp: '5511998848997',        // só números, com DDI e DDD
+  email: 'bleach.co.br@gmail.com',
+  instagram: '',  // só o usuário, sem @ (ex: usebleach.co)
+  tiktok: '',
+  whatsapp: '',   // só números, com DDI e DDD
 };
 
 export const CONTACT_LINKS = [
@@ -11,7 +11,6 @@ export const CONTACT_LINKS = [
     label: 'E-mail',
     value: CONTACT.email,
     href: `mailto:${CONTACT.email}`,
-    preferred: true,
   },
   CONTACT.instagram && {
     label: 'Instagram',

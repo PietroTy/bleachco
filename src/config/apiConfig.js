@@ -24,6 +24,7 @@ export const API_CONFIG = {
         paymentStatus:    '/payment/:id/status',
         orderGet:         '/order/:id',
         shippingCalculate: '/shipping/calculate',
+        contact:          '/contact',
     }
 };
 

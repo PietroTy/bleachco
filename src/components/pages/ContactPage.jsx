@@ -1,6 +1,39 @@
-import { CONTACT_LINKS } from '../../config/contact';
+import { useState } from 'react';
+import { CONTACT, CONTACT_LINKS } from '../../config/contact';
+import { getApiUrl } from '../../config/apiConfig';
+
+const SUBJECTS = ['Dúvida sobre pedido', 'Peça personalizada', 'Parceria', 'Outro assunto'];
+const EMPTY = { nome: '', email: '', assunto: SUBJECTS[0], mensagem: '', website: '' };
 
 export default function ContactPage() {
+  const [form, setForm] = useState(EMPTY);
+  const [state, setState] = useState('idle'); // idle | sending | sent | error
+  const [error, setError] = useState('');
+
+  const update = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setState('sending');
+    setError('');
+    let validation = '';
+    try {
+      const res = await fetch(getApiUrl('contact'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 400) validation = data.error;
+      if (!res.ok) throw new Error();
+      setState('sent');
+      setForm(EMPTY);
+    } catch {
+      setState('error');
+      setError(validation || `Não deu pra enviar agora. Manda direto pra ${CONTACT.email}.`);
+    }
+  };
+
   return (
     <>
       <div className="page-header">
@@ -11,34 +44,68 @@ export default function ContactPage() {
           <span className="accent">UM OI.</span>
         </h1>
         <p className="reveal reveal-delay-2">
-          Dúvidas sobre pedidos, peças personalizadas, parcerias ou só curiosidade. O jeito mais rápido de
-          falar com a gente é por e-mail.
+          Dúvidas sobre pedidos, peças personalizadas, parcerias ou só curiosidade. A resposta chega no seu e-mail.
         </p>
       </div>
 
       <section style={{ padding: '0 0 120px' }}>
         <div className="container">
           <div className="about-grid">
-            <div className="contact-channels reveal">
-              {CONTACT_LINKS.length > 0 ? (
-                CONTACT_LINKS.map((c) => (
-                  <a key={c.label} href={c.href} className={`contact-channel${c.preferred ? ' contact-channel--preferred' : ''}`} target="_blank" rel="noopener noreferrer">
-                    <span className="contact-channel-label">{c.label}{c.preferred && <em> · preferido</em>}</span>
-                    <span className="contact-channel-value">{c.value}</span>
-                    <span className="contact-channel-arrow">→</span>
-                  </a>
-                ))
+            <div className="contact-form-box reveal">
+              {state === 'sent' ? (
+                <div className="contact-sent">
+                  <h3>MENSAGEM <span className="accent">ENVIADA.</span></h3>
+                  <p>Valeu! A gente responde no e-mail que você informou.</p>
+                  <button type="button" className="btn btn-ghost" onClick={() => setState('idle')}>Mandar outra</button>
+                </div>
               ) : (
-                <p>Nossos canais de contato estão chegando. Volta daqui a pouco.</p>
+                <form onSubmit={submit}>
+                  <span className="eyebrow">Fale conosco</span>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="nome">Nome *</label>
+                      <input id="nome" name="nome" required minLength={2} maxLength={80} value={form.nome} onChange={update} placeholder="Seu nome" />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email">E-mail *</label>
+                      <input id="email" name="email" type="email" required maxLength={160} value={form.email} onChange={update} placeholder="voce@exemplo.com" />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="assunto">Assunto</label>
+                    <select id="assunto" name="assunto" value={form.assunto} onChange={update}>
+                      {SUBJECTS.map((s) => <option key={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="mensagem">Mensagem *</label>
+                    <textarea id="mensagem" name="mensagem" required minLength={10} maxLength={3000} rows={6} value={form.mensagem} onChange={update} placeholder="Conta pra gente..." />
+                  </div>
+                  {/* Armadilha pra robô: pessoa não vê nem preenche */}
+                  <input className="contact-hp" name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={update} aria-hidden="true" />
+                  {state === 'error' && <p className="form-error" style={{ marginBottom: 14 }}>{error}</p>}
+                  <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={state === 'sending'}>
+                    {state === 'sending' ? 'Enviando...' : 'Enviar mensagem →'}
+                  </button>
+                </form>
               )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} className="reveal reveal-delay-1">
+              <div className="contact-channels">
+                {CONTACT_LINKS.map((c) => (
+                  <a key={c.label} href={c.href} className="contact-channel" target="_blank" rel="noopener noreferrer">
+                    <span className="contact-channel-label">{c.label}</span>
+                    <span className="contact-channel-value">{c.value}</span>
+                    <span className="contact-channel-arrow">→</span>
+                  </a>
+                ))}
+              </div>
               <div className="contact-note">
                 <span className="eyebrow">Peças personalizadas</span>
                 <p>
-                  Tem uma ideia de estampa? A gente pode criar uma peça exclusiva pra você. Chama e explica o
-                  conceito — avaliamos caso a caso.
+                  Tem uma ideia de estampa? A gente pode criar uma peça exclusiva pra você. Escolhe "Peça
+                  personalizada" no assunto e explica o conceito — avaliamos caso a caso.
                 </p>
                 <p style={{ marginTop: '12px', fontSize: '.8rem' }}>Prazo adicional para desenvolvimento.</p>
               </div>
