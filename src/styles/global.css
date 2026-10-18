@@ -300,6 +300,16 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
   0% { opacity: 0; } 18% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; }
 }
 
+/* ── SOBRE: time-lapse da gota ── */
+.drop-timelapse { image-rendering: pixelated; }
+.about-drop {
+  position: absolute; z-index: 1; right: max(28px, calc((100% - 1180px) / 2)); top: 50%;
+  width: min(38vw, 440px); aspect-ratio: 1; transform: translateY(-46%);
+  border-radius: 50%; mask-image: radial-gradient(circle, #000 55%, transparent 71%);
+  -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 71%);
+}
+@media (max-width: 960px) { .about-drop { opacity: 0.35; width: 70vw; right: -15vw; } }
+
 /* ── 404 SEM SINAL ── */
 .no-signal { position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
 .no-signal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: 0.55; }

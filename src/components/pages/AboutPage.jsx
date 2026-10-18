@@ -1,40 +1,11 @@
-import stainOrangeImg from '../../assets/stain_splash.png';
-import stainWhiteImg from '../../assets/stain_splash_white.png';
+import DropTimelapse from '../../art/DropTimelapse';
 
 export default function AboutPage() {
   return (
     <>
       {/* HERO PARALLAX */}
       <section className="product-hero parallax-section" style={{ minHeight: '70vh', position: 'relative', overflow: 'hidden' }} aria-label="Sobre">
-        <div className="product-hero-bg parallax-bg" data-speed="0.25" aria-hidden="true">
-          <img
-            src={stainOrangeImg}
-            alt=""
-            style={{
-              position: 'absolute',
-              right: '-10vw',
-              top: '-5vh',
-              width: '55vw',
-              maxWidth: '700px',
-              opacity: 0.32,
-              pointerEvents: 'none'
-            }}
-          />
-          <img
-            src={stainWhiteImg}
-            alt=""
-            style={{
-              position: 'absolute',
-              left: '-10vw',
-              bottom: '0',
-              width: '45vw',
-              maxWidth: '550px',
-              opacity: 0.15,
-              pointerEvents: 'none'
-            }}
-          />
-        </div>
-        <div className="product-hero-overlay"></div>
+        <DropTimelapse className="about-drop" />
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', padding: '160px 28px 80px', width: '100%' }}>
           <span className="eyebrow reveal">Quem somos</span>
           <h1 className="reveal reveal-delay-1">
