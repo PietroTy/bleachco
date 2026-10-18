@@ -47,9 +47,24 @@ export function bleachIn(el, duration = 3400) {
     webkitTextFillColor: 'transparent',
     imageRendering: 'pixelated',
   });
+  // Cada quadro só entra no fundo depois de decodificado: trocar a imagem direto deixa o
+  // Firefox sem pintar nada até a animação acabar (letra invisível e depois "pop")
+  let decoding = false;
+  let done = false;
   const paint = () => {
     stain.render(ctx);
-    style.backgroundImage = `url(${canvas.toDataURL()})`;
+    if (decoding) return;
+    decoding = true;
+    const url = canvas.toDataURL();
+    const frame = new Image();
+    frame.src = url;
+    frame.decode().then(
+      () => {
+        if (!done) style.backgroundImage = `url(${url})`;
+        decoding = false;
+      },
+      () => (decoding = false)
+    );
   };
   paint();
 
@@ -73,7 +88,10 @@ export function bleachIn(el, duration = 3400) {
     if (p > 0.8) stain.bleachTo(1 - (p - 0.8) / 0.2);
     paint();
     if (p < 1) requestAnimationFrame(tick);
-    else props.forEach((k) => (style[k] = ''));
+    else {
+      done = true;
+      props.forEach((k) => (style[k] = ''));
+    }
   };
   requestAnimationFrame(tick);
 }
