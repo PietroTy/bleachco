@@ -7,19 +7,18 @@ const rgb = (el) => getComputedStyle(el).color.match(/\d+/g).slice(0, 3).map(Num
 // Título que aparece alvejado: as letras são o pano preto do fundo, e o mesmo motor
 // das manchas pinga alvejante nelas até chegar na cor delas (preto → ferrugem → laranja → osso):
 // texto branco vai até o osso, trecho laranja (.accent) para no laranja.
-// A mancha vira o fundo do texto (background-clip: text) só durante a animação.
+// A mancha vira o fundo do texto (background-clip: text) e fica: a letra termina manchada, não chapada.
 export function bleachIn(el, duration = 2600) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const base = getComputedStyle(el).color;
-  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele. Quando acaba
-  // fica na cor real (senão o texto transparente mostra a mancha do título por baixo) até o título acabar.
-  const parts = [...el.querySelectorAll('*')].filter((child) => getComputedStyle(child).color !== base);
-  stainText(el, duration, () => parts.forEach((child) => (child.style.webkitTextFillColor = '')));
-  parts.forEach((child) => stainText(child, duration, null, 'currentcolor'));
+  stainText(el, duration);
+  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele
+  el.querySelectorAll('*').forEach((child) => {
+    if (getComputedStyle(child).color !== base) stainText(child, duration);
+  });
 }
 
-// onDone: chamado no fim; fill: cor do texto que fica no fim (padrão: a do CSS)
-function stainText(el, duration, onDone, fill = '') {
+function stainText(el, duration) {
   const floor = dyeFor(rgb(el));
   const box = el.getBoundingClientRect();
   if (!box.width || !box.height) return;
@@ -48,7 +47,6 @@ function stainText(el, duration, onDone, fill = '') {
 
   const style = el.style;
   // A mancha é a entrada: sem o fade/subida do .reveal por cima dela
-  const props = ['opacity', 'transform', 'transition', 'backgroundImage', 'backgroundSize', 'backgroundOrigin', 'backgroundRepeat', 'backgroundClip', 'webkitBackgroundClip', 'webkitTextFillColor', 'imageRendering'];
   Object.assign(style, {
     opacity: '1',
     transform: 'none',
@@ -63,28 +61,36 @@ function stainText(el, duration, onDone, fill = '') {
   });
   // Cada quadro só entra no fundo depois de decodificado: trocar a imagem direto deixa o
   // Firefox sem pintar nada até a animação acabar (letra invisível e depois "pop")
-  let decoding = false;
-  let done = false;
-  const paint = () => {
-    stain.render(ctx);
-    if (decoding) return;
-    decoding = true;
+  // (só entra quadro mais novo que o da tela; o último quadro sempre entra)
+  let seq = 0;
+  let shown = 0;
+  let inflight = false;
+  const paint = (last = false) => {
+    stain.render(ctx, 0); // sem o "molhado escurece": na letra clara vira pisca-pisca escuro
+    if (inflight && !last) return;
+    inflight = true;
+    const id = ++seq;
     const url = canvas.toDataURL();
     const frame = new Image();
     frame.src = url;
-    frame.decode().then(
-      () => {
-        if (!done) style.backgroundImage = `url(${url})`;
-        decoding = false;
-      },
-      () => (decoding = false)
-    );
+    frame
+      .decode()
+      .then(() => {
+        if (id > shown) {
+          shown = id;
+          style.backgroundImage = `url(${url})`;
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (id === seq) inflight = false;
+      });
   };
   paint();
 
   // Ritmo constante do começo ao fim: primeiro a grade de gotas, depois gotas mirando
-  // o que ainda está escuro, até a mancha cobrir tudo sozinha. Só o finzinho (tudo já
-  // quase na cor) é acabado junto, rápido o bastante pra não se notar.
+  // o que ainda está escuro, até a mancha cobrir tudo sozinha. No finzinho os pontos que
+  // sobraram escuros clareiam até perto da cor, mas a variação da mancha fica.
   const DRIP_EVERY = 30;
   const FINISH = 450;
   const start = performance.now();
@@ -138,15 +144,12 @@ function stainText(el, duration, onDone, fill = '') {
       }
     }
     const q = finishAt ? Math.min(1, (now - finishAt) / FINISH) : 0;
-    stain.bleachTo(finishAt ? floor + (finishFrom - floor) * (1 - q) : 1, floor);
-    paint();
-    if (q < 1) requestAnimationFrame(tick);
-    else {
-      done = true;
-      props.forEach((k) => (style[k] = ''));
-      style.webkitTextFillColor = fill;
-      onDone?.();
-    }
+    const keep = floor + 0.2; // o quanto de variação acima da cor fica pra sempre
+    stain.bleachTo(finishAt ? keep + Math.max(0, finishFrom - keep) * (1 - q) : 1, floor);
+    if (q < 1) {
+      paint();
+      requestAnimationFrame(tick);
+    } else paint(true);
   };
   requestAnimationFrame(tick);
 }

@@ -227,14 +227,15 @@ export function createStain(w, h, seed = 1) {
     return active > 0;
   }
 
-  function render(ctx) {
+  // wetness: quanto o molhado escurece (0 = não escurece)
+  function render(ctx, wetness = 0.4) {
     if (dirty1 < dirty0) return;
     if (!img) img = ctx.createImageData(w, h);
     const px = img.data;
     for (let i = dirty0 * w, end = (dirty1 + 1) * w; i < end; i++) {
       const d = Math.min(1, Math.max(0, dye[i] + grain[i]));
       const k = Math.round(d * 255) * 3;
-      const wet = Math.min(0.35, bleach[i] * 0.4); // molhado fica um pouco mais escuro
+      const wet = Math.min(0.35, bleach[i] * wetness); // molhado fica um pouco mais escuro
       px[i * 4] = PALETTE[k] * (1 - wet);
       px[i * 4 + 1] = PALETTE[k + 1] * (1 - wet);
       px[i * 4 + 2] = PALETTE[k + 2] * (1 - wet);
