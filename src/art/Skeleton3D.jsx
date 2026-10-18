@@ -39,7 +39,7 @@ const PRINTS = {
 const PRINT_IDS = Object.keys(PRINTS);
 
 function shirtTexture(printId) {
-  const c = noiseCanvas(128, 128, [20, 20, 20], 14, 11);
+  const c = noiseCanvas(128, 128, [34, 33, 36], 16, 11);
   const ctx = c.getContext('2d');
   // UV é uma projeção de frente (largura x altura da camiseta): peito em ~30% do topo.
   // Costas e laterais apontam pro canto (0,0) da textura, que é só tecido.
@@ -142,8 +142,8 @@ function buildScene(gltf, teeGltf, printId) {
     }
   });
   // Medidas da malha (altura 1): costura do ombro em x 0.27 / z 0.9 → encaixa no ombro do esqueleto
-  tee.scale.set(0.72, 0.7, 0.84); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
-  tee.position.set(0, 0.82, -0.045);
+  tee.scale.set(0.6, 0.7, 0.8); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
+  tee.position.set(0, 0.82, -0.035);
   root.add(tee);
   root.updateWorldMatrix(true, true);
 
@@ -200,7 +200,7 @@ function buildScene(gltf, teeGltf, printId) {
   // Pose final: braços mais soltos junto ao corpo, a manga vem junto. Antebraço direito desce pro galão
   const relax = (side, upper, lower, hand, fore) => {
     const sh = P(upper);
-    aimBone(upper, lower, sh.clone().add(v(side * 0.1, -0.3, 0.05)));
+    aimBone(upper, lower, sh.clone().add(v(side * 0.075, -0.3, 0.03)));
     const el = P(lower);
     aimBone(lower, hand, el.clone().add(fore));
   };
@@ -331,7 +331,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
         bones.Torso.quaternion.copy(rest.Torso);
         rotateBoneWorld(bones.Torso, tmpQ.setFromAxisAngle(axisX, 0.06 + Math.sin(t * 1.4) * 0.015));
         bones.Head.quaternion.copy(rest.Head);
-        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisX, 0.14 + Math.sin(t * 0.7) * 0.05));
+        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisX, 0.05 + Math.sin(t * 0.7) * 0.04));
         rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisZ, Math.sin(t * 0.4) * 0.08));
 
         parts.cap.getWorldPosition(parts.spout);
