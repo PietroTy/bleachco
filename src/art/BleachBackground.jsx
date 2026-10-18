@@ -51,9 +51,11 @@ export default function BleachBackground() {
     const ro = new ResizeObserver(fit);
     ro.observe(page);
 
-    const splashAt = (px, py, k = 1) => {
-      const size = SPLASH_PX / ((Math.min(stain.w, stain.h) / 100) * 9 * CELL);
-      stain.splash(px / CELL, py / CELL, size * k);
+    const splashAt = (px, py, k = 1, strength) => {
+      // Tela estreita, mancha menor (senão uma poça come o celular inteiro)
+      const narrow = Math.max(0.5, Math.min(1, (stain.w * CELL) / 900));
+      const size = (SPLASH_PX * narrow) / ((Math.min(stain.w, stain.h) / 100) * 9 * CELL);
+      stain.blot(px / CELL, py / CELL, size * k, strength);
       run();
     };
 
@@ -78,6 +80,14 @@ export default function BleachBackground() {
             splashAt(r.left + window.scrollX + fx * r.width, r.top + window.scrollY + fy * r.height, k);
           });
         });
+        // E umas a mais espalhadas, coladas nas laterais pra não brigar com o texto
+        const pageW = stain.w * CELL;
+        const pageH = page.scrollHeight;
+        const extra = Math.round((pageW * pageH) / (480 * 480));
+        for (let k = 0; k < extra; k++) {
+          const side = Math.random() < 0.5 ? Math.random() * 0.2 : 0.8 + Math.random() * 0.2;
+          splashAt(side * pageW, Math.random() * pageH, 0.4 + Math.random() * 0.8, 0.3 + Math.random() * 0.6);
+        }
         stain.render(ctx);
         run();
       },

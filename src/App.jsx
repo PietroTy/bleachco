@@ -22,7 +22,7 @@ import CheckoutPage from './components/pages/CheckoutPage';
 import ConfirmationPage from './components/pages/ConfirmationPage';
 import StainPage from './components/pages/StainPage';
 import NotFoundPage from './components/pages/NotFoundPage';
-import { bleachIn } from './art/vhs';
+import { bleachIn } from './art/bleachIn';
 import BleachBackground from './art/BleachBackground';
 
 export default function App() {

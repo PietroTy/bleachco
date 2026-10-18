@@ -111,6 +111,63 @@ export function createStain(w, h, seed = 1) {
     }
   }
 
+  // Variedade: cada mancha sai de um jeito, e com força diferente (fraca fica ferrugem, forte vai pro osso)
+  function blot(cx, cy, size = 1, strength = 0.6 + rand() * 0.8) {
+    const u = size * unit;
+    const kind = rand();
+    if (kind < 0.3) {
+      splash(cx, cy, size * Math.min(1, strength));
+    } else if (kind < 0.5) {
+      // Escorrido: poça que desceu em fios
+      drop(cx, cy, (4 + rand() * 4) * u, 1.4 * strength);
+      const trails = 1 + Math.floor(rand() * 3);
+      for (let t = 0; t < trails; t++) {
+        let x = cx + (rand() - 0.5) * 6 * u;
+        const len = (20 + rand() * 45) * u;
+        for (let d = 0; d < len; d += 1) {
+          x += (rand() - 0.5) * 0.5;
+          drop(x, cy + d, Math.max(0.7, (1 - d / len) * 2.2 * u), 0.55 * strength);
+        }
+      }
+    } else if (kind < 0.65) {
+      // Spray: névoa de pinguinhos
+      const n = 30 + Math.floor(rand() * 50);
+      const spread = (14 + rand() * 16) * u;
+      for (let k = 0; k < n; k++) {
+        const ang = rand() * Math.PI * 2;
+        const d = Math.pow(rand(), 0.7) * spread;
+        drop(cx + Math.cos(ang) * d, cy + Math.sin(ang) * d * 0.7, (0.4 + rand() * 1.1) * u, 0.9 * strength);
+      }
+    } else if (kind < 0.8) {
+      // Rastro: passada de pano molhado, falhando
+      const ang = rand() * Math.PI;
+      const len = (30 + rand() * 40) * u;
+      const r = (2 + rand() * 2.5) * u;
+      for (let d = -len / 2; d < len / 2; d += 1) {
+        if (rand() < 0.25) continue;
+        const wob = Math.sin(d * 0.08 + rand()) * r * 0.6;
+        drop(cx + Math.cos(ang) * d - Math.sin(ang) * wob, cy + Math.sin(ang) * d + Math.cos(ang) * wob, r * (0.6 + rand() * 0.5), 0.45 * strength);
+      }
+    } else {
+      // Poça seca: miolo fraco e anel mais forte na borda
+      const R = (9 + rand() * 9) * u;
+      drop(cx, cy, R, 0.35 * strength);
+      const n = Math.ceil(R * 2.5);
+      for (let k = 0; k < n; k++) {
+        const ang = (k / n) * Math.PI * 2;
+        const rr = R * (0.95 + rand() * 0.2);
+        drop(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, (1 + rand()) * u, 0.9 * strength);
+      }
+    }
+  }
+
+  // Termina o serviço: ninguém fica com mais corante que maxDye
+  function bleachTo(maxDye) {
+    for (let i = 0; i < n; i++) if (dye[i] > maxDye) dye[i] = maxDye;
+    dirty0 = 0;
+    dirty1 = h - 1;
+  }
+
   function step(iterations = 1) {
     for (let it = 0; it < iterations; it++) {
       if (y1 < y0) break;
@@ -200,7 +257,7 @@ export function createStain(w, h, seed = 1) {
     }
   }
 
-  return { w, h, dye, bleach, rand, drop, splash, step, render, reset, paste, get busy() { return active > 0; } };
+  return { w, h, dye, bleach, rand, drop, splash, blot, bleachTo, step, render, reset, paste, get busy() { return active > 0; } };
 }
 
 // Mancha determinística: a mesma semente sempre gera a mesma mancha

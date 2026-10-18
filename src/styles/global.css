@@ -98,7 +98,7 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 900;
-  height: 64px;
+  height: 92px;
   display: flex;
   align-items: center;
   background: rgba(8,8,8,0);
@@ -1158,7 +1158,7 @@ footer {
   .hero-line { display: none; }
   .nav-links {
     display: none; flex-direction: column; gap: 0;
-    position: fixed; top: 64px; left: 0; right: 0;
+    position: fixed; top: 76px; left: 0; right: 0;
     background: rgba(8,8,8,0.98);
     padding: 18px 28px;
     border-bottom: 1px solid var(--gray-lt);
@@ -1224,6 +1224,10 @@ footer {
 }
 .bleach-bg-osd button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-transform: inherit; letter-spacing: inherit; }
 .bleach-bg-osd button:hover { color: var(--orange); }
-.nav-logo-img { height: 50px; width: auto; display: block; }
-.footer-logo-img { height: 64px; width: auto; display: block; }
+.nav-logo-img { height: 76px; width: auto; display: block; }
+@media (max-width: 960px) {
+  #navbar { height: 76px; }
+  .nav-logo-img { height: 60px; }
+}
+.footer-logo-img { height: 88px; width: auto; display: block; }
 .skeleton-credit { font-size: 0.75rem; color: var(--bone2); opacity: 0.6; }
