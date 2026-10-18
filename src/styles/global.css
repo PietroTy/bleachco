@@ -269,6 +269,31 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
   filter: drop-shadow(0 30px 80px rgba(212,82,30,0.22));
   animation: hero-art-float 7s ease-in-out infinite;
 }
+/* ── ESQUELETO 3D (PS1) ── */
+.hero-3d { justify-self: end; width: 100%; max-width: 500px; }
+.skeleton3d { position: relative; width: 100%; aspect-ratio: 4 / 5; }
+.skeleton3d-canvas {
+  position: absolute; inset: 0; width: 100% !important; height: 100% !important;
+  image-rendering: pixelated; cursor: grab; touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 96%);
+}
+.skeleton3d-canvas:active { cursor: grabbing; }
+.skeleton3d-osd {
+  position: absolute; left: 6%; bottom: 4%; pointer-events: none;
+  font-family: 'VT323', monospace; font-size: 1.2rem; letter-spacing: 0.12em; color: var(--bone);
+  text-shadow: 1px 0 rgba(212,82,30,.7), -1px 0 rgba(80,140,255,.5);
+}
+.skeleton3d-osd--hint { left: auto; right: 6%; color: var(--gray); text-shadow: none; }
+.skeleton3d.is-glitching .skeleton3d-canvas { animation: vhs-tracking 0.32s steps(4) 1; }
+@keyframes vhs-tracking {
+  0%   { transform: translateX(0); filter: none; }
+  25%  { transform: translateX(-6px) skewX(4deg); filter: hue-rotate(40deg) saturate(2); clip-path: inset(10% 0 55% 0); }
+  50%  { transform: translateX(8px); filter: contrast(1.6); clip-path: inset(45% 0 20% 0); }
+  75%  { transform: translateX(-3px); filter: hue-rotate(-30deg); clip-path: none; }
+  100% { transform: translateX(0); filter: none; }
+}
+
 @keyframes hero-art-float {
   0%,100% { transform: translateY(0) rotate(0deg); }
   50%     { transform: translateY(-14px) rotate(-1.5deg); }
@@ -1172,6 +1197,7 @@ footer {
   .hero { padding-top: 96px; }
   .hero-content { grid-template-columns: 1fr; gap: 8px; }
   .hero-art { order: -1; justify-self: center; max-width: 240px; }
+  .hero-3d { order: -1; justify-self: center; max-width: 300px; }
   .product-hero-content { grid-template-columns: 1fr; gap: 36px; padding-top: 130px; }
   .product-shirt-preview svg { max-width: 200px; }
   .processo-grid { grid-template-columns: 1fr 1fr; }
