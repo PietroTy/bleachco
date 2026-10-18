@@ -142,7 +142,7 @@ function buildScene(gltf, teeGltf, printId) {
     }
   });
   // Medidas da malha (altura 1): costura do ombro em x 0.27 / z 0.9 → encaixa no ombro do esqueleto
-  tee.scale.set(0.72, 0.7, 1.0); // mais funda que a malha: o tórax do esqueleto é mais "cheio" que o manequim
+  tee.scale.set(0.72, 0.7, 0.84); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
   tee.position.set(0, 0.82, -0.045);
   root.add(tee);
   root.updateWorldMatrix(true, true);
@@ -166,6 +166,14 @@ function buildScene(gltf, teeGltf, printId) {
   for (let i = 0; i < count; i++) {
     local.fromBufferAttribute(pos, i);
     const arm = THREE.MathUtils.smoothstep(Math.abs(local.x), 0.22, 0.3) * THREE.MathUtils.smoothstep(local.y, 0.42, 0.5);
+    // Manga afunilada em volta do eixo dela (costura → abertura), pra não abrir em aba longe do braço
+    if (arm > 0) {
+      const side = Math.sign(local.x);
+      const t = THREE.MathUtils.clamp((0.9 - local.y) / 0.3, 0, 1);
+      _a.set(side * (0.27 + 0.17 * t), 0.9 - 0.3 * t, 0.1 * t);
+      local.lerp(_a, 0.28 * arm);
+      pos.setXYZ(i, local.x, local.y, local.z);
+    }
     skinIndex.set([0, local.x < 0 ? 2 : 1, 0, 0], i * 4);
     skinWeight.set([1 - arm, arm, 0, 0], i * 4);
   }
