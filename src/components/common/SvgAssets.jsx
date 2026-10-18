@@ -2,8 +2,7 @@ import React from 'react';
 
 export const ECLIPSE_SVG_RAW = `
   <svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-    <rect width="800" height="1000" fill="#0c0c0c"/>
-    <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#111111" stroke="#282828" stroke-width="1.8"/>
+    <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#151515" stroke="#3a3a3a" stroke-width="2.4"/>
     <ellipse cx="400" cy="500" rx="145" ry="145" fill="#D4521E" opacity="0.82"/>
     <ellipse cx="400" cy="500" rx="95" ry="95" fill="#0c0c0c" opacity="0.96"/>
     <ellipse cx="400" cy="500" rx="168" ry="168" fill="none" stroke="#D4521E" stroke-width="12" opacity="0.18"/>
@@ -19,8 +18,7 @@ export const ECLIPSE_SVG_RAW = `
 
 export const SPY_SVG_RAW = `
   <svg viewBox="0 0 800 1000" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-    <rect width="800" height="1000" fill="#0c0c0c"/>
-    <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#111111" stroke="#282828" stroke-width="1.8"/>
+    <path d="M220,180 L100,300 L190,350 L190,820 L610,820 L610,350 L700,300 L580,180 L520,230 Q400,290 280,230 Z" fill="#151515" stroke="#3a3a3a" stroke-width="2.4"/>
     <ellipse cx="400" cy="500" rx="160" ry="80" fill="none" stroke="#D4521E" stroke-width="18" opacity="0.8"/>
     <ellipse cx="400" cy="500" rx="52" ry="52" fill="#D4521E" opacity="0.85"/>
     <ellipse cx="400" cy="500" rx="26" ry="26" fill="#080808"/>

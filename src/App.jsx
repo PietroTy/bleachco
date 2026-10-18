@@ -9,7 +9,6 @@ import Nav from './components/common/Nav';
 import Footer from './components/common/Footer';
 import CartDrawer from './components/common/CartDrawer';
 import Toast from './components/common/Toast';
-import CustomCursor from './components/common/CustomCursor';
 import BackToTop from './components/common/BackToTop';
 
 // Pages
@@ -111,7 +110,6 @@ export default function App() {
 
   return (
     <>
-      <CustomCursor />
       <Toast />
       <CartDrawer />
       <Nav />

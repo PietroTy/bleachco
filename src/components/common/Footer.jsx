@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import logoImg from '../../assets/logo.png';
+import { CONTACT_LINKS } from '../../config/contact';
 
 export default function Footer() {
   return (
@@ -22,8 +23,12 @@ export default function Footer() {
           </div>
           <div className="footer-col">
             <h4>Contato</h4>
-            <p>oi@bleachco.com.br</p>
-            <p style={{ marginTop: '8px' }}>(11) 99999-0000</p>
+            <ul>
+              {CONTACT_LINKS.map((c) => (
+                <li key={c.label}><a href={c.href} target="_blank" rel="noopener noreferrer">{c.value}</a></li>
+              ))}
+              <li><Link to="/contato">Fale com a gente</Link></li>
+            </ul>
           </div>
         </div>
         <div className="footer-bottom">

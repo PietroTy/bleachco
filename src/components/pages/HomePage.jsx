@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { EclipseSvg, SpySvg } from '../common/SvgAssets';
+import ProductGrid from '../common/ProductGrid';
 import stainOrangeImg from '../../assets/stain_splash.png';
-import stainWhiteImg from '../../assets/stain_splash_white.png';
+import bottleSplashImg from '../../assets/stain_bottle_splash.png';
 
 export default function HomePage() {
   return (
@@ -11,38 +11,28 @@ export default function HomePage() {
         <div className="hero-bg">
           <div className="hero-stain hero-stain-1"></div>
           <div className="hero-stain hero-stain-2"></div>
-          {/* Manchas reais (Laranja & Branca sem glow) */}
-          <img
-            src={stainOrangeImg}
-            alt=""
-            className="stain-bg-img stain-orange hero-stain-1"
-            aria-hidden="true"
-          />
-          <img
-            src={stainWhiteImg}
-            alt=""
-            className="stain-bg-img stain-white hero-stain-2"
-            aria-hidden="true"
-          />
         </div>
         <div className="hero-content">
-          <p className="eyebrow reveal">Feito à mão — São Paulo</p>
-          <h1 className="reveal reveal-delay-1">
-            A MANCHA
-            <br />
-            <span className="accent">É A ARTE.</span>
-          </h1>
-          <p className="hero-sub reveal reveal-delay-2">
-            Camisetas artesanais alvejadas à mão. Cada peça é única e irrepetível.
-          </p>
-          <div className="hero-cta reveal reveal-delay-3">
-            <Link to="/produtos" className="btn btn-primary btn-lg">
-              Ver estampas
-            </Link>
-            <Link to="/sobre" className="btn btn-ghost btn-lg">
-              Como fazemos
-            </Link>
+          <div className="hero-text">
+            <p className="eyebrow reveal">Feito à mão — São Paulo</p>
+            <h1 className="reveal reveal-delay-1">
+              A MANCHA
+              <br />
+              <span className="accent">É A ARTE.</span>
+            </h1>
+            <p className="hero-sub reveal reveal-delay-2">
+              Camisetas artesanais alvejadas à mão. Cada peça é única e irrepetível.
+            </p>
+            <div className="hero-cta reveal reveal-delay-3">
+              <Link to="/produtos" className="btn btn-primary btn-lg">
+                Ver estampas
+              </Link>
+              <Link to="/sobre" className="btn btn-ghost btn-lg">
+                Como fazemos
+              </Link>
+            </div>
           </div>
+          <img src={bottleSplashImg} alt="" className="hero-art reveal reveal-delay-2" aria-hidden="true" />
         </div>
         <div className="hero-scroll-hint" aria-hidden="true">
           <span>rolar</span>
@@ -86,31 +76,7 @@ export default function HomePage() {
             </h2>
           </div>
         </div>
-        <div className="products-grid">
-          {/* ECLIPSE */}
-          <Link to="/produto/eclipse" className="product-tile" aria-label="Ver estampa Eclipse">
-            <div className="product-tile-bg">
-              <EclipseSvg style={{ width: '100%', height: '100%' }} />
-            </div>
-            <span className="product-tile-label">Feito à mão</span>
-            <div className="product-tile-info">
-              <div className="product-tile-name">ECLIPSE</div>
-              <div className="product-tile-price">A partir de R$ 139,00</div>
-            </div>
-          </Link>
-
-          {/* SPY */}
-          <Link to="/produto/spy" className="product-tile" aria-label="Ver estampa Spy">
-            <div className="product-tile-bg">
-              <SpySvg style={{ width: '100%', height: '100%' }} />
-            </div>
-            <span className="product-tile-label">Feito à mão</span>
-            <div className="product-tile-info">
-              <div className="product-tile-name">SPY</div>
-              <div className="product-tile-price">A partir de R$ 139,00</div>
-            </div>
-          </Link>
-        </div>
+        <ProductGrid />
       </section>
 
       {/* ── MANIFESTO / PARALLAX ── */}

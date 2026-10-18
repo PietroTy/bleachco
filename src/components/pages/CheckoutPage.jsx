@@ -32,16 +32,11 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="container" style={{ padding: '100px 20px', textAlign: 'center', minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <h2 style={{ fontFamily: 'Syne, sans-serif', fontSize: '2rem', marginBottom: '1rem', color: '#fff' }}>
-          Seu carrinho está vazio ✦
-        </h2>
-        <p style={{ color: '#888', marginBottom: '2rem', maxWidth: '400px' }}>
-          Adicione uma de nossas camisetas exclusivas feitas à mão antes de prosseguir com o checkout.
-        </p>
-        <Link to="/produtos" className="hero-btn-primary" style={{ display: 'inline-block', padding: '14px 28px', textDecoration: 'none' }}>
-          Ver Coleção →
-        </Link>
+      <div className="page-header confirm-page">
+        <span className="eyebrow">Checkout</span>
+        <h1>CARRINHO <span className="accent">VAZIO.</span></h1>
+        <p>Escolhe uma estampa antes de finalizar o pedido.</p>
+        <Link to="/produtos" className="btn btn-primary" style={{ marginTop: 32 }}>Ver estampas</Link>
       </div>
     );
   }
@@ -64,7 +59,7 @@ export default function CheckoutPage() {
     try {
       const data = await calculateShipping({
         cep: cleanCep,
-        items: cart.map((i) => ({ id: i.id, qty: i.qty, price: i.price })),
+        items: cart.map((i) => ({ id: i.id, qty: i.qty, size: i.size })),
       });
       const options = data.options || [];
       setShippingOptions(options);

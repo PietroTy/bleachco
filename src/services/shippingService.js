@@ -31,32 +31,9 @@ export async function calculateShipping({ cep, items = [] }) {
 
     return await res.json();
   } catch (err) {
-    console.warn('⚠️ Falha na requisição de frete ao backend. Usando cotação padrão:', err);
-    // Retorna frete simulado gracioso para não travar a experiência do usuário
-    return {
-      options: [
-        {
-          id: 'sedex-std',
-          name: 'SEDEX',
-          company: 'Correios',
-          price: 19.90,
-          currency: 'R$',
-          deliveryTime: 2,
-          deliveryRange: '1 a 2 dias úteis',
-          logo: null,
-        },
-        {
-          id: 'pac-std',
-          name: 'PAC',
-          company: 'Correios',
-          price: 14.90,
-          currency: 'R$',
-          deliveryTime: 5,
-          deliveryRange: '4 a 6 dias úteis',
-          logo: null,
-        },
-      ],
-      simulated: true,
-    };
+    // Frete inventado não serve: o backend recota na hora do pagamento e recusaria
+    throw new Error(err.message.startsWith('Failed to fetch')
+      ? 'Não conseguimos calcular o frete agora. Tente de novo em alguns minutos.'
+      : err.message);
   }
 }
