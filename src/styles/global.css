@@ -1034,8 +1034,6 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
   transition: border-color var(--t), transform var(--t);
 }
 .contact-channel:hover { border-color: var(--orange); transform: translateX(4px); }
-.contact-channel--preferred { border-color: rgba(212,82,30,.45); background: var(--orange-dim); }
-.contact-channel-label em { font-style: normal; color: var(--bone2); }
 .contact-channel-value { overflow-wrap: anywhere; }
 .contact-channel-label {
   grid-column: 1; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.22em;
@@ -1047,6 +1045,16 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
 .contact-note { padding: 32px; background: var(--ink2); border: 1px solid var(--gray-lt); border-radius: var(--r); }
 .contact-note--accent { background: var(--orange-dim); border-color: rgba(212,82,30,.3); }
 .contact-quote { font-family: var(--ff-display); font-size: 1.6rem; line-height: 1.2; color: var(--bone); }
+
+/* ── FALE CONOSCO ── */
+.contact-form-box { padding: 32px; background: var(--ink2); border: 1px solid var(--gray-lt); border-radius: var(--r); }
+.contact-form-box textarea { resize: vertical; min-height: 140px; }
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 15px center; padding-right: 40px;
+}
+.contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.contact-sent { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px 0; }
 
 /* ── CONFIRMAÇÃO (status) ── */
 .confirm-page { min-height: 70vh; }
