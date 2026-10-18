@@ -89,6 +89,33 @@ function rotateBoneWorld(bone, delta) {
   bone.quaternion.copy(parentQ.invert().multiply(delta.clone().multiply(worldQ)));
 }
 
+// Osso que fica dentro da camiseta não aparece: descarta o fragmento se ele cai num cilindro elíptico
+// um pouco menor que o corpo da camiseta, ou num tubo dentro de cada manga (coordenadas da malha dela). Evita escápula/úmero furando o tecido.
+const teeInverse = { value: new THREE.Matrix4() };
+function hideInsideShirt(material) {
+  const base = material.onBeforeCompile;
+  material.onBeforeCompile = (shader) => {
+    base(shader);
+    shader.uniforms.uTeeInv = teeInverse;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform mat4 uTeeInv;\nvarying vec3 vWorldPos;')
+      .replace(
+        '#include <clipping_planes_fragment>',
+        `#include <clipping_planes_fragment>
+        vec3 tp = (uTeeInv * vec4(vWorldPos, 1.0)).xyz;
+        if (tp.y > 0.04 && tp.y < 0.93 && pow(tp.x / 0.3, 2.0) + pow(tp.z / 0.17, 2.0) < 1.0) discard;
+        // manga: tubo do ombro (x 0.27, altura 0.88) até a abertura (x 0.45, altura 0.62)
+        vec3 a = vec3(0.24, 0.88, 0.04), b = vec3(0.4, 0.66, 0.09);
+        vec3 q = vec3(abs(tp.x), tp.y, tp.z) - a, ab = b - a;
+        if (length(q - ab * clamp(dot(q, ab) / dot(ab, ab), 0.0, 1.0)) < 0.08) discard;`
+      );
+  };
+  return material;
+}
+
 function buildScene(gltf, teeGltf, printId) {
   const v = (x, y, z) => new THREE.Vector3(x, y, z);
   const root = gltf.scene;
@@ -105,23 +132,10 @@ function buildScene(gltf, teeGltf, printId) {
   map.minFilter = THREE.NearestFilter;
   map.generateMipmaps = false;
   skin.material.dispose();
-  skin.material = ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide }));
+  skin.material = hideInsideShirt(ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide })));
   skin.frustumCulled = false;
 
-  // Pose: braço direito segura o galão pela alça, ao lado do corpo; esquerdo solto
-  const P = (b) => b.getWorldPosition(new THREE.Vector3());
-  root.updateWorldMatrix(true, true);
-  const shR = P(bones.UpperArmR);
-  aimBone(bones.UpperArmR, bones.LowerArmR, shR.clone().add(v(-0.13, -0.25, 0.04)));
-  const elR = P(bones.LowerArmR);
-  aimBone(bones.LowerArmR, bones.HandR, elR.clone().add(v(-0.01, -0.2, 0.14)));
-  const shL = P(bones.UpperArmL);
-  aimBone(bones.UpperArmL, bones.LowerArmL, shL.clone().add(v(0.12, -0.26, 0.0)));
-  const elL = P(bones.LowerArmL);
-  aimBone(bones.LowerArmL, bones.HandL, elL.clone().add(v(0.015, -0.24, 0.06)));
-  root.updateWorldMatrix(true, true);
-
-  // Camiseta: modelo pronto, um pouco largo (oversized), preso no tronco
+  // Camiseta: modelo pronto, preso no tronco
   const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
   const tee = teeGltf.scene;
   tee.traverse((o) => {
@@ -130,9 +144,25 @@ function buildScene(gltf, teeGltf, printId) {
       o.material = cloth;
     }
   });
-  tee.scale.set(0.7, 0.64, 0.95);
-  tee.position.set(0, 0.86, -0.025);
+  // Medidas da malha (altura 1): costura do ombro em x 0.27 / z 0.9 → encaixa no ombro do esqueleto
+  tee.scale.set(0.72, 0.7, 1.0); // mais funda que a malha: o tórax do esqueleto é mais "cheio" que o manequim
+  tee.position.set(0, 0.82, -0.045);
   root.add(tee);
+  tee.updateWorldMatrix(true, true);
+
+  // Pose: cada braço mira o centro da abertura da manga (medido na malha: x ±0.44, altura 0.6,
+  // 0.1 pra frente), então sai pela manga; antebraço direito desce pro galão, o esquerdo pende solto
+  const P = (b) => b.getWorldPosition(new THREE.Vector3());
+  root.updateWorldMatrix(true, true);
+  const sleeveOpening = (side) => tee.localToWorld(v(side * 0.44, 0.6, 0.1));
+  aimBone(bones.UpperArmR, bones.LowerArmR, sleeveOpening(-1));
+  const elR = P(bones.LowerArmR);
+  aimBone(bones.LowerArmR, bones.HandR, elR.clone().add(v(0.04, -0.24, 0.1)));
+  aimBone(bones.UpperArmL, bones.LowerArmL, sleeveOpening(1));
+  const elL = P(bones.LowerArmL);
+  aimBone(bones.LowerArmL, bones.HandL, elL.clone().add(v(-0.03, -0.25, 0.05)));
+  root.updateWorldMatrix(true, true);
+
   bones.Torso.attach(tee);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
@@ -165,7 +195,7 @@ function buildScene(gltf, teeGltf, printId) {
   }
 
   const rest = Object.fromEntries(['Torso', 'Neck', 'Head'].map((n) => [n, bones[n].quaternion.clone()]));
-  return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth };
+  return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth, tee };
 }
 
 // Esqueleto PSX vestindo a camiseta, luz azul/vermelha estilo clipe "Camelot"
@@ -272,6 +302,10 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
       }
       torch.intensity = 1.6 * (0.8 + 0.14 * Math.sin(t * 13) + 0.06 * Math.sin(t * 31));
 
+      if (parts) {
+        scene.updateMatrixWorld();
+        teeInverse.value.copy(parts.tee.matrixWorld).invert();
+      }
       renderer.render(scene, camera);
       if (visible) raf = requestAnimationFrame(frame);
     };
