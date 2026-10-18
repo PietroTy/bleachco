@@ -115,7 +115,7 @@ export function createStain(w, h, seed = 1) {
   function blot(cx, cy, size = 1, strength = 0.6 + rand() * 0.8) {
     const u = size * unit;
     const kind = rand();
-    if (kind < 0.3) {
+    if (kind < 0.4) {
       splash(cx, cy, size * Math.min(1, strength));
     } else if (kind < 0.5) {
       // Escorrido: poça que desceu em fios
@@ -129,7 +129,7 @@ export function createStain(w, h, seed = 1) {
           drop(x, cy + d, Math.max(0.7, (1 - d / len) * 2.2 * u), 0.55 * strength);
         }
       }
-    } else if (kind < 0.65) {
+    } else if (kind < 0.57) {
       // Spray: névoa de pinguinhos
       const n = 30 + Math.floor(rand() * 50);
       const spread = (14 + rand() * 16) * u;
@@ -138,7 +138,7 @@ export function createStain(w, h, seed = 1) {
         const d = Math.pow(rand(), 0.7) * spread;
         drop(cx + Math.cos(ang) * d, cy + Math.sin(ang) * d * 0.7, (0.4 + rand() * 1.1) * u, 0.9 * strength);
       }
-    } else if (kind < 0.8) {
+    } else if (kind < 0.75) {
       // Rastro: passada de pano molhado, falhando
       const ang = rand() * Math.PI;
       const len = (30 + rand() * 40) * u;

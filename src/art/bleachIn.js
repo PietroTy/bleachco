@@ -5,7 +5,7 @@ const CELL = 4; // px de tela por pixel de tecido
 // Título que aparece alvejado: as letras são o pano preto do fundo, e o mesmo motor
 // das manchas pinga alvejante nelas até descolorir (preto → ferrugem → laranja → osso).
 // A mancha vira o fundo do texto (background-clip: text) só durante a animação.
-export function bleachIn(el, duration = 2600) {
+export function bleachIn(el, duration = 3400) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const box = el.getBoundingClientRect();
   if (!box.width || !box.height) return;
@@ -25,16 +25,20 @@ export function bleachIn(el, duration = 2600) {
       drops.push({
         x: x + (stain.rand() - 0.5) * gap,
         y: y + (stain.rand() - 0.5) * gap,
-        r: 2.5 + stain.rand() * 3.5,
-        at: stain.rand() * 0.55,
+        r: 2 + stain.rand() * 2.5,
+        at: stain.rand() * 0.7,
       });
     }
   }
   drops.sort((a, b) => a.at - b.at);
 
   const style = el.style;
-  const props = ['backgroundImage', 'backgroundSize', 'backgroundOrigin', 'backgroundRepeat', 'backgroundClip', 'webkitBackgroundClip', 'webkitTextFillColor', 'imageRendering'];
+  // A mancha é a entrada: sem o fade/subida do .reveal por cima dela
+  const props = ['opacity', 'transform', 'transition', 'backgroundImage', 'backgroundSize', 'backgroundOrigin', 'backgroundRepeat', 'backgroundClip', 'webkitBackgroundClip', 'webkitTextFillColor', 'imageRendering'];
   Object.assign(style, {
+    opacity: '1',
+    transform: 'none',
+    transition: 'none',
     backgroundSize: '100% 100%',
     backgroundOrigin: 'border-box',
     backgroundRepeat: 'no-repeat',
@@ -50,16 +54,23 @@ export function bleachIn(el, duration = 2600) {
   paint();
 
   const start = performance.now();
+  let last = start;
+  let pending = 0;
   let next = 0;
   const tick = (now) => {
     const p = Math.min(1, (now - start) / duration);
     while (next < drops.length && drops[next].at <= p) {
       const d = drops[next++];
-      stain.drop(d.x, d.y, d.r, 1.3);
+      stain.drop(d.x, d.y, d.r, 0.35);
     }
-    stain.step(2);
+    // Passo da simulação por tempo (60/s), não por quadro: tela de 120Hz não acelera
+    pending += (now - last) / (1000 / 60);
+    last = now;
+    const steps = Math.min(4, Math.floor(pending));
+    pending -= steps;
+    if (steps) stain.step(steps);
     // Reta final: o que sobrou de preto termina de descolorir junto
-    if (p > 0.7) stain.bleachTo(1 - (p - 0.7) / 0.3);
+    if (p > 0.8) stain.bleachTo(1 - (p - 0.8) / 0.2);
     paint();
     if (p < 1) requestAnimationFrame(tick);
     else props.forEach((k) => (style[k] = ''));
