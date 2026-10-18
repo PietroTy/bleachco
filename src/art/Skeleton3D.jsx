@@ -188,11 +188,12 @@ function buildScene(printId) {
 }
 
 // Esqueleto low-poly estilo Demon's Souls vestindo a camiseta, renderizado como PS1
-export default function Skeleton3D({ fallback }) {
+// print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa
+export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true }) {
   const wrapRef = useRef(null);
   const apiRef = useRef(null);
   const [failed, setFailed] = useState(false);
-  const [printId, setPrintId] = useState(PRINT_IDS[0]);
+  const [printId, setPrintId] = useState(PRINTS[print] ? print : PRINT_IDS[0]);
   const [glitch, setGlitch] = useState(false);
 
   useEffect(() => {
@@ -227,7 +228,7 @@ export default function Skeleton3D({ fallback }) {
     rim.position.set(-1.6, 1.8, -2.2);
     scene.add(rim);
 
-    const parts = buildScene(PRINT_IDS[0]);
+    const parts = buildScene(printId);
     const pivot = new THREE.Group();
     pivot.add(parts.body);
     scene.add(pivot);
@@ -329,12 +330,22 @@ export default function Skeleton3D({ fallback }) {
       renderer.dispose();
       canvas.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Estampa definida por fora (ex: página de produto trocando de eclipse pra spy)
+  useEffect(() => {
+    if (PRINTS[print] && apiRef.current) {
+      apiRef.current.setPrint(print);
+      setPrintId(print);
+    }
+  }, [print]);
 
   // Troca de estampa com um "tracking" de VHS rapidinho
   useEffect(() => {
     if (!apiRef.current) return;
     apiRef.current.next = () => {
+      if (!cycle) return;
       setGlitch(true);
       setTimeout(() => {
         setPrintId((cur) => {
@@ -352,7 +363,7 @@ export default function Skeleton3D({ fallback }) {
   return (
     <div ref={wrapRef} className={`skeleton3d${glitch ? ' is-glitching' : ''}`}>
       <span className="skeleton3d-osd">▶ {PRINTS[printId].name}</span>
-      <span className="skeleton3d-osd skeleton3d-osd--hint">arrasta · clica</span>
+      <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
     </div>
   );
 }

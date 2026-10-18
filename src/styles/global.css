@@ -639,6 +639,7 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
 .product-shirt-preview {
   display: flex; align-items: center; justify-content: center;
 }
+#shirt-svg-thumb { width: 100%; max-width: 440px; }
 .product-shirt-preview svg {
   max-width: 320px; width: 100%;
   filter: drop-shadow(0 40px 80px rgba(0,0,0,0.7));
