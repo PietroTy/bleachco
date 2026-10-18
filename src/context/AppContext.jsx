@@ -39,6 +39,7 @@ export function AppProvider({ children }) {
 
   const [cartOpen, setCartOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
+  const [banner, setBanner] = useState(null); // faixa "PEÇA OBTIDA" estilo Souls
   const [selectedShipping, setSelectedShipping] = useState(null); // { id, name, company, price, deliveryRange }
 
   // Save cart to localStorage whenever it changes
@@ -58,15 +59,12 @@ export function AppProvider({ children }) {
     setCart((prev) => {
       const existingIdx = prev.findIndex((item) => item.id === product.id && item.size === product.size);
       if (existingIdx > -1) {
-        const nextCart = [...prev];
-        nextCart[existingIdx].qty += 1;
-        return nextCart;
-      } else {
-        return [...prev, { ...product, qty: 1 }];
+        return prev.map((item, i) => (i === existingIdx ? { ...item, qty: item.qty + 1 } : item));
       }
+      return [...prev, { ...product, qty: 1 }];
     });
-    setCartOpen(true);
-    showToast(`${product.name} — Tam. ${product.size} adicionado ✦`);
+    setBanner({ title: 'PEÇA OBTIDA', sub: `${product.name} · Tam. ${product.size}`, key: Date.now() });
+    setTimeout(() => setCartOpen(true), 1500);
   };
 
   const updateQty = (id, size, delta) => {
@@ -74,13 +72,9 @@ export function AppProvider({ children }) {
       const idx = prev.findIndex((item) => item.id === id && item.size === size);
       if (idx === -1) return prev;
 
-      const nextCart = [...prev];
-      nextCart[idx].qty += delta;
-
-      if (nextCart[idx].qty <= 0) {
-        nextCart.splice(idx, 1);
-      }
-      return nextCart;
+      const qty = prev[idx].qty + delta;
+      if (qty <= 0) return prev.filter((_, i) => i !== idx);
+      return prev.map((item, i) => (i === idx ? { ...item, qty } : item));
     });
   };
 
@@ -97,6 +91,8 @@ export function AppProvider({ children }) {
         setCartOpen,
         toast,
         showToast,
+        banner,
+        setBanner,
         addToCart,
         updateQty,
         clearCart,
