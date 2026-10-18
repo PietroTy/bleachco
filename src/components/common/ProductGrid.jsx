@@ -17,7 +17,6 @@ export default function ProductGrid() {
           <Link key={id} to={`/produto/${id}`} className={`product-card reveal reveal-delay-${i}`}>
             <div className="product-card-media">
               <Art style={{ width: '100%', height: '100%' }} />
-              <span className="product-card-label">Feito à mão</span>
             </div>
             <div className="product-card-info">
               <span className="product-card-name">{name}</span>
