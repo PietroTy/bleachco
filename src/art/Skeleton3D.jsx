@@ -41,11 +41,11 @@ const PRINT_IDS = Object.keys(PRINTS);
 function shirtTexture(printId) {
   const c = noiseCanvas(128, 128, [20, 20, 20], 14, 11);
   const ctx = c.getContext('2d');
-  // Frente da camiseta fica no meio da textura (u = 0.5); peito em ~55% do topo (v segue os pontos do perfil).
-  // A textura dá a volta no tronco e estica ~1.9x na horizontal: desenha comprimido.
+  // Frente da camiseta fica no meio da textura (u = 0.5); peito em ~62% do topo (v segue os pontos do perfil).
+  // A textura dá a volta no tronco e estica ~1.55x na horizontal: desenha comprimido.
   ctx.save();
-  ctx.translate(64, 70);
-  ctx.scale(1 / 1.9, 1);
+  ctx.translate(64, 79);
+  ctx.scale(1 / 1.55, 1);
   PRINTS[printId].draw(ctx, 0, 0, 15);
   ctx.restore();
   // Respingos soltos de alvejante pelo tecido
@@ -123,28 +123,31 @@ function buildScene(gltf, printId) {
 
   // Camiseta: presa no tronco, cobrindo as costelas
   const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
-  // Perfil da camiseta (raio, altura): barra, cintura, peito, ombro caindo até a gola
+  // Perfil oversized (raio, altura): corpo largo e reto, ombro caído que cobre a cabeça do úmero
   const torso = new THREE.Mesh(
     new THREE.LatheGeometry(
-      [v(0.172, -0.25, 0), v(0.158, -0.12, 0), v(0.168, 0.0, 0), v(0.174, 0.12, 0), v(0.152, 0.2, 0), v(0.112, 0.248, 0), v(0.07, 0.272, 0)],
+      [v(0.225, -0.3, 0), v(0.215, -0.15, 0), v(0.218, 0.0, 0), v(0.222, 0.12, 0), v(0.222, 0.22, 0), v(0.21, 0.27, 0), v(0.16, 0.305, 0), v(0.08, 0.32, 0)],
       18,
       -Math.PI
     ),
     cloth
   );
   torso.scale.z = 0.86;
-  torso.position.set(0, 1.15, -0.035);
+  torso.position.set(0, 1.12, -0.04);
   root.add(torso);
   bones.Torso.attach(torso);
-  // Mangas acompanham o braço
+  // Mangas acompanham o braço (tecido liso: a estampa é só no peito)
+  const plain = ps1(new THREE.MeshLambertMaterial({ map: pixelTexture(noiseCanvas(32, 32, [20, 20, 20], 14, 12)), side: THREE.DoubleSide }));
   for (const side of ['R', 'L']) {
     const sh = P(bones[`UpperArm${side}`]);
     const el = P(bones[`LowerArm${side}`]);
     // Manga abre um pouco pra fora do braço, como tecido caindo do ombro
-    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.18, 0, 0)).normalize();
-    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.066, 0.15, 12, 1, true), cloth);
-    sleeve.position.copy(sh).addScaledVector(dir, 0.07);
-    sleeve.position.x += Math.sign(sh.x) * 0.012;
+    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.25, 0, 0)).normalize();
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.1, 0.2, 12, 1, true), plain);
+    // Ombro caído: a manga começa já descendo pelo braço
+    sleeve.position.copy(sh).addScaledVector(dir, 0.13);
+    sleeve.position.x += Math.sign(sh.x) * 0.035;
+    sleeve.position.z -= 0.02;
     sleeve.quaternion.setFromUnitVectors(v(0, -1, 0), dir);
     root.add(sleeve);
     bones[`UpperArm${side}`].attach(sleeve);
