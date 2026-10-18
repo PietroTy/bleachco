@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { EclipseSvg, SpySvg, ECLIPSE_SVG_RAW, SPY_SVG_RAW } from '../common/SvgAssets';
 import { calculateShipping } from '../../services/shippingService';
+
+const Skeleton3D = lazy(() => import('../../art/Skeleton3D'));
 
 const PRODUCTS_DATA = {
   eclipse: {
@@ -22,18 +24,18 @@ const PRODUCTS_DATA = {
         {/* Disco negro do eclipse */}
         <ellipse cx="600" cy="450" rx="196" ry="196" fill="#060606"/>
         {/* Anel laranja interno (borda do eclipse) */}
-        <ellipse cx="600" cy="450" rx="200" ry="200" fill="none" stroke="#D4521E" stroke-width="22" opacity="0.3"/>
+        <ellipse cx="600" cy="450" rx="200" ry="200" fill="none" stroke="#D4521E" strokeWidth="22" opacity="0.3"/>
         {/* Centro luminoso pequeno */}
         <ellipse cx="600" cy="450" rx="42" ry="42" fill="#D4521E" opacity="0.15"/>
         {/* Raios da coroa */}
-        <line x1="600" y1="150" x2="600" y2="200" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
-        <line x1="600" y1="700" x2="600" y2="750" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
-        <line x1="310" y1="450" x2="258" y2="450" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
-        <line x1="890" y1="450" x2="942" y2="450" stroke="#D4521E" stroke-width="3" opacity="0.2"/>
-        <line x1="392" y1="242" x2="358" y2="208" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
-        <line x1="808" y1="242" x2="842" y2="208" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
-        <line x1="392" y1="658" x2="358" y2="692" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
-        <line x1="808" y1="658" x2="842" y2="692" stroke="#D4521E" stroke-width="2" opacity="0.15"/>
+        <line x1="600" y1="150" x2="600" y2="200" stroke="#D4521E" strokeWidth="3" opacity="0.2"/>
+        <line x1="600" y1="700" x2="600" y2="750" stroke="#D4521E" strokeWidth="3" opacity="0.2"/>
+        <line x1="310" y1="450" x2="258" y2="450" stroke="#D4521E" strokeWidth="3" opacity="0.2"/>
+        <line x1="890" y1="450" x2="942" y2="450" stroke="#D4521E" strokeWidth="3" opacity="0.2"/>
+        <line x1="392" y1="242" x2="358" y2="208" stroke="#D4521E" strokeWidth="2" opacity="0.15"/>
+        <line x1="808" y1="242" x2="842" y2="208" stroke="#D4521E" strokeWidth="2" opacity="0.15"/>
+        <line x1="392" y1="658" x2="358" y2="692" stroke="#D4521E" strokeWidth="2" opacity="0.15"/>
+        <line x1="808" y1="658" x2="842" y2="692" stroke="#D4521E" strokeWidth="2" opacity="0.15"/>
         {/* Respingos irregulares de alvejante */}
         <ellipse cx="340" cy="310" rx="28" ry="22" fill="#D4521E" opacity="0.3"/>
         <ellipse cx="870" cy="580" rx="20" ry="16" fill="#D4521E" opacity="0.25"/>
@@ -67,13 +69,13 @@ const PRODUCTS_DATA = {
     otherProductSvg: (
       <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
         <rect width="800" height="600" fill="#0c0c0c"/>
-        <ellipse cx="400" cy="300" rx="200" ry="100" fill="none" stroke="#D4521E" stroke-width="22" opacity="0.8"/>
+        <ellipse cx="400" cy="300" rx="200" ry="100" fill="none" stroke="#D4521E" strokeWidth="22" opacity="0.8"/>
         <ellipse cx="400" cy="300" rx="65" ry="65" fill="#D4521E" opacity="0.85"/>
         <ellipse cx="400" cy="300" rx="32" ry="32" fill="#080808"/>
         <ellipse cx="418" cy="286" rx="10" ry="10" fill="#D4521E" opacity="0.6"/>
-        <line x1="260" y1="200" x2="250" y2="168" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
-        <line x1="400" y1="200" x2="400" y2="166" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
-        <line x1="540" y1="200" x2="550" y2="168" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+        <line x1="260" y1="200" x2="250" y2="168" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.5"/>
+        <line x1="400" y1="200" x2="400" y2="166" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.5"/>
+        <line x1="540" y1="200" x2="550" y2="168" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.5"/>
       </svg>
     )
   },
@@ -87,23 +89,23 @@ const PRODUCTS_DATA = {
       <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', minHeight: '120vh' }}>
         <rect width="1200" height="900" fill="#080808"/>
         {/* Olho grande como fundo fullscreen */}
-        <path d="M100,450 Q400,150 600,150 Q800,150 1100,450 Q800,750 600,750 Q400,750 100,450 Z" fill="none" stroke="#D4521E" stroke-width="28" opacity="0.75"/>
+        <path d="M100,450 Q400,150 600,150 Q800,150 1100,450 Q800,750 600,750 Q400,750 100,450 Z" fill="none" stroke="#D4521E" strokeWidth="28" opacity="0.75"/>
         <ellipse cx="600" cy="450" rx="170" ry="170" fill="#D4521E" opacity="0.82"/>
         <ellipse cx="600" cy="450" rx="85" ry="85" fill="#060606"/>
         <ellipse cx="648" cy="408" rx="28" ry="28" fill="#D4521E" opacity="0.55"/>
         <ellipse cx="572" cy="478" rx="12" ry="12" fill="#D4521E" opacity="0.25"/>
-        <line x1="260" y1="230" x2="230" y2="175" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
-        <line x1="360" y1="185" x2="345" y2="130" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
-        <line x1="470" y1="162" x2="462" y2="106" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
-        <line x1="600" y1="155" x2="600" y2="96" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
-        <line x1="730" y1="162" x2="738" y2="106" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
-        <line x1="840" y1="185" x2="855" y2="130" stroke="#D4521E" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
-        <line x1="940" y1="230" x2="970" y2="175" stroke="#D4521E" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
-        <line x1="290" y1="660" x2="265" y2="710" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
-        <line x1="460" y1="730" x2="452" y2="782" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
-        <line x1="600" y1="745" x2="600" y2="800" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
-        <line x1="740" y1="730" x2="748" y2="782" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
-        <line x1="910" y1="660" x2="935" y2="710" stroke="#D4521E" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
+        <line x1="260" y1="230" x2="230" y2="175" stroke="#D4521E" strokeWidth="8" strokeLinecap="round" opacity="0.5"/>
+        <line x1="360" y1="185" x2="345" y2="130" stroke="#D4521E" strokeWidth="7" strokeLinecap="round" opacity="0.45"/>
+        <line x1="470" y1="162" x2="462" y2="106" stroke="#D4521E" strokeWidth="7" strokeLinecap="round" opacity="0.5"/>
+        <line x1="600" y1="155" x2="600" y2="96" stroke="#D4521E" strokeWidth="8" strokeLinecap="round" opacity="0.5"/>
+        <line x1="730" y1="162" x2="738" y2="106" stroke="#D4521E" strokeWidth="7" strokeLinecap="round" opacity="0.5"/>
+        <line x1="840" y1="185" x2="855" y2="130" stroke="#D4521E" strokeWidth="7" strokeLinecap="round" opacity="0.45"/>
+        <line x1="940" y1="230" x2="970" y2="175" stroke="#D4521E" strokeWidth="8" strokeLinecap="round" opacity="0.5"/>
+        <line x1="290" y1="660" x2="265" y2="710" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
+        <line x1="460" y1="730" x2="452" y2="782" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
+        <line x1="600" y1="745" x2="600" y2="800" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
+        <line x1="740" y1="730" x2="748" y2="782" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
+        <line x1="910" y1="660" x2="935" y2="710" stroke="#D4521E" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
         <ellipse cx="180" cy="380" rx="22" ry="16" fill="#D4521E" opacity="0.25"/>
         <ellipse cx="1020" cy="530" rx="18" ry="14" fill="#D4521E" opacity="0.22"/>
         <ellipse cx="350" cy="700" rx="12" ry="9" fill="#D4521E" opacity="0.2"/>
@@ -136,7 +138,7 @@ const PRODUCTS_DATA = {
         <rect width="800" height="600" fill="#0c0c0c"/>
         <ellipse cx="400" cy="300" rx="200" ry="200" fill="#D4521E" opacity="0.75"/>
         <ellipse cx="400" cy="300" rx="138" ry="138" fill="#060606"/>
-        <ellipse cx="400" cy="300" rx="205" ry="205" fill="none" stroke="#D4521E" stroke-width="14" opacity="0.2"/>
+        <ellipse cx="400" cy="300" rx="205" ry="205" fill="none" stroke="#D4521E" strokeWidth="14" opacity="0.2"/>
         <ellipse cx="240" cy="210" rx="20" ry="16" fill="#D4521E" opacity="0.3"/>
         <ellipse cx="570" cy="390" rx="14" ry="11" fill="#D4521E" opacity="0.25"/>
       </svg>
@@ -220,7 +222,9 @@ export default function ProductPage() {
         <div className="product-hero-content">
           <div className="product-shirt-preview">
             <div id="shirt-svg-thumb">
-              {product.previewSvg}
+              <Suspense fallback={product.previewSvg}>
+                <Skeleton3D print={product.id} cycle={false} fallback={product.previewSvg} />
+              </Suspense>
             </div>
           </div>
 
