@@ -14,7 +14,7 @@ function defs() {
   return svgRoot;
 }
 
-export function bleachIn(el, duration = 1100) {
+export function bleachIn(el, duration = 2600) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const id = `bleach-in-${++counter}`;
   const ns = 'http://www.w3.org/2000/svg';

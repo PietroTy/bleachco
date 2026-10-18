@@ -23,6 +23,7 @@ import ConfirmationPage from './components/pages/ConfirmationPage';
 import StainPage from './components/pages/StainPage';
 import NotFoundPage from './components/pages/NotFoundPage';
 import { bleachIn } from './art/vhs';
+import BleachBackground from './art/BleachBackground';
 
 export default function App() {
   const location = useLocation();
@@ -122,7 +123,7 @@ export default function App() {
 
   return (
     <>
-      <div className="vhs-scanlines" aria-hidden="true" />
+      <BleachBackground />
       <Toast />
       <SoulsBanner />
       <CartDrawer />
