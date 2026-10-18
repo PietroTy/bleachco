@@ -8,17 +8,18 @@ const rgb = (el) => getComputedStyle(el).color.match(/\d+/g).slice(0, 3).map(Num
 // das manchas pinga alvejante nelas até chegar na cor delas (preto → ferrugem → laranja → osso):
 // texto branco vai até o osso, trecho laranja (.accent) para no laranja.
 // A mancha vira o fundo do texto (background-clip: text) só durante a animação.
-export function bleachIn(el, duration = 3400) {
+export function bleachIn(el, duration = 2600) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const base = getComputedStyle(el).color;
-  stainText(el, duration);
-  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele
-  el.querySelectorAll('*').forEach((child) => {
-    if (getComputedStyle(child).color !== base) stainText(child, duration);
-  });
+  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele. Quando acaba
+  // fica na cor real (senão o texto transparente mostra a mancha do título por baixo) até o título acabar.
+  const parts = [...el.querySelectorAll('*')].filter((child) => getComputedStyle(child).color !== base);
+  stainText(el, duration, () => parts.forEach((child) => (child.style.webkitTextFillColor = '')));
+  parts.forEach((child) => stainText(child, duration, null, 'currentcolor'));
 }
 
-function stainText(el, duration) {
+// onDone: chamado no fim; fill: cor do texto que fica no fim (padrão: a do CSS)
+function stainText(el, duration, onDone, fill = '') {
   const floor = dyeFor(rgb(el));
   const box = el.getBoundingClientRect();
   if (!box.width || !box.height) return;
@@ -31,15 +32,15 @@ function stainText(el, duration) {
   const ctx = canvas.getContext('2d');
 
   // Gotas espalhadas pelo título, cada uma caindo numa hora
-  const gap = 9;
+  const gap = 8;
   const drops = [];
   for (let y = gap / 2; y < h + gap / 2; y += gap) {
     for (let x = gap / 2; x < w + gap / 2; x += gap) {
       drops.push({
         x: x + (stain.rand() - 0.5) * gap,
         y: y + (stain.rand() - 0.5) * gap,
-        r: 2 + stain.rand() * 2.5,
-        at: stain.rand() * 0.7,
+        r: 2.5 + stain.rand() * 2.5,
+        at: stain.rand() * duration,
       });
     }
   }
@@ -81,15 +82,46 @@ function stainText(el, duration) {
   };
   paint();
 
+  // Ritmo constante do começo ao fim: primeiro a grade de gotas, depois gotas mirando
+  // o que ainda está escuro, até a mancha cobrir tudo sozinha. Só o finzinho (tudo já
+  // quase na cor) é acabado junto, rápido o bastante pra não se notar.
+  const DRIP_EVERY = 30;
+  const FINISH = 450;
   const start = performance.now();
   let last = start;
   let pending = 0;
   let next = 0;
+  let lastDrip = start;
+  let finishAt = 0;
+  let finishFrom = 1;
+  // Quanto do título ainda está longe da cor (fração) e o mais escuro que sobrou
+  const remaining = () => {
+    let dark = 0;
+    let max = 0;
+    for (let i = 0; i < stain.dye.length; i++) {
+      if (stain.dye[i] > floor + 0.15) dark++;
+      if (stain.dye[i] > max) max = stain.dye[i];
+    }
+    return { left: dark / stain.dye.length, max };
+  };
+  const dripOnDark = () => {
+    for (let k = 0; k < 60; k++) {
+      const i = Math.floor(stain.rand() * stain.dye.length);
+      if (stain.dye[i] > floor + 0.1) {
+        stain.drop(i % w, Math.floor(i / w), 2.5 + stain.rand() * 2.5, 2);
+        return;
+      }
+    }
+  };
   const tick = (now) => {
-    const p = Math.min(1, (now - start) / duration);
-    while (next < drops.length && drops[next].at <= p) {
+    const t = now - start;
+    while (next < drops.length && drops[next].at <= t) {
       const d = drops[next++];
-      stain.drop(d.x, d.y, d.r, 0.35);
+      stain.drop(d.x, d.y, d.r, 2);
+    }
+    if (next >= drops.length && !finishAt && now - lastDrip > DRIP_EVERY) {
+      lastDrip = now;
+      dripOnDark();
     }
     // Passo da simulação por tempo (60/s), não por quadro: tela de 120Hz não acelera
     pending += (now - last) / (1000 / 60);
@@ -97,13 +129,23 @@ function stainText(el, duration) {
     const steps = Math.min(4, Math.floor(pending));
     pending -= steps;
     if (steps) stain.step(steps);
-    // Nunca passa da cor do texto; na reta final o que sobrou de preto chega nela junto
-    stain.bleachTo(p > 0.8 ? floor + (1 - floor) * (1 - (p - 0.8) / 0.2) : 1, floor);
+    // Nunca passa da cor do texto
+    if (!finishAt && next >= drops.length) {
+      const { left, max } = remaining();
+      if (left < 0.015 || t > duration * 3) {
+        finishAt = now;
+        finishFrom = max;
+      }
+    }
+    const q = finishAt ? Math.min(1, (now - finishAt) / FINISH) : 0;
+    stain.bleachTo(finishAt ? floor + (finishFrom - floor) * (1 - q) : 1, floor);
     paint();
-    if (p < 1) requestAnimationFrame(tick);
+    if (q < 1) requestAnimationFrame(tick);
     else {
       done = true;
       props.forEach((k) => (style[k] = ''));
+      style.webkitTextFillColor = fill;
+      onDone?.();
     }
   };
   requestAnimationFrame(tick);
