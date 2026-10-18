@@ -152,9 +152,13 @@ function buildScene(gltf, teeGltf, printId) {
     }
   });
   // Medidas da malha (altura 1): costura do ombro em x 0.27 / z 0.9 → encaixa no ombro do esqueleto
-  tee.scale.set(0.6, 0.7, 0.8); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
+  tee.scale.set(0.6, 0.62, 0.8); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
+  // O modelo vem com o pescoço caído pra frente: endireita pra cabeça ficar em cima da gola
+  rotateBoneWorld(bones.Neck, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.28));
   root.updateWorldMatrix(true, true);
-  tee.position.set(bones.Neck.getWorldPosition(new THREE.Vector3()).x, 0.82, -0.035); // esqueleto não é simétrico: centra no pescoço
+  rotateBoneWorld(bones.Head, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.3)); // e o rosto volta a olhar pra frente
+  root.updateWorldMatrix(true, true);
+  tee.position.set(bones.Neck.getWorldPosition(new THREE.Vector3()).x, 0.9, -0.035); // esqueleto não é simétrico: centra no pescoço
   root.add(tee);
   root.updateWorldMatrix(true, true);
 
