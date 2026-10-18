@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas } from './ps1';
 
 const ORANGE = '#D4521E';
@@ -53,11 +54,11 @@ function shirtTexture(printId) {
   return pixelTexture(c);
 }
 
-function boneTexture() {
-  const c = noiseCanvas(32, 32, [196, 186, 160], 46, 3);
+function metalTexture() {
+  const c = noiseCanvas(32, 32, [70, 76, 92], 40, 9);
   const ctx = c.getContext('2d');
-  ctx.fillStyle = 'rgba(40,30,20,0.35)';
-  for (let x = 0; x < 32; x += 5) ctx.fillRect(x, 0, 1, 32); // sujeira escorrida
+  ctx.fillStyle = 'rgba(120,52,24,0.45)'; // ferrugem
+  [[4, 20, 5, 3], [22, 6, 3, 6], [14, 26, 6, 2], [26, 24, 3, 4]].forEach(([x, y, w, h]) => ctx.fillRect(x, y, w, h));
   return pixelTexture(c);
 }
 
@@ -72,122 +73,145 @@ function bottleTexture() {
   return pixelTexture(c);
 }
 
-// Cilindro de osso ligando dois pontos
-function limb(material, a, b, r, sides = 5) {
-  const dir = new THREE.Vector3().subVectors(b, a);
-  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 0.8, dir.length(), sides), material);
-  mesh.position.copy(a).addScaledVector(dir, 0.5);
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
-  return mesh;
+// Modelo: "Low poly retro PSX skeleton" por LonesomeDucky (OpenGameArt, CC-BY 4.0)
+const MODEL_URL = `${process.env.PUBLIC_URL}/models/skeleton/skeleton.gltf`;
+
+const _q2 = new THREE.Quaternion();
+const _a = new THREE.Vector3();
+const _b = new THREE.Vector3();
+
+// Gira o osso (em coordenadas do mundo) pra que ele aponte do seu início até `target`
+function aimBone(bone, child, target) {
+  bone.updateWorldMatrix(true, true);
+  bone.getWorldPosition(_a);
+  child.getWorldPosition(_b);
+  const from = _b.sub(_a).normalize();
+  const to = target.clone().sub(_a).normalize();
+  rotateBoneWorld(bone, _q2.setFromUnitVectors(from, to));
 }
 
-function buildScene(printId) {
+function rotateBoneWorld(bone, delta) {
+  bone.updateWorldMatrix(true, false);
+  const parentQ = bone.parent.getWorldQuaternion(new THREE.Quaternion());
+  const worldQ = bone.getWorldQuaternion(new THREE.Quaternion());
+  bone.quaternion.copy(parentQ.invert().multiply(delta.clone().multiply(worldQ)));
+}
+
+function buildScene(gltf, printId) {
   const v = (x, y, z) => new THREE.Vector3(x, y, z);
-  const bone = ps1(new THREE.MeshLambertMaterial({ map: boneTexture(), flatShading: true }));
-  const dark = new THREE.MeshBasicMaterial({ color: 0x050505 });
-  const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), flatShading: true, side: THREE.DoubleSide }));
-  const ember = new THREE.MeshBasicMaterial({ color: 0xff6a1a });
-
-  const body = new THREE.Group();
-
-  // Camiseta: tronco achatado + mangas + gola
-  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.32, 0.88, 10, 2, false, -Math.PI, Math.PI * 2), cloth);
-  torso.position.y = 0.44;
-  torso.scale.z = 0.62;
-  body.add(torso);
-  for (const side of [-1, 1]) {
-    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.15, 0.3, 7, 1, true), cloth);
-    sleeve.position.set(side * 0.42, 0.74, 0);
-    sleeve.rotation.z = side * 0.75;
-    body.add(sleeve);
-  }
-  const collar = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.026, 3, 8), cloth);
-  collar.rotation.x = Math.PI / 2;
-  collar.position.y = 0.88;
-  body.add(collar);
-
-  // Pescoço (vértebras) e crânio
-  for (let k = 0; k < 3; k++) {
-    const vert = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.05, 0.07), bone);
-    vert.position.set(0, 0.91 + k * 0.06, -0.02);
-    body.add(vert);
-  }
-  const head = new THREE.Group();
-  head.position.set(0, 1.06, 0);
-  head.scale.setScalar(1.18);
-  const skull = new THREE.Mesh(new THREE.IcosahedronGeometry(0.2, 1), bone);
-  skull.scale.set(0.88, 1, 1.05);
-  skull.position.y = 0.17;
-  head.add(skull);
-  for (const side of [-1, 1]) {
-    const socket = new THREE.Mesh(new THREE.IcosahedronGeometry(0.052, 0), dark);
-    socket.position.set(side * 0.075, 0.17, 0.165);
-    head.add(socket);
-    const glow = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.012, 0.01), ember);
-    glow.position.set(side * 0.075, 0.165, 0.2);
-    head.add(glow);
-  }
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.05, 3), dark);
-  nose.position.set(0, 0.1, 0.19);
-  nose.rotation.x = Math.PI;
-  head.add(nose);
-  const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.06, 0.17), bone);
-  jaw.position.set(0, 0.0, 0.05);
-  head.add(jaw);
-  const teeth = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.025, 0.02), bone);
-  teeth.position.set(0, 0.045, 0.14);
-  head.add(teeth);
-  body.add(head);
-
-  // Braços saindo das mangas
-  const shoulderL = v(-0.48, 0.66, 0), elbowL = v(-0.56, 0.32, 0.06), wristL = v(-0.5, 0.04, 0.16);
-  const shoulderR = v(0.48, 0.66, 0), elbowR = v(0.6, 0.38, 0.12), wristR = v(0.44, 0.18, 0.36);
-  body.add(limb(bone, shoulderL, elbowL, 0.038), limb(bone, elbowL, wristL, 0.03));
-  body.add(limb(bone, shoulderR, elbowR, 0.038), limb(bone, elbowR, wristR, 0.03));
-  // Juntas
-  [elbowL, wristL, elbowR, wristR].forEach((p, k) => {
-    const joint = new THREE.Mesh(new THREE.IcosahedronGeometry(k % 2 ? 0.035 : 0.048, 0), bone);
-    joint.position.copy(p);
-    body.add(joint);
+  const root = gltf.scene;
+  const bones = {};
+  let skin = null;
+  root.traverse((o) => {
+    if (o.isBone) bones[o.name.replace('.', '')] = o;
+    if (o.isSkinnedMesh) skin = o;
   });
-  for (let f = 0; f < 4; f++) {
-    body.add(limb(bone, wristL, v(-0.52 + f * 0.02, -0.06, 0.16 + f * 0.022), 0.011, 3));
+
+  // Material do modelo trocado por um "de PS1" (luz por vértice, pixel duro, recorte de alfa)
+  const map = skin.material.map;
+  map.magFilter = THREE.NearestFilter;
+  map.minFilter = THREE.NearestFilter;
+  map.generateMipmaps = false;
+  skin.material.dispose();
+  skin.material = ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide }));
+  skin.frustumCulled = false;
+
+  // Pose: braço direito segura o galão pela alça, ao lado do corpo; esquerdo solto
+  const P = (b) => b.getWorldPosition(new THREE.Vector3());
+  root.updateWorldMatrix(true, true);
+  const shR = P(bones.UpperArmR);
+  aimBone(bones.UpperArmR, bones.LowerArmR, shR.clone().add(v(-0.085, -0.27, 0.07)));
+  const elR = P(bones.LowerArmR);
+  aimBone(bones.LowerArmR, bones.HandR, elR.clone().add(v(-0.01, -0.2, 0.14)));
+  const shL = P(bones.UpperArmL);
+  aimBone(bones.UpperArmL, bones.LowerArmL, shL.clone().add(v(0.075, -0.28, 0.02)));
+  const elL = P(bones.LowerArmL);
+  aimBone(bones.LowerArmL, bones.HandL, elL.clone().add(v(0.015, -0.24, 0.06)));
+  root.updateWorldMatrix(true, true);
+
+  // Camiseta: presa no tronco, cobrindo as costelas
+  const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), flatShading: true, side: THREE.DoubleSide }));
+  // Perfil da camiseta (raio, altura): ombro, peito, cintura, barra levemente aberta
+  const torso = new THREE.Mesh(
+    new THREE.LatheGeometry([v(0.188, -0.22, 0), v(0.174, -0.1, 0), v(0.178, 0.02, 0), v(0.186, 0.14, 0), v(0.172, 0.22, 0)], 12, -Math.PI),
+    cloth
+  );
+  torso.scale.z = 0.7;
+  torso.position.set(0, 1.15, -0.035);
+  root.add(torso);
+  const yoke = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.172, 0.08, 12, 1, true), cloth);
+  yoke.scale.z = 0.7;
+  yoke.position.set(0, 1.41, -0.035);
+  root.add(yoke);
+  bones.Torso.attach(torso);
+  bones.Torso.attach(yoke);
+  // Mangas acompanham o braço
+  for (const side of ['R', 'L']) {
+    const sh = P(bones[`UpperArm${side}`]);
+    const el = P(bones[`LowerArm${side}`]);
+    // Manga abre um pouco pra fora do braço, como tecido caindo do ombro
+    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.35, 0, 0)).normalize();
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.075, 0.17, 8, 1, true), cloth);
+    sleeve.position.copy(sh).addScaledVector(dir, 0.07);
+    sleeve.position.x += Math.sign(sh.x) * 0.03;
+    sleeve.quaternion.setFromUnitVectors(v(0, -1, 0), dir);
+    root.add(sleeve);
+    bones[`UpperArm${side}`].attach(sleeve);
   }
 
-  // Garrafa de alvejante na mão direita, inclinada, pingando
-  const bottle = new THREE.Group();
+  // Elmo de cavaleiro (bacinete pontudo, como no clipe "Camelot")
+  const metal = ps1(new THREE.MeshLambertMaterial({ map: metalTexture(), flatShading: true, side: THREE.DoubleSide }));
+  const head = P(bones.Head);
+  const helmet = new THREE.Group();
+  const crown = new THREE.Mesh(
+    new THREE.LatheGeometry([v(0.118, 0.0, 0), v(0.112, 0.05, 0), v(0.088, 0.1, 0), v(0.045, 0.14, 0), v(0.0, 0.18, 0)], 9),
+    metal
+  );
+  helmet.add(crown);
+  const cheeks = new THREE.Mesh(
+    new THREE.LatheGeometry([v(0.1, -0.1, 0), v(0.118, -0.05, 0), v(0.118, 0.002, 0)], 9, 0.85, Math.PI * 2 - 1.7),
+    metal
+  );
+  helmet.add(cheeks);
+  helmet.position.set(head.x, head.y + 0.1, head.z - 0.015);
+  helmet.rotation.x = -0.1;
+  root.add(helmet);
+  bones.Head.attach(helmet);
+
+  // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
   const bottleMat = ps1(new THREE.MeshLambertMaterial({ map: bottleTexture(), flatShading: true }));
-  const jug = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.24, 0.1), bottleMat);
+  const bottle = new THREE.Group();
+  const jug = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.13), bottleMat);
+  jug.position.set(0, -0.12, 0.03);
   bottle.add(jug);
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.05, 6), ps1(new THREE.MeshLambertMaterial({ color: 0xd4521e })));
-  cap.position.set(0.04, 0.14, 0);
-  bottle.add(cap);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.013, 3, 6, Math.PI), bottleMat);
-  handle.position.set(-0.03, 0.12, 0);
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.011, 3, 6, Math.PI), bottleMat);
+  handle.rotation.y = Math.PI / 2;
+  handle.position.set(0, -0.025, -0.0);
   bottle.add(handle);
-  bottle.position.copy(wristR).add(v(0.06, 0.02, 0.05));
-  bottle.rotation.z = -1.15;
-  body.add(bottle);
-  for (let f = 0; f < 3; f++) {
-    body.add(limb(bone, wristR, v(0.5 + f * 0.012, 0.1 - f * 0.03, 0.42), 0.011, 3));
-  }
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.035, 6), ps1(new THREE.MeshLambertMaterial({ color: 0xd4521e })));
+  cap.position.set(0, -0.005, 0.075);
+  bottle.add(cap);
+  const hand = P(bones.HandR);
+  bottle.position.copy(hand).add(v(0, -0.07, 0.02));
+  bottle.rotation.x = 0.55;
+  root.add(bottle);
+  bones.HandR.attach(bottle);
 
-  // Gotas caindo da tampa
+  const ember = new THREE.MeshBasicMaterial({ color: 0xff6a1a });
   const drips = [];
-  const dripGeo = new THREE.BoxGeometry(0.014, 0.03, 0.014);
+  const dripGeo = new THREE.BoxGeometry(0.012, 0.026, 0.012);
   for (let k = 0; k < 6; k++) {
     const d = new THREE.Mesh(dripGeo, ember);
     d.userData.t = k / 6;
     drips.push(d);
-    body.add(d);
+    root.add(d);
   }
-  const spout = new THREE.Vector3();
 
-  body.rotation.x = 0.1; // curvado, cansado
-  return { body, head, jaw, torso, cap, drips, spout, cloth };
+  const rest = Object.fromEntries(['Torso', 'Neck', 'Head'].map((n) => [n, bones[n].quaternion.clone()]));
+  return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth };
 }
 
-// Esqueleto low-poly estilo Demon's Souls vestindo a camiseta, renderizado como PS1
+// Esqueleto PSX de elmo vestindo a camiseta, luz azul/vermelha estilo clipe "Camelot"
 // print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa
 export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true }) {
   const wrapRef = useRef(null);
@@ -195,6 +219,8 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
   const [failed, setFailed] = useState(false);
   const [printId, setPrintId] = useState(PRINTS[print] ? print : PRINT_IDS[0]);
   const [glitch, setGlitch] = useState(false);
+  const printRef = useRef(printId);
+  const clothRef = useRef(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -212,77 +238,99 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x080808, 3.2, 6.5);
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 30);
-    camera.position.set(0, 0.95, 3.6);
-    camera.lookAt(0, 0.6, 0);
+    scene.fog = new THREE.Fog(0x06060c, 2.6, 5.2);
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
+    // Câmera baixa olhando pra cima: o esqueleto fica imponente
+    camera.position.set(0, 0.9, 2.5);
+    camera.lookAt(0, 1.15, 0);
 
-    scene.add(new THREE.AmbientLight(0x5a5650, 1.5));
-    const key = new THREE.DirectionalLight(0xe8e0d0, 1.1);
-    key.position.set(-0.8, 1.6, 2.2);
+    scene.add(new THREE.AmbientLight(0x1c2240, 2.2));
+    const key = new THREE.DirectionalLight(0x7f9cff, 2.4);
+    key.position.set(-1.4, 1.2, 1.6);
     scene.add(key);
-    const torch = new THREE.PointLight(0xff6a1a, 3.2, 0, 1.6);
-    torch.position.set(1.6, 0.9, 0.6);
-    scene.add(torch);
-    const rim = new THREE.DirectionalLight(0x8fa6dc, 2.2);
-    rim.position.set(-1.6, 1.8, -2.2);
+    const rim = new THREE.DirectionalLight(0xff2a3c, 3.2);
+    rim.position.set(1.5, 1.4, -1.6);
     scene.add(rim);
+    const torch = new THREE.PointLight(0xff6a1a, 1.6, 0, 1.4);
+    torch.position.set(0.9, 0.7, 0.9);
+    scene.add(torch);
 
-    const parts = buildScene(printId);
     const pivot = new THREE.Group();
-    pivot.add(parts.body);
     scene.add(pivot);
+    let parts = null;
 
-    // Resolução baixa de propósito: ~1/3 do tamanho na tela
+    // Resolução baixa de propósito
     const resize = () => {
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
-      const scale = w < 500 ? 2.5 : 3;
+      const scale = w < 500 ? 2 : 2.4;
       const iw = Math.max(80, Math.round(w / scale));
       const ih = Math.max(80, Math.round(h / scale));
       renderer.setSize(iw, ih, false);
       camera.aspect = iw / ih;
       camera.updateProjectionMatrix();
-      ps1Uniforms.uSnap.value.set(iw / 2.5, ih / 2.5);
+      ps1Uniforms.uSnap.value.set(iw / 2, ih / 2);
     };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(wrap);
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let rotY = -0.35;
-    let velocity = reduced ? 0 : 0.0025;
+    let rotY = 0.35;
+    let velocity = 0;
     let dragging = null;
     let visible = true;
     let raf = 0;
     const t0 = performance.now();
+    const axisX = new THREE.Vector3(1, 0, 0);
+    const axisZ = new THREE.Vector3(0, 0, 1);
+    const tmpQ = new THREE.Quaternion();
 
     const frame = () => {
-      const t = (performance.now() - t0) / 1000;
+      const t = reduced ? 0 : (performance.now() - t0) / 1000;
       if (!dragging) {
         rotY += velocity;
-        velocity += ((reduced ? 0 : 0.0025) - velocity) * 0.02; // volta pro giro lento
+        velocity *= 0.94;
+        rotY += (0.35 + Math.sin(t * 0.25) * 0.25 - rotY) * 0.01; // volta devagar pra pose de 3/4
       }
       pivot.rotation.y = rotY;
-      parts.torso.scale.y = 1 + Math.sin(t * 1.5) * 0.012;
-      parts.head.rotation.x = 0.2 + Math.sin(t * 0.7) * 0.04;
-      parts.head.rotation.z = Math.sin(t * 0.4) * 0.07;
-      parts.jaw.rotation.x = Math.max(0, Math.sin(t * 0.9)) * 0.12;
-      torch.intensity = 3.2 * (0.8 + 0.14 * Math.sin(t * 13) + 0.06 * Math.sin(t * 31));
 
-      parts.cap.getWorldPosition(parts.spout);
-      parts.body.worldToLocal(parts.spout);
-      parts.drips.forEach((d) => {
-        d.userData.t = (d.userData.t + 0.012) % 1;
-        const p = d.userData.t;
-        d.position.set(parts.spout.x + 0.01, parts.spout.y - p * p * 1.4, parts.spout.z);
-        d.visible = p > 0.02;
-      });
+      if (parts) {
+        const { bones, rest } = parts;
+        // Respira, cabeça pende e balança
+        bones.Torso.quaternion.copy(rest.Torso);
+        rotateBoneWorld(bones.Torso, tmpQ.setFromAxisAngle(axisX, 0.06 + Math.sin(t * 1.4) * 0.015));
+        bones.Head.quaternion.copy(rest.Head);
+        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisX, 0.14 + Math.sin(t * 0.7) * 0.05));
+        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisZ, Math.sin(t * 0.4) * 0.08));
+
+        parts.cap.getWorldPosition(parts.spout);
+        pivot.worldToLocal(parts.spout);
+        parts.drips.forEach((d) => {
+          d.userData.t = (d.userData.t + 0.012) % 1;
+          const p = d.userData.t;
+          d.position.set(parts.spout.x, parts.spout.y - p * p * 1.1, parts.spout.z);
+          d.visible = p > 0.03;
+        });
+      }
+      torch.intensity = 1.6 * (0.8 + 0.14 * Math.sin(t * 13) + 0.06 * Math.sin(t * 31));
 
       renderer.render(scene, camera);
       if (visible) raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
+
+    new GLTFLoader().load(
+      MODEL_URL,
+      (gltf) => {
+        if (!wrap.isConnected) return;
+        parts = buildScene(gltf, printRef.current);
+        pivot.add(parts.root);
+        clothRef.current = parts.cloth;
+      },
+      undefined,
+      () => setFailed(true)
+    );
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
@@ -313,9 +361,12 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
     apiRef.current = {
       setPrint(id) {
-        parts.cloth.map.dispose();
-        parts.cloth.map = shirtTexture(id);
-        parts.cloth.needsUpdate = true;
+        printRef.current = id;
+        const cloth = clothRef.current;
+        if (!cloth) return;
+        cloth.map.dispose();
+        cloth.map = shirtTexture(id);
+        cloth.needsUpdate = true;
       },
     };
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import logoImg from '../../assets/logo.png';
+import logoImg from '../../assets/logo-mark.png';
 
 export default function Nav() {
   const { cart, setCartOpen } = useApp();
@@ -52,7 +52,7 @@ export default function Nav() {
     >
       <div className="nav-inner">
         <Link to="/" className="logo-brand-link" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <img src={logoImg} alt="Bleach.Co Logo" style={{ height: '54px', width: 'auto', display: 'block', objectFit: 'contain' }} />
+          <img src={logoImg} alt="Bleach.Co Logo" className="nav-logo-img" />
         </Link>
         <button
           className={`nav-toggle ${mobileMenuOpen ? 'open' : ''}`}

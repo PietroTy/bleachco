@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logoImg from '../../assets/logo.png';
+import logoImg from '../../assets/logo-mark.png';
 import { CONTACT_LINKS } from '../../config/contact';
 
 export default function Footer() {
@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link to="/" style={{ display: 'inline-block', marginBottom: '16px' }}>
-              <img src={logoImg} alt="Bleach.Co Logo" style={{ height: '60px', width: 'auto', display: 'block' }} />
+              <img src={logoImg} alt="Bleach.Co Logo" className="footer-logo-img" />
             </Link>
             <p className="eyebrow" style={{ marginBottom: '12px', display: 'block' }}>A mancha é a arte.</p>
             <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
@@ -33,6 +33,9 @@ export default function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} bleach.co</span>
+          <span className="skeleton-credit">
+            Esqueleto 3D: <a href="https://opengameart.org/content/low-poly-retro-psx-skeleton" target="_blank" rel="noopener noreferrer">LonesomeDucky</a>, CC-BY 4.0
+          </span>
           <span>Feito à mão ✦ SP</span>
         </div>
       </div>
