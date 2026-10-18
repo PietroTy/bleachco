@@ -11,7 +11,8 @@ export default function ContactPage() {
           <span className="accent">UM OI.</span>
         </h1>
         <p className="reveal reveal-delay-2">
-          Dúvidas sobre pedidos, peças personalizadas, parcerias ou só curiosidade.
+          Dúvidas sobre pedidos, peças personalizadas, parcerias ou só curiosidade. O jeito mais rápido de
+          falar com a gente é por e-mail.
         </p>
       </div>
 
@@ -21,8 +22,8 @@ export default function ContactPage() {
             <div className="contact-channels reveal">
               {CONTACT_LINKS.length > 0 ? (
                 CONTACT_LINKS.map((c) => (
-                  <a key={c.label} href={c.href} className="contact-channel" target="_blank" rel="noopener noreferrer">
-                    <span className="contact-channel-label">{c.label}</span>
+                  <a key={c.label} href={c.href} className={`contact-channel${c.preferred ? ' contact-channel--preferred' : ''}`} target="_blank" rel="noopener noreferrer">
+                    <span className="contact-channel-label">{c.label}{c.preferred && <em> · preferido</em>}</span>
                     <span className="contact-channel-value">{c.value}</span>
                     <span className="contact-channel-arrow">→</span>
                   </a>
