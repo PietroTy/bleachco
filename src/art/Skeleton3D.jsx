@@ -41,24 +41,16 @@ const PRINT_IDS = Object.keys(PRINTS);
 function shirtTexture(printId) {
   const c = noiseCanvas(128, 128, [20, 20, 20], 14, 11);
   const ctx = c.getContext('2d');
-  // Frente da camiseta fica no meio da textura (u = 0.5); peito em ~35% do topo.
-  // A textura dá a volta no tronco e estica ~2.6x na horizontal: desenha comprimido.
+  // Frente da camiseta fica no meio da textura (u = 0.5); peito em ~55% do topo (v segue os pontos do perfil).
+  // A textura dá a volta no tronco e estica ~1.9x na horizontal: desenha comprimido.
   ctx.save();
-  ctx.translate(64, 46);
-  ctx.scale(1 / 2.6, 1);
+  ctx.translate(64, 70);
+  ctx.scale(1 / 1.9, 1);
   PRINTS[printId].draw(ctx, 0, 0, 15);
   ctx.restore();
   // Respingos soltos de alvejante pelo tecido
   ctx.fillStyle = 'rgba(212,82,30,0.55)';
   [[40, 70], [88, 30], [70, 92], [20, 50], [104, 80]].forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
-  return pixelTexture(c);
-}
-
-function metalTexture() {
-  const c = noiseCanvas(32, 32, [70, 76, 92], 40, 9);
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = 'rgba(120,52,24,0.45)'; // ferrugem
-  [[4, 20, 5, 3], [22, 6, 3, 6], [14, 26, 6, 2], [26, 24, 3, 4]].forEach(([x, y, w, h]) => ctx.fillRect(x, y, w, h));
   return pixelTexture(c);
 }
 
@@ -130,53 +122,33 @@ function buildScene(gltf, printId) {
   root.updateWorldMatrix(true, true);
 
   // Camiseta: presa no tronco, cobrindo as costelas
-  const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), flatShading: true, side: THREE.DoubleSide }));
-  // Perfil da camiseta (raio, altura): ombro, peito, cintura, barra levemente aberta
+  const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
+  // Perfil da camiseta (raio, altura): barra, cintura, peito, ombro caindo até a gola
   const torso = new THREE.Mesh(
-    new THREE.LatheGeometry([v(0.188, -0.22, 0), v(0.174, -0.1, 0), v(0.178, 0.02, 0), v(0.186, 0.14, 0), v(0.172, 0.22, 0)], 12, -Math.PI),
+    new THREE.LatheGeometry(
+      [v(0.172, -0.25, 0), v(0.158, -0.12, 0), v(0.168, 0.0, 0), v(0.174, 0.12, 0), v(0.152, 0.2, 0), v(0.112, 0.248, 0), v(0.07, 0.272, 0)],
+      18,
+      -Math.PI
+    ),
     cloth
   );
-  torso.scale.z = 0.7;
+  torso.scale.z = 0.86;
   torso.position.set(0, 1.15, -0.035);
   root.add(torso);
-  const yoke = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.172, 0.08, 12, 1, true), cloth);
-  yoke.scale.z = 0.7;
-  yoke.position.set(0, 1.41, -0.035);
-  root.add(yoke);
   bones.Torso.attach(torso);
-  bones.Torso.attach(yoke);
   // Mangas acompanham o braço
   for (const side of ['R', 'L']) {
     const sh = P(bones[`UpperArm${side}`]);
     const el = P(bones[`LowerArm${side}`]);
     // Manga abre um pouco pra fora do braço, como tecido caindo do ombro
-    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.35, 0, 0)).normalize();
-    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.075, 0.17, 8, 1, true), cloth);
+    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.18, 0, 0)).normalize();
+    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.066, 0.15, 12, 1, true), cloth);
     sleeve.position.copy(sh).addScaledVector(dir, 0.07);
-    sleeve.position.x += Math.sign(sh.x) * 0.03;
+    sleeve.position.x += Math.sign(sh.x) * 0.012;
     sleeve.quaternion.setFromUnitVectors(v(0, -1, 0), dir);
     root.add(sleeve);
     bones[`UpperArm${side}`].attach(sleeve);
   }
-
-  // Elmo de cavaleiro (bacinete pontudo, como no clipe "Camelot")
-  const metal = ps1(new THREE.MeshLambertMaterial({ map: metalTexture(), flatShading: true, side: THREE.DoubleSide }));
-  const head = P(bones.Head);
-  const helmet = new THREE.Group();
-  const crown = new THREE.Mesh(
-    new THREE.LatheGeometry([v(0.118, 0.0, 0), v(0.112, 0.05, 0), v(0.088, 0.1, 0), v(0.045, 0.14, 0), v(0.0, 0.18, 0)], 9),
-    metal
-  );
-  helmet.add(crown);
-  const cheeks = new THREE.Mesh(
-    new THREE.LatheGeometry([v(0.1, -0.1, 0), v(0.118, -0.05, 0), v(0.118, 0.002, 0)], 9, 0.85, Math.PI * 2 - 1.7),
-    metal
-  );
-  helmet.add(cheeks);
-  helmet.position.set(head.x, head.y + 0.1, head.z - 0.015);
-  helmet.rotation.x = -0.1;
-  root.add(helmet);
-  bones.Head.attach(helmet);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
   const bottleMat = ps1(new THREE.MeshLambertMaterial({ map: bottleTexture(), flatShading: true }));
@@ -211,7 +183,7 @@ function buildScene(gltf, printId) {
   return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth };
 }
 
-// Esqueleto PSX de elmo vestindo a camiseta, luz azul/vermelha estilo clipe "Camelot"
+// Esqueleto PSX vestindo a camiseta, luz azul/vermelha estilo clipe "Camelot"
 // print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa
 export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true }) {
   const wrapRef = useRef(null);
