@@ -1,8 +1,11 @@
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import ProductGrid from '../common/ProductGrid';
 import BleachCanvas from '../../art/BleachCanvas';
 import stainOrangeImg from '../../assets/stain_splash.png';
 import bottleSplashImg from '../../assets/stain_bottle_splash.png';
+
+const Skeleton3D = lazy(() => import('../../art/Skeleton3D'));
 
 export default function HomePage() {
   return (
@@ -33,7 +36,14 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <img src={bottleSplashImg} alt="" className="hero-art reveal reveal-delay-2" aria-hidden="true" />
+          {(() => {
+            const bottle = <img src={bottleSplashImg} alt="" className="hero-art" aria-hidden="true" />;
+            return (
+              <div className="hero-3d reveal reveal-delay-2">
+                <Suspense fallback={bottle}><Skeleton3D fallback={bottle} /></Suspense>
+              </div>
+            );
+          })()}
         </div>
         <div className="hero-scroll-hint" aria-hidden="true">
           <span>rolar</span>
