@@ -19,6 +19,7 @@ import AboutPage from './components/pages/AboutPage';
 import ContactPage from './components/pages/ContactPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import ConfirmationPage from './components/pages/ConfirmationPage';
+import StainPage from './components/pages/StainPage';
 
 export default function App() {
   const location = useLocation();
@@ -123,6 +124,7 @@ export default function App() {
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/confirmacao" element={<ConfirmationPage />} />
+          <Route path="/mancha/:code" element={<StainPage />} />
         </Routes>
       </main>
 

@@ -1039,6 +1039,20 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
 .contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .contact-sent { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px 0; }
 
+/* ── MANCHA Nº ── */
+.order-stain { display: inline-flex; flex-direction: column; width: 288px; max-width: 100%; justify-self: start; border: 1px solid var(--gray-lt); border-radius: var(--r); overflow: hidden; background: #0c0c0c; }
+.order-stain canvas { display: block; width: 100%; aspect-ratio: 4 / 5; image-rendering: pixelated; }
+.order-stain figcaption {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 10px 14px; border-top: 1px solid var(--gray-lt);
+  font-family: 'VT323', monospace; font-size: 1.25rem; letter-spacing: 0.06em; color: var(--bone);
+}
+.order-stain button { font: inherit; font-size: 1.05rem; color: var(--orange); background: none; border: 0; text-transform: uppercase; }
+.stain-page { display: grid; grid-template-columns: 1fr auto; gap: 56px; align-items: center; min-height: 80vh; }
+.confirm-stain { margin-top: 40px; display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; }
+.confirm-stain p { max-width: 300px; font-size: 0.86rem; }
+.confirm-stain a { color: var(--orange); }
+
 /* ── CONFIRMAÇÃO (status) ── */
 .confirm-page { min-height: 70vh; }
 .confirm-wait { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: var(--orange); font-size: 0.85rem; }
@@ -1174,6 +1188,7 @@ footer {
 @media (max-width: 600px) {
   .container, .container--narrow { padding: 0 16px !important; }
   .page-header { padding-left: 16px; padding-right: 16px; }
+  .stain-page { grid-template-columns: 1fr; gap: 32px; }
   .product-grid { grid-template-columns: 1fr; gap: 20px; }
   .processo-grid { grid-template-columns: 1fr; }
   .hero-cta { flex-direction: column; }

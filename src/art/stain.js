@@ -167,7 +167,7 @@ export function generateStain(seedText, w = 96, h = 120) {
   const r = s.rand;
   const main = 1 + Math.floor(r() * 3);
   for (let k = 0; k < main; k++) {
-    s.splash(w * (0.3 + r() * 0.4), h * (0.3 + r() * 0.4), 0.8 + r() * 0.9);
+    s.splash(w * (0.35 + r() * 0.3), h * (0.35 + r() * 0.3), 0.6 + r() * 0.5);
   }
   // Escorrido vertical, como gota que desceu pela camiseta
   if (r() > 0.4) {
@@ -179,7 +179,7 @@ export function generateStain(seedText, w = 96, h = 120) {
       y += 1;
     }
   }
-  for (let k = 0; k < 6 + r() * 10; k++) s.drop(r() * w, r() * h, 0.6 + r() * 0.8, 0.8);
+  for (let k = 0; k < 6 + r() * 10; k++) s.drop(w * (0.1 + r() * 0.8), h * (0.1 + r() * 0.8), 0.6 + r() * 0.8, 0.8);
   for (let i = 0; i < 260; i++) s.step();
   return s;
 }

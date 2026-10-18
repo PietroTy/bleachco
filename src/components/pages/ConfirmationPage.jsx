@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { checkPaymentStatus, getOrderDetails } from '../../services/paymentService';
+import OrderStain, { stainCode } from '../../art/OrderStain';
 
 const fmt = (v) => `R$ ${parseFloat(v).toFixed(2).replace('.', ',')}`;
 const FAILED = ['rejected', 'cancelled', 'refunded', 'charged_back', 'amount_mismatch'];
@@ -11,6 +12,7 @@ export default function ConfirmationPage() {
   const orderId = searchParams.get('orderId');
   const [status, setStatus] = useState(null); // null = carregando | 'not_found' | status do pedido
   const [order, setOrder] = useState(null);
+  const [code, setCode] = useState(null);
   const statusRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +25,10 @@ export default function ConfirmationPage() {
         if (stopped) return;
         statusRef.current = data.status;
         setStatus(data.status);
-        if (data.status === 'approved') setOrder(await getOrderDetails(orderId).catch(() => null));
+        if (data.status === 'approved') {
+          setOrder(await getOrderDetails(orderId).catch(() => null));
+          setCode(await stainCode(orderId));
+        }
       } catch (err) {
         if (stopped || statusRef.current) return;
         statusRef.current = String(err.message).includes('nao_encontrado') ? 'not_found' : 'pending';
@@ -69,6 +74,14 @@ export default function ConfirmationPage() {
               <div><strong>Itens:</strong> {order.items?.map((i) => `${i.qty}x ${i.name} (${i.size})`).join(', ')}</div>
               {order.shipping && <div><strong>Frete:</strong> {order.shipping.company} {order.shipping.name} — {fmt(order.shipping.price)}</div>}
               <div className="confirm-total">Total pago: {fmt(order.total)}</div>
+            </div>
+          )}
+          {code && (
+            <div className="confirm-stain">
+              <OrderStain code={code} />
+              <p>
+                Sua mancha nº {code}: gerada só pra este pedido. <Link to={`/mancha/${code}`}>Link pra compartilhar →</Link>
+              </p>
             </div>
           )}
           <Link to="/produtos" className="btn btn-primary" style={{ marginTop: 32 }}>Voltar pra loja</Link>
