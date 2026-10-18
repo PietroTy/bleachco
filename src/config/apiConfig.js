@@ -6,10 +6,10 @@ function getBackendBaseUrl() {
         // Se estiver rodando com porta de dev (ex: :3004) ou IP de rede local
         if (port || host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.') || host.startsWith('10.')) {
             const protocol = window.location.protocol || 'http:';
-            return `${protocol}//${host}:3003`;
+            return `${protocol}//${host}:3005`;
         }
     }
-    return process.env.REACT_APP_BACKEND_URL || 'http://localhost:3003';
+    return process.env.REACT_APP_BACKEND_URL || 'http://localhost:3005';
 }
 
 export const API_CONFIG = {

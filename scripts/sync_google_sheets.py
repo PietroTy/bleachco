@@ -12,30 +12,25 @@ import os
 import sys
 import csv
 import json
-import urllib.request
 from datetime import datetime
 
 # Configurações do Backend e Planilha
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:3003')
-ADMIN_ORDERS_ENDPOINT = f"{BACKEND_URL}/admin/orders"
+ORDERS_FILE = os.path.join(BASE_DIR, "backend", "orders.json")
 CSV_OUTPUT_FILE = os.path.join(BASE_DIR, "pedidos_bleachco.csv")
 CREDENTIALS_FILE = os.path.join(BASE_DIR, "google_credentials.json")
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1-7sqUShOjilj3BxaE3bOJUZ47yxpLwueq_5-B2o2pR4/edit"
 
 def fetch_orders():
-    """Busca a lista de pedidos do backend."""
-    print(f"📦 Conectando ao backend em {ADMIN_ORDERS_ENDPOINT}...")
+    """Lê os pedidos direto do orders.json do backend (mesma máquina, sem passar pela API)."""
+    print(f"📦 Lendo pedidos de {ORDERS_FILE}...")
     try:
-        req = urllib.request.Request(ADMIN_ORDERS_ENDPOINT, headers={'User-Agent': 'BleachCo-Sync/1.0'})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            if response.status == 200:
-                data = json.loads(response.read().decode('utf-8'))
-                orders = data.get('orders', [])
-                print(f"✅ {len(orders)} pedido(s) encontrado(s) no backend.")
-                return orders
+        with open(ORDERS_FILE, encoding='utf-8') as f:
+            orders = json.load(f)
+        print(f"✅ {len(orders)} pedido(s) encontrado(s) no backend.")
+        return orders
     except Exception as e:
-        print(f"⚠️ Erro ao conectar ao backend: {e}")
+        print(f"⚠️ Erro ao ler pedidos: {e}")
         return []
 
 def format_items_summary(items):

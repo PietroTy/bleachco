@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { EclipseSvg, SpySvg } from '../common/SvgAssets';
+import ProductGrid from '../common/ProductGrid';
 import stainOrangeImg from '../../assets/stain_splash.png';
 import stainWhiteImg from '../../assets/stain_splash_white.png';
 
@@ -29,7 +28,7 @@ export default function ProductsPage() {
             bottom: '-10vh',
             width: '40vw',
             maxWidth: '500px',
-            opacity: 0.12,
+            opacity: 0.05,
             pointerEvents: 'none'
           }}
         />
@@ -45,31 +44,7 @@ export default function ProductsPage() {
       </div>
 
       <section className="products-section" style={{ paddingTop: 0 }}>
-        <div className="products-grid">
-          {/* ECLIPSE */}
-          <Link to="/produto/eclipse" className="product-tile reveal" aria-label="Eclipse">
-            <div className="product-tile-bg">
-              <EclipseSvg style={{ width: '100%', height: '100%' }} />
-            </div>
-            <span className="product-tile-label">Feito à mão</span>
-            <div className="product-tile-info">
-              <div className="product-tile-name">ECLIPSE</div>
-              <div className="product-tile-price">A partir de R$ 139,00</div>
-            </div>
-          </Link>
-
-          {/* SPY */}
-          <Link to="/produto/spy" className="product-tile reveal reveal-delay-1" aria-label="Spy">
-            <div className="product-tile-bg">
-              <SpySvg style={{ width: '100%', height: '100%' }} />
-            </div>
-            <span className="product-tile-label">Feito à mão</span>
-            <div className="product-tile-info">
-              <div className="product-tile-name">SPY</div>
-              <div className="product-tile-price">A partir de R$ 139,00</div>
-            </div>
-          </Link>
-        </div>
+        <ProductGrid />
       </section>
 
       {/* AVISO HANDMADE */}

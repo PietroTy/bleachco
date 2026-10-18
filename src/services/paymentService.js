@@ -25,26 +25,20 @@ export async function createOrder(payload) {
 
         return await res.json();
     } catch (err) {
-        console.warn('⚠️ Falha na conexão de pagamento com o backend. Gerando pedido de simulação:', err);
-        const simId = 'BCO-SIM-' + Date.now();
-        return {
-            orderId: simId,
-            checkoutUrl: `/confirmacao?orderId=${simId}&simulated=true`,
-            status: 'approved'
-        };
+        // Sem backend não existe pedido: o checkout mostra o erro, nunca um "aprovado" falso
+        throw new Error(err.message.startsWith('Failed to fetch')
+            ? 'Não conseguimos falar com a loja agora. Tente de novo em alguns minutos.'
+            : err.message);
     }
 }
 
 /**
  * Verifica o status de um pedido.
  * @param {string} orderId
- * @param {boolean} isSimulated
  * @returns {Promise<{ orderId: string, status: string, paidAt: string|null }>}
  */
-export async function checkPaymentStatus(orderId, isSimulated = false) {
-    const baseUrl = getPaymentStatusUrl(orderId);
-    const url = isSimulated ? `${baseUrl}?simulated=true` : baseUrl;
-    const res = await fetch(url);
+export async function checkPaymentStatus(orderId) {
+    const res = await fetch(getPaymentStatusUrl(orderId));
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Erro ao verificar status MP: ${res.status}`);

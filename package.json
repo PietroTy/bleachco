@@ -15,7 +15,7 @@
   },
   "homepage": "https://bleachco.com.br/",
   "scripts": {
-    "start": "PORT=3004 react-scripts start",
+    "start": "PORT=3008 react-scripts start",
     "build": "react-scripts build && node generate-static-routes.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
