@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductGrid from '../common/ProductGrid';
 import BleachCanvas from '../../art/BleachCanvas';
@@ -6,6 +6,21 @@ import stainOrangeImg from '../../assets/stain_splash.png';
 import bottleSplashImg from '../../assets/stain_bottle_splash.png';
 
 const Skeleton3D = lazy(() => import('../../art/Skeleton3D'));
+
+// Letreiro de videocassete: ▶ PLAY SP 00:00:07 (contando desde que a página abriu)
+function VhsCounter() {
+  const [secs, setSecs] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setSecs((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const pad = (n) => String(n).padStart(2, '0');
+  return (
+    <div className="vhs-osd" aria-hidden="true">
+      ▶ PLAY <span>SP</span> {pad(Math.floor(secs / 3600))}:{pad(Math.floor(secs / 60) % 60)}:{pad(secs % 60)}
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
@@ -45,10 +60,7 @@ export default function HomePage() {
             );
           })()}
         </div>
-        <div className="hero-scroll-hint" aria-hidden="true">
-          <span>rolar</span>
-          <div className="scroll-line"></div>
-        </div>
+        <VhsCounter />
       </section>
 
       {/* ── ESTAMPAS ── */}

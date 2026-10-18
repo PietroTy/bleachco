@@ -20,6 +20,8 @@ import ContactPage from './components/pages/ContactPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import ConfirmationPage from './components/pages/ConfirmationPage';
 import StainPage from './components/pages/StainPage';
+import NotFoundPage from './components/pages/NotFoundPage';
+import { bleachIn } from './art/vhs';
 
 export default function App() {
   const location = useLocation();
@@ -28,12 +30,19 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
+    // "Tracking" de VHS rapidinho na troca de página
+    const main = document.querySelector('.app-main');
+    main?.classList.add('vhs-cut');
+    const cut = setTimeout(() => main?.classList.remove('vhs-cut'), 380);
+
     // 1. INTERSECTION OBSERVER FOR SCROLL REVEALS
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+            const el = entry.target;
+            (el.matches('h1, h2') ? [el] : el.querySelectorAll('h1, h2')).forEach((h) => bleachIn(h));
             observer.unobserve(entry.target);
           }
         });
@@ -48,6 +57,7 @@ export default function App() {
 
     return () => {
       clearTimeout(timer);
+      clearTimeout(cut);
       observer.disconnect();
     };
   }, [location.pathname, location.search]);
@@ -111,6 +121,7 @@ export default function App() {
 
   return (
     <>
+      <div className="vhs-scanlines" aria-hidden="true" />
       <Toast />
       <CartDrawer />
       <Nav />
@@ -125,6 +136,7 @@ export default function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/confirmacao" element={<ConfirmationPage />} />
           <Route path="/mancha/:code" element={<StainPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
 
