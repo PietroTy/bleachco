@@ -72,6 +72,13 @@ export function createStain(w, h, seed = 1) {
   for (let i = 0; i < n; i++) cond[i] = Math.pow(cond[i], 2.2) * 1.6;
 
   let active = 0;
+  // Faixa de linhas com líquido (só ela é simulada) e faixa a redesenhar: numa grade alta
+  // (o fundo da página inteira) o resto do pano fica parado de graça
+  let y0 = h;
+  let y1 = -1;
+  let dirty0 = 0;
+  let dirty1 = h - 1;
+  let img = null;
 
   function drop(cx, cy, radius = 3, amount = 1) {
     const r = Math.max(1, radius);
@@ -86,6 +93,8 @@ export function createStain(w, h, seed = 1) {
         if (d <= edge) bleach[y * w + x] += amount * (1 - (d / edge) * 0.5);
       }
     }
+    y0 = Math.max(0, Math.min(y0, Math.floor(cy - r * 1.6)));
+    y1 = Math.min(h - 1, Math.max(y1, Math.ceil(cy + r * 1.6)));
     active = 120;
   }
 
@@ -104,8 +113,14 @@ export function createStain(w, h, seed = 1) {
 
   function step(iterations = 1) {
     for (let it = 0; it < iterations; it++) {
+      if (y1 < y0) break;
+      // O líquido anda no máximo uma célula por passo
+      y0 = Math.max(0, y0 - 1);
+      y1 = Math.min(h - 1, y1 + 1);
+      dirty0 = Math.min(dirty0, y0);
+      dirty1 = Math.max(dirty1, y1);
       let total = 0;
-      for (let y = 0; y < h; y++) {
+      for (let y = y0; y <= y1; y++) {
         for (let x = 0; x < w; x++) {
           const i = y * w + x;
           const b = bleach[i];
@@ -120,7 +135,7 @@ export function createStain(w, h, seed = 1) {
           next[i] = b + flow * 0.22;
         }
       }
-      for (let i = 0; i < n; i++) {
+      for (let i = y0 * w, end = (y1 + 1) * w; i < end; i++) {
         const b = next[i];
         if (b > 0.002) {
           // O alvejante come o corante e vai sendo consumido/absorvido
@@ -132,14 +147,20 @@ export function createStain(w, h, seed = 1) {
         }
       }
       if (total < 0.5) active = Math.max(0, active - 1);
+      if (!active) {
+        bleach.fill(0, y0 * w, (y1 + 1) * w);
+        y0 = h;
+        y1 = -1;
+      }
     }
     return active > 0;
   }
 
   function render(ctx) {
-    const img = ctx.createImageData(w, h);
+    if (dirty1 < dirty0) return;
+    if (!img) img = ctx.createImageData(w, h);
     const px = img.data;
-    for (let i = 0; i < n; i++) {
+    for (let i = dirty0 * w, end = (dirty1 + 1) * w; i < end; i++) {
       const d = Math.min(1, Math.max(0, dye[i] + grain[i]));
       const k = Math.round(d * 255) * 3;
       const wet = Math.min(0.35, bleach[i] * 0.4); // molhado fica um pouco mais escuro
@@ -148,16 +169,38 @@ export function createStain(w, h, seed = 1) {
       px[i * 4 + 2] = PALETTE[k + 2] * (1 - wet);
       px[i * 4 + 3] = 255;
     }
-    ctx.putImageData(img, 0, 0);
+    ctx.putImageData(img, 0, 0, 0, dirty0, w, dirty1 - dirty0 + 1);
+    dirty0 = h;
+    dirty1 = -1;
   }
 
   function reset() {
     bleach.fill(0);
     dye.fill(1);
     active = 0;
+    y0 = h;
+    y1 = -1;
+    dirty0 = 0;
+    dirty1 = h - 1;
   }
 
-  return { w, h, rand, drop, splash, step, render, reset, get busy() { return active > 0; } };
+  // Herda o pano de outra grade (ex: a página cresceu): copia a área em comum
+  function paste(other) {
+    const cw = Math.min(w, other.w);
+    for (let y = 0; y < Math.min(h, other.h); y++) {
+      for (let x = 0; x < cw; x++) {
+        dye[y * w + x] = other.dye[y * other.w + x];
+        bleach[y * w + x] = other.bleach[y * other.w + x];
+      }
+    }
+    if (other.busy) {
+      active = 120;
+      y0 = 0;
+      y1 = Math.min(h, other.h) - 1;
+    }
+  }
+
+  return { w, h, dye, bleach, rand, drop, splash, step, render, reset, paste, get busy() { return active > 0; } };
 }
 
 // Mancha determinística: a mesma semente sempre gera a mesma mancha

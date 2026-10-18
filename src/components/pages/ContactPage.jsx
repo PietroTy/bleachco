@@ -36,7 +36,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <div className="page-header">
+      <div className="page-header" data-stain="0.9,0.3,1 0.04,0.85,0.6">
         <span className="eyebrow reveal">Fale com a gente</span>
         <h1 className="reveal reveal-delay-1">
           MANDA

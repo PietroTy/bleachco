@@ -1,8 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import ProductGrid from '../common/ProductGrid';
-import stainOrangeImg from '../../assets/stain_splash.png';
-import bottleSplashImg from '../../assets/stain_bottle_splash.png';
 
 const Skeleton3D = lazy(() => import('../../art/Skeleton3D'));
 
@@ -10,7 +8,7 @@ export default function HomePage() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="hero" aria-label="Início">
+      <section className="hero" aria-label="Início" data-stain="0.88,0.18,1.1 0.04,0.9,0.7 0.5,0.97,0.5">
         <div className="hero-bg">
           <div className="hero-stain hero-stain-1"></div>
           <div className="hero-stain hero-stain-2"></div>
@@ -35,14 +33,9 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          {(() => {
-            const bottle = <img src={bottleSplashImg} alt="" className="hero-art" aria-hidden="true" />;
-            return (
-              <div className="hero-3d reveal reveal-delay-2">
-                <Suspense fallback={bottle}><Skeleton3D fallback={bottle} /></Suspense>
-              </div>
-            );
-          })()}
+          <div className="hero-3d reveal reveal-delay-2">
+            <Suspense fallback={null}><Skeleton3D /></Suspense>
+          </div>
         </div>
       </section>
 
@@ -62,23 +55,7 @@ export default function HomePage() {
       </section>
 
       {/* ── MANIFESTO / PARALLAX ── */}
-      <section className="manifesto parallax-section" aria-label="Manifesto" style={{ position: 'relative', overflow: 'hidden' }}>
-        <div className="manifesto-bg manifesto-parallax" data-speed="0.25" aria-hidden="true">
-          <img
-            src={stainOrangeImg}
-            alt=""
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '55vw',
-              maxWidth: '750px',
-              opacity: 0.22,
-              pointerEvents: 'none'
-            }}
-          />
-        </div>
+      <section className="manifesto parallax-section" aria-label="Manifesto" data-stain="0.08,0.35,0.9 0.93,0.7,1.1" style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="manifesto-content">
           <p className="eyebrow reveal">Nosso manifesto</p>
           <p className="manifesto-quote reveal reveal-delay-1">

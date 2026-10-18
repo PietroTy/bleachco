@@ -20,7 +20,7 @@ export default function AboutPage() {
       </section>
 
       {/* HISTÓRIA */}
-      <section className="about-section">
+      <section className="about-section" data-stain="0.93,0.15,0.9 0.05,0.6,0.7">
         <div className="container">
           <div className="about-grid">
             <div className="about-text reveal">
