@@ -40,30 +40,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── STATS BAR ── */}
-      <section className="stats-bar" aria-label="Números">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item reveal">
-              <span className="stat-num-big">100%</span>
-              <span className="stat-label-big">Artesanal</span>
-            </div>
-            <div className="stat-item reveal reveal-delay-1">
-              <span className="stat-num-big">0</span>
-              <span className="stat-label-big">Peças idênticas</span>
-            </div>
-            <div className="stat-item reveal reveal-delay-2">
-              <span className="stat-num-big">2</span>
-              <span className="stat-label-big">Estampas na coleção</span>
-            </div>
-            <div className="stat-item reveal reveal-delay-3">
-              <span className="stat-num-big">∞</span>
-              <span className="stat-label-big">Variações possíveis</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── ESTAMPAS ── */}
       <section className="products-section" aria-label="Estampas">
         <div className="container">
@@ -108,13 +84,6 @@ export default function HomePage() {
             <br />
             é exatamente o ponto."
           </p>
-          <div className="manifesto-tags reveal reveal-delay-2">
-            <span className="tag">100% artesanal</span>
-            <span className="tag">Feito à mão</span>
-            <span className="tag">Peça única</span>
-            <span className="tag">Sem estoque</span>
-            <span className="tag">Sob encomenda</span>
-          </div>
         </div>
       </section>
 
