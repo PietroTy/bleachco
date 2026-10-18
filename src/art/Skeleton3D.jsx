@@ -41,17 +41,15 @@ const PRINT_IDS = Object.keys(PRINTS);
 function shirtTexture(printId) {
   const c = noiseCanvas(128, 128, [20, 20, 20], 14, 11);
   const ctx = c.getContext('2d');
-  // Frente da camiseta fica no meio da textura (u = 0.5); peito em ~62% do topo (v segue os pontos do perfil).
-  // A textura dá a volta no tronco e estica ~1.55x na horizontal: desenha comprimido.
-  ctx.save();
-  ctx.translate(64, 79);
-  ctx.scale(1 / 1.55, 1);
-  PRINTS[printId].draw(ctx, 0, 0, 15);
-  ctx.restore();
+  // UV é uma projeção de frente (largura x altura da camiseta): peito em ~30% do topo.
+  // Costas e laterais apontam pro canto (0,0) da textura, que é só tecido.
+  PRINTS[printId].draw(ctx, 64, 40, 19);
   // Respingos soltos de alvejante pelo tecido
   ctx.fillStyle = 'rgba(212,82,30,0.55)';
   [[40, 70], [88, 30], [70, 92], [20, 50], [104, 80]].forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
-  return pixelTexture(c);
+  const tex = pixelTexture(c);
+  tex.flipY = false; // UV de glTF: topo da imagem = topo da camiseta
+  return tex;
 }
 
 function bottleTexture() {
@@ -67,6 +65,8 @@ function bottleTexture() {
 
 // Modelo: "Low poly retro PSX skeleton" por LonesomeDucky (OpenGameArt, CC-BY 4.0)
 const MODEL_URL = `${process.env.PUBLIC_URL}/models/skeleton/skeleton.gltf`;
+// Camiseta: "T-shirt" por Poly by Google (poly.pizza, CC-BY 3.0), com UV refeito pra estampa
+const TEE_URL = `${process.env.PUBLIC_URL}/models/tshirt.glb`;
 
 const _q2 = new THREE.Quaternion();
 const _a = new THREE.Vector3();
@@ -89,7 +89,7 @@ function rotateBoneWorld(bone, delta) {
   bone.quaternion.copy(parentQ.invert().multiply(delta.clone().multiply(worldQ)));
 }
 
-function buildScene(gltf, printId) {
+function buildScene(gltf, teeGltf, printId) {
   const v = (x, y, z) => new THREE.Vector3(x, y, z);
   const root = gltf.scene;
   const bones = {};
@@ -112,46 +112,28 @@ function buildScene(gltf, printId) {
   const P = (b) => b.getWorldPosition(new THREE.Vector3());
   root.updateWorldMatrix(true, true);
   const shR = P(bones.UpperArmR);
-  aimBone(bones.UpperArmR, bones.LowerArmR, shR.clone().add(v(-0.085, -0.27, 0.07)));
+  aimBone(bones.UpperArmR, bones.LowerArmR, shR.clone().add(v(-0.13, -0.25, 0.04)));
   const elR = P(bones.LowerArmR);
   aimBone(bones.LowerArmR, bones.HandR, elR.clone().add(v(-0.01, -0.2, 0.14)));
   const shL = P(bones.UpperArmL);
-  aimBone(bones.UpperArmL, bones.LowerArmL, shL.clone().add(v(0.075, -0.28, 0.02)));
+  aimBone(bones.UpperArmL, bones.LowerArmL, shL.clone().add(v(0.12, -0.26, 0.0)));
   const elL = P(bones.LowerArmL);
   aimBone(bones.LowerArmL, bones.HandL, elL.clone().add(v(0.015, -0.24, 0.06)));
   root.updateWorldMatrix(true, true);
 
-  // Camiseta: presa no tronco, cobrindo as costelas
+  // Camiseta: modelo pronto, um pouco largo (oversized), preso no tronco
   const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
-  // Perfil oversized (raio, altura): corpo largo e reto, ombro caído que cobre a cabeça do úmero
-  const torso = new THREE.Mesh(
-    new THREE.LatheGeometry(
-      [v(0.225, -0.3, 0), v(0.215, -0.15, 0), v(0.218, 0.0, 0), v(0.222, 0.12, 0), v(0.222, 0.22, 0), v(0.21, 0.27, 0), v(0.16, 0.305, 0), v(0.08, 0.32, 0)],
-      18,
-      -Math.PI
-    ),
-    cloth
-  );
-  torso.scale.z = 0.86;
-  torso.position.set(0, 1.12, -0.04);
-  root.add(torso);
-  bones.Torso.attach(torso);
-  // Mangas acompanham o braço (tecido liso: a estampa é só no peito)
-  const plain = ps1(new THREE.MeshLambertMaterial({ map: pixelTexture(noiseCanvas(32, 32, [20, 20, 20], 14, 12)), side: THREE.DoubleSide }));
-  for (const side of ['R', 'L']) {
-    const sh = P(bones[`UpperArm${side}`]);
-    const el = P(bones[`LowerArm${side}`]);
-    // Manga abre um pouco pra fora do braço, como tecido caindo do ombro
-    const dir = el.clone().sub(sh).normalize().add(v(Math.sign(sh.x) * 0.25, 0, 0)).normalize();
-    const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.1, 0.2, 12, 1, true), plain);
-    // Ombro caído: a manga começa já descendo pelo braço
-    sleeve.position.copy(sh).addScaledVector(dir, 0.13);
-    sleeve.position.x += Math.sign(sh.x) * 0.035;
-    sleeve.position.z -= 0.02;
-    sleeve.quaternion.setFromUnitVectors(v(0, -1, 0), dir);
-    root.add(sleeve);
-    bones[`UpperArm${side}`].attach(sleeve);
-  }
+  const tee = teeGltf.scene;
+  tee.traverse((o) => {
+    if (o.isMesh) {
+      o.material.dispose();
+      o.material = cloth;
+    }
+  });
+  tee.scale.set(0.7, 0.64, 0.95);
+  tee.position.set(0, 0.86, -0.025);
+  root.add(tee);
+  bones.Torso.attach(tee);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
   const bottleMat = ps1(new THREE.MeshLambertMaterial({ map: bottleTexture(), flatShading: true }));
@@ -295,17 +277,15 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     };
     raf = requestAnimationFrame(frame);
 
-    new GLTFLoader().load(
-      MODEL_URL,
-      (gltf) => {
+    const loader = new GLTFLoader();
+    Promise.all([loader.loadAsync(MODEL_URL), loader.loadAsync(TEE_URL)])
+      .then(([gltf, teeGltf]) => {
         if (!wrap.isConnected) return;
-        parts = buildScene(gltf, printRef.current);
+        parts = buildScene(gltf, teeGltf, printRef.current);
         pivot.add(parts.root);
         clothRef.current = parts.cloth;
-      },
-      undefined,
-      () => setFailed(true)
-    );
+      })
+      .catch(() => setFailed(true));
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
