@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import ProductGrid from '../common/ProductGrid';
+import BleachCanvas from '../../art/BleachCanvas';
 import stainOrangeImg from '../../assets/stain_splash.png';
 import bottleSplashImg from '../../assets/stain_bottle_splash.png';
 
@@ -55,6 +56,18 @@ export default function HomePage() {
         <ProductGrid />
       </section>
 
+      {/* ── ALVEJE VOCÊ MESMO ── */}
+      <section className="bleach-section" aria-label="Alveje você mesmo">
+        <div className="container">
+          <div className="section-head reveal">
+            <span className="eyebrow">Experimenta</span>
+            <h2>ALVEJE <span className="accent">VOCÊ MESMO.</span></h2>
+            <p className="section-sub">É assim que cada peça nasce: uma gota, um gesto, uma mancha que não se repete.</p>
+          </div>
+          <div className="reveal reveal-delay-1"><BleachCanvas /></div>
+        </div>
+      </section>
+
       {/* ── MANIFESTO / PARALLAX ── */}
       <section className="manifesto parallax-section" aria-label="Manifesto" style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="manifesto-bg manifesto-parallax" data-speed="0.25" aria-hidden="true">
@@ -78,7 +91,7 @@ export default function HomePage() {
           <p className="manifesto-quote reveal reveal-delay-1">
             "Água sanitária não é ferramenta de limpeza.
             <br />
-            É <span className="accent">tinta</span>. É <span class="accent">voz</span>.
+            É <span className="accent">tinta</span>. É <span className="accent">voz</span>.
             <br />
             A mancha que você acha imperfeita
             <br />
