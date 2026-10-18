@@ -1034,6 +1034,9 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
   transition: border-color var(--t), transform var(--t);
 }
 .contact-channel:hover { border-color: var(--orange); transform: translateX(4px); }
+.contact-channel--preferred { border-color: rgba(212,82,30,.45); background: var(--orange-dim); }
+.contact-channel-label em { font-style: normal; color: var(--bone2); }
+.contact-channel-value { overflow-wrap: anywhere; }
 .contact-channel-label {
   grid-column: 1; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--orange);
