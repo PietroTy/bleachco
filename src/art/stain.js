@@ -42,6 +42,20 @@ const PALETTE = (() => {
   return lut;
 })();
 
+// Quanto corante sobra quando o pano chega nessa cor (a mais próxima da paleta), ex: laranja ≈ 0.36
+export function dyeFor([r, g, b]) {
+  let best = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < 256; i++) {
+    const d = (PALETTE[i * 3] - r) ** 2 + (PALETTE[i * 3 + 1] - g) ** 2 + (PALETTE[i * 3 + 2] - b) ** 2;
+    if (d < bestDist) {
+      bestDist = d;
+      best = i;
+    }
+  }
+  return best / 255;
+}
+
 export function createStain(w, h, seed = 1) {
   const rand = mulberry32(seed);
   const n = w * h;
@@ -161,9 +175,9 @@ export function createStain(w, h, seed = 1) {
     }
   }
 
-  // Termina o serviço: ninguém fica com mais corante que maxDye
-  function bleachTo(maxDye) {
-    for (let i = 0; i < n; i++) if (dye[i] > maxDye) dye[i] = maxDye;
+  // Prende o corante entre minDye e maxDye: maxDye termina o serviço, minDye é onde a cor para
+  function bleachTo(maxDye, minDye = 0) {
+    for (let i = 0; i < n; i++) dye[i] = Math.min(maxDye, Math.max(minDye, dye[i]));
     dirty0 = 0;
     dirty1 = h - 1;
   }
