@@ -1,37 +1,9 @@
 import ProductGrid from '../common/ProductGrid';
-import stainOrangeImg from '../../assets/stain_splash.png';
-import stainWhiteImg from '../../assets/stain_splash_white.png';
 
 export default function ProductsPage() {
   return (
     <>
-      <div className="page-header" style={{ position: 'relative', overflow: 'hidden' }}>
-        <img
-          src={stainOrangeImg}
-          alt=""
-          style={{
-            position: 'absolute',
-            right: '-8vw',
-            top: '-5vh',
-            width: '45vw',
-            maxWidth: '550px',
-            opacity: 0.28,
-            pointerEvents: 'none'
-          }}
-        />
-        <img
-          src={stainWhiteImg}
-          alt=""
-          style={{
-            position: 'absolute',
-            left: '-10vw',
-            bottom: '-10vh',
-            width: '40vw',
-            maxWidth: '500px',
-            opacity: 0.05,
-            pointerEvents: 'none'
-          }}
-        />
+      <div className="page-header" data-stain="0.9,0.3,1.1 0.04,0.85,0.7">
         <span className="eyebrow reveal">Coleção 2025</span>
         <h1 className="reveal reveal-delay-1">
           DUAS ESTAMPAS.

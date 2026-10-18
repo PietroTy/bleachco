@@ -218,37 +218,6 @@ p  { font-size: 0.938rem; color: var(--gray); line-height: 1.85; }
 }
 
 /* Real Bleach Stain Images background (No Glow / Flat Clean) */
-.stain-bg-img {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.35;
-  user-select: none;
-  z-index: 1;
-  transition: transform 0.1s ease-out;
-}
-
-.stain-bg-img.stain-orange {
-  width: 48vw;
-  max-width: 620px;
-  right: -10vw;
-  top: 5vh;
-  opacity: 0.35;
-}
-
-.stain-bg-img.stain-white {
-  width: 44vw;
-  max-width: 580px;
-  left: -10vw;
-  bottom: 5vh;
-  opacity: 0.15;
-}
-
-.stain-bg-img.section-splash {
-  width: 38vw;
-  max-width: 480px;
-  opacity: 0.25;
-}
-
 /* Noise texture overlay */
 .hero-bg::after {
   content: '';
@@ -1240,8 +1209,11 @@ footer {
 }
 
 /* ── PANO DE FUNDO (alvejante onde clicar) ── */
+#root { position: relative; }
+/* Moldura do tamanho da página: o pano rola junto e o que passa dela fica cortado */
+.bleach-bg-frame { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
 .bleach-bg {
-  position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none;
+  position: absolute; top: 0; left: 0;
   image-rendering: pixelated; opacity: 0.55;
 }
 .bleach-bg-osd {
