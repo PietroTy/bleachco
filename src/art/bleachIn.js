@@ -1,12 +1,25 @@
-import { createStain } from './stain';
+import { createStain, dyeFor } from './stain';
 
 const CELL = 4; // px de tela por pixel de tecido
 
+const rgb = (el) => getComputedStyle(el).color.match(/\d+/g).slice(0, 3).map(Number);
+
 // Título que aparece alvejado: as letras são o pano preto do fundo, e o mesmo motor
-// das manchas pinga alvejante nelas até descolorir (preto → ferrugem → laranja → osso).
+// das manchas pinga alvejante nelas até chegar na cor delas (preto → ferrugem → laranja → osso):
+// texto branco vai até o osso, trecho laranja (.accent) para no laranja.
 // A mancha vira o fundo do texto (background-clip: text) só durante a animação.
 export function bleachIn(el, duration = 3400) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const base = getComputedStyle(el).color;
+  stainText(el, duration);
+  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele
+  el.querySelectorAll('*').forEach((child) => {
+    if (getComputedStyle(child).color !== base) stainText(child, duration);
+  });
+}
+
+function stainText(el, duration) {
+  const floor = dyeFor(rgb(el));
   const box = el.getBoundingClientRect();
   if (!box.width || !box.height) return;
   const w = Math.ceil(box.width / CELL);
@@ -84,8 +97,8 @@ export function bleachIn(el, duration = 3400) {
     const steps = Math.min(4, Math.floor(pending));
     pending -= steps;
     if (steps) stain.step(steps);
-    // Reta final: o que sobrou de preto termina de descolorir junto
-    if (p > 0.8) stain.bleachTo(1 - (p - 0.8) / 0.2);
+    // Nunca passa da cor do texto; na reta final o que sobrou de preto chega nela junto
+    stain.bleachTo(p > 0.8 ? floor + (1 - floor) * (1 - (p - 0.8) / 0.2) : 1, floor);
     paint();
     if (p < 1) requestAnimationFrame(tick);
     else {
