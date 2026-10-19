@@ -107,6 +107,12 @@ function hideInsideShirt(material) {
       .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform mat4 uTeeInv;\nuniform mat4 uArmInv[2];\nuniform vec4 uArmAxis[2];\nvarying vec3 vWorldPos;')
+      // Osso branco: a textura do modelo é amarelada, tira boa parte da cor e clareia
+      .replace(
+        '#include <map_fragment>',
+        `#include <map_fragment>
+        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114))), 0.7) * 1.15;`
+      )
       .replace(
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
@@ -165,11 +171,30 @@ function buildScene(gltf, teeGltf, printId) {
   root.add(tee);
   root.updateWorldMatrix(true, true);
 
-  // Pose de encaixe: cada braço mira o centro da abertura da manga (x ±0.44, altura 0.6, 0.1 pra frente)
+  // Pose de encaixe: cada braço mira o centro da abertura da sua manga
   const P = (b) => b.getWorldPosition(new THREE.Vector3());
-  const sleeveOpening = (side) => tee.localToWorld(v(side * 0.44, 0.6, 0.1));
   // Ombro de cada lado em coordenadas da malha: a manga afunila em volta da linha ombro → abertura
   const shoulderLocal = { [-1]: tee.worldToLocal(P(bones.UpperArmR)), 1: tee.worldToLocal(P(bones.UpperArmL)) };
+  // Centro real de cada abertura, medido na malha (o modelo não é simétrico: uma manga vai pra
+  // frente e a outra pra trás). Ponta da manga = vértices mais longe do ombro na direção dela.
+  const teeGeo = tee.getObjectByProperty('isMesh', true).geometry.attributes.position;
+  const sleeve = {};
+  for (const side of [-1, 1]) {
+    const sh = shoulderLocal[side];
+    const pts = [];
+    for (let i = 0; i < teeGeo.count; i++) {
+      const p = new THREE.Vector3().fromBufferAttribute(teeGeo, i);
+      if (side * p.x > 0.3 && p.y < sh.y) pts.push(p);
+    }
+    const mean = (list) => list.reduce((m, p) => m.add(p), new THREE.Vector3()).divideScalar(list.length);
+    const dir = mean(pts).sub(sh).normalize();
+    const along = pts.map((p) => p.clone().sub(sh).dot(dir));
+    const far = Math.max(...along);
+    const opening = mean(pts.filter((p, k) => along[k] > far - 0.05));
+    const axis = opening.clone().sub(sh);
+    sleeve[side] = { opening, axis, len: axis.length() };
+  }
+  const sleeveOpening = (side) => tee.localToWorld(sleeve[side].opening.clone());
   aimBone(bones.UpperArmR, bones.LowerArmR, sleeveOpening(-1));
   aimBone(bones.UpperArmL, bones.LowerArmL, sleeveOpening(1));
   root.updateWorldMatrix(true, true);
@@ -195,13 +220,14 @@ function buildScene(gltf, teeGltf, printId) {
   for (let i = 0; i < count; i++) {
     local.fromBufferAttribute(pos, i);
     const arm = THREE.MathUtils.smoothstep(Math.abs(local.x), 0.22, 0.3) * THREE.MathUtils.smoothstep(local.y, 0.42, 0.5);
-    // Manga afunilada em volta do eixo dela (costura → abertura), pra não abrir em aba longe do braço
+    // Manga afunilada em volta do eixo dela (ombro → abertura), pra não abrir em aba longe do braço
     if (arm > 0) {
       const side = Math.sign(local.x);
       const sh = shoulderLocal[side];
-      const t = THREE.MathUtils.clamp((sh.y - local.y) / (sh.y - 0.6), 0, 1);
-      _a.set(sh.x + (side * 0.44 - sh.x) * t, sh.y + (0.6 - sh.y) * t, sh.z + (0.1 - sh.z) * t);
-      local.lerp(_a, 0.32 * arm);
+      const { axis, len } = sleeve[side];
+      const t = THREE.MathUtils.clamp(_b.copy(local).sub(sh).dot(axis) / (len * len), 0, 1);
+      _a.copy(sh).addScaledVector(axis, t); // ponto do eixo na altura do vértice
+      local.lerp(_a, (0.25 + 0.25 * t) * arm); // aperta mais perto da abertura, em volta do osso
       pos.setXYZ(i, local.x, local.y, local.z);
     }
     skinIndex.set([0, local.x < 0 ? 2 : 1, 0, 0], i * 4);
@@ -271,7 +297,7 @@ function buildScene(gltf, teeGltf, printId) {
   return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth, teeFrame, arms };
 }
 
-// Esqueleto PSX vestindo a camiseta, luz azul/vermelha estilo clipe "Camelot"
+// Esqueleto PSX vestindo a camiseta, luz quente: osso branco com contraluz laranja (cores da marca)
 // print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa
 export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true }) {
   const wrapRef = useRef(null);
@@ -298,17 +324,17 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x06060c, 2.6, 5.2);
+    scene.fog = new THREE.Fog(0x0c0806, 2.6, 5.2);
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
     // Câmera baixa olhando pra cima: o esqueleto fica imponente
     camera.position.set(0, 0.9, 2.5);
     camera.lookAt(0, 1.15, 0);
 
-    scene.add(new THREE.AmbientLight(0x1c2240, 2.2));
-    const key = new THREE.DirectionalLight(0x7f9cff, 2.4);
+    scene.add(new THREE.AmbientLight(0x34302c, 2.0));
+    const key = new THREE.DirectionalLight(0xfff8f2, 2.9);
     key.position.set(-1.4, 1.2, 1.6);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xff2a3c, 3.2);
+    const rim = new THREE.DirectionalLight(0xff6a1a, 3.0);
     rim.position.set(1.5, 1.4, -1.6);
     scene.add(rim);
     const torch = new THREE.PointLight(0xff6a1a, 1.6, 0, 1.4);

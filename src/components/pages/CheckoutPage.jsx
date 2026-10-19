@@ -449,14 +449,11 @@ export default function CheckoutPage() {
                   color: 'var(--bone)'
                 }}>
                   <div style={{ fontWeight: 'bold', color: 'var(--orange)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>Termos do Processo Artesanal & Cuidados:</span>
+                    <span>Termos do Processo Artesanal:</span>
                   </div>
                   <ul style={{ margin: '0 0 12px 18px', padding: 0, lineHeight: 1.5, color: '#d0c8be' }}>
-                    <li style={{ marginBottom: '6px' }}>
-                      <strong>Variações Únicas:</strong> Por ser um processo manual com água sanitária, o resultado final terá pequenas variações estéticas exclusivas em relação à foto ilustrativa.
-                    </li>
                     <li>
-                      <strong>Instruções de Lavagem:</strong> Lave separadamente nas primeiras lavagens para evitar manchas em outras roupas.
+                      <strong>Variações Únicas:</strong> Por ser um processo manual com água sanitária, o resultado final terá pequenas variações estéticas exclusivas em relação à foto ilustrativa.
                     </li>
                   </ul>
                   <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', fontSize: '1.05rem', marginTop: '10px', color: '#fff' }}>
@@ -469,7 +466,7 @@ export default function CheckoutPage() {
                       }}
                       style={{ accentColor: 'var(--orange)', width: '18px', height: '18px', marginTop: '2px' }}
                     />
-                    <span>Estou ciente e de acordo com as variações artesanais e instruções de lavagem.</span>
+                    <span>Estou ciente e de acordo com as variações artesanais.</span>
                   </label>
                   {errors.terms && (
                     <span className="form-error" style={{ display: 'block', marginTop: '6px' }}>{errors.terms}</span>
