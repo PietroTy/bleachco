@@ -1321,6 +1321,14 @@ footer {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   image-rendering: pixelated;
+  /* halo escuro: a borda da letra não se mistura com mancha clara atrás (vira "contorno branco") */
+  filter: drop-shadow(0 0 2px rgba(8,8,8,0.95));
+}
+/* Texto pequeno: a textura nem aparece e só suja a borda da letra. Fica cor sólida, com o halo */
+:where(.eyebrow, .product-card-price, .product-card-cta, .nav-links a, .footer-col a, .footer-col span,
+  .footer-bottom span, .form-group label, .step-num, small, label) {
+  background-image: none;
+  -webkit-text-fill-color: currentColor;
 }
 /* Esses têm fundo próprio (shorthand "background" no CSS deles): letra volta a ser cor sólida */
 .no-signal-osd a { -webkit-text-fill-color: currentColor; }
