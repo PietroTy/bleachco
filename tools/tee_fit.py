@@ -5,7 +5,7 @@ import bpy, bmesh, math, sys
 from mathutils import Vector, Quaternion, Matrix
 P = dict(a.split('=') for a in sys.argv[sys.argv.index('--')+1:]) if '--' in sys.argv else {}
 f = lambda k, d: float(P.get(k, d))
-# Uso: blender -b -P tools/tee_fit.py -- sx=0.72 hem=0.87 top=1.50 margin=0.02 export=1
+# Uso: blender -b -P tools/tee_fit.py -- sx=0.72 hem=0.87 top=1.50 margin=0.02 collar_sy=1.0 collar_sx=0.6 export=1
 # Lê tools/tshirt_orig.glb (o modelo original do Poly) e escreve tools/out/tshirt_fit.glb → public/models/tshirt.glb
 import os
 OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out') + '/'
@@ -78,6 +78,12 @@ for v in tee.data.vertices:
     m = f('margin', 0.03)
     t = (p.y - (-0.165)) / (0.175 - (-0.165))
     y = (fr - m) + t * ((bk + m) - (fr - m))
+    # Gola centrada no pescoço: o pescoço do esqueleto sai bem atrás, então o topo da camiseta é
+    # comprimido de frente pra trás em volta dele (o peito sobe inclinado até a gola) e o buraco estreita
+    kc = ss(h, f('collar_from', 0.86), 0.98)
+    neckC = neckY + f('neck_dy', 0.0)
+    y = y + kc * ((neckC + (y - f('collar_c', 0.025)) * f('collar_sy', 0.6)) - y)
+    x = x * (1 - f('collar_sx', 0.3) * ss(h, 0.86, 0.99) * (1 - ss(abs(p.x), 0.12, 0.2)))
     q = Vector((x, y, z))
     pre.append((v, q, a, side))
 for side in (-1, 1):
@@ -109,6 +115,14 @@ ca = tee.data.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
 for i, (a, s) in enumerate(cols): ca.data[i].color = (a, s, 0, 1)
 tee.data.update()
 
+# Buraco da gola: borda aberta lá no alto, perto do centro
+bm = bmesh.new(); bm.from_mesh(tee.data)
+ring = {v.index: v.co.copy() for e in bm.edges if e.is_boundary for v in e.verts if v.co.z > 1.4 and abs(v.co.x) < 0.14}
+bm.free()
+if ring:
+    c = sum(ring.values(), Vector()) / len(ring)
+    xs = [p.x for p in ring.values()]; ys = [p.y for p in ring.values()]
+    print('COLLAR center', round(c.x, 3), round(c.y, 3), round(c.z, 3), 'x', round(min(xs), 3), round(max(xs), 3), 'y', round(min(ys), 3), round(max(ys), 3), '| neck y', round(neckY, 3), 'neck verts y 0.043..0.129')
 if P.get('render'):
     sc = bpy.context.scene
     cam = bpy.data.objects.new('c', bpy.data.cameras.new('c')); sc.collection.objects.link(cam); sc.camera = cam
@@ -125,6 +139,13 @@ if P.get('render'):
         cam.rotation_euler = (math.pi / 2, 0, r)
         sc.render.filepath = OUT + f'v{i}.png'
         bpy.ops.render.render(write_still=True)
+    # de cima: o buraco da gola com o pescoço dentro (cabeça escondida)
+    bpy.data.objects['Skeleton'].hide_render = False
+    cam.location = (0, 0, 3); cam.rotation_euler = (0, 0, 0); cam.data.ortho_scale = 0.6
+    sc.render.resolution_x = sc.render.resolution_y = 360
+    cam.data.clip_start = 3 - 1.56
+    sc.render.filepath = OUT + 'top.png'
+    bpy.ops.render.render(write_still=True)
 if P.get('export'):
     bpy.ops.object.select_all(action='DESELECT'); tee.select_set(True); bpy.context.view_layer.objects.active = tee
     bpy.ops.export_scene.gltf(filepath=OUT + 'tshirt_fit.glb', use_selection=True, export_animations=False, export_texcoords=True, export_normals=True, export_vertex_color='ACTIVE', export_all_vertex_colors=True, export_materials='NONE')
