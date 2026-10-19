@@ -141,7 +141,7 @@ function hideInsideShirt(material) {
         vec3 tp = (uTeeInv * vec4(vWorldPos, 1.0)).xyz;
         // Corpo da camiseta, até um pouco acima do ombro (clavícula e escápula não furam a gola),
         // menos um cilindro em volta do pescoço, que sai pela gola
-        bool neck = tp.y > 0.97 && pow(tp.x / 0.1, 2.0) + pow((tp.z + 0.02) / 0.12, 2.0) < 1.0;
+        bool neck = tp.y > 0.86 && pow(tp.x / 0.055, 2.0) + pow((tp.z + 0.03) / 0.075, 2.0) < 1.0;
         if (tp.y > 0.04 && tp.y < 1.1 && !neck && pow(tp.x / 0.3, 2.0) + pow(tp.z / 0.17, 2.0) < 1.0) discard;
         for (int k = 0; k < 2; k++) {
           vec3 ap = (uArmInv[k] * vec4(vWorldPos, 1.0)).xyz;

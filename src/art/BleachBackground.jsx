@@ -35,7 +35,7 @@ export default function BleachBackground() {
           if ((d.wait -= 1) > 0) return true;
           d.x += (Math.random() - 0.5) * 0.6;
           d.y += 1;
-          stain.drop(d.x, d.y, d.r * (0.6 + 0.4 * (d.left / d.len)), 0.35);
+          stain.drop(d.x, d.y, d.r * (0.6 + 0.4 * (d.left / d.len)), 0.22);
           return --d.left > 0;
         });
       }
@@ -71,11 +71,11 @@ export default function BleachBackground() {
       const narrow = Math.max(0.5, Math.min(1, (stain.w * CELL) / 900));
       const size = (SPLASH_PX * narrow) / ((Math.min(stain.w, stain.h) / 100) * 9 * CELL);
       stain.blot(px / CELL, py / CELL, size * k, strength);
-      if (Math.random() < 0.55) {
+      if (Math.random() < 0.25) {
         // Começa da parte de baixo da mancha, depois de a poça assentar (wait em passos de ~90ms)
         const u = size * k * (Math.min(stain.w, stain.h) / 100);
-        const len = Math.round((12 + Math.random() * 30) * u);
-        drips.push({ x: px / CELL + (Math.random() - 0.5) * 6 * u, y: py / CELL + 5 * u, r: 1.2 + u * 0.6, len, left: len, wait: 8 + Math.random() * 20 });
+        const len = Math.round((6 + Math.random() * 14) * u);
+        drips.push({ x: px / CELL + (Math.random() - 0.5) * 6 * u, y: py / CELL + 5 * u, r: 0.9 + u * 0.35, len, left: len, wait: 15 + Math.random() * 25 });
       }
       run();
     };
@@ -86,12 +86,12 @@ export default function BleachBackground() {
     let dragged = false;
     const trailTo = (px, py) => {
       const dist = Math.hypot(px - trail[0], py - trail[1]);
-      const STEP = 2 * CELL;
+      const STEP = 2.5 * CELL;
       if (dist < STEP) return;
       for (let t = 0; t < dist; t += STEP) {
         const x = trail[0] + ((px - trail[0]) * t) / dist;
         const y = trail[1] + ((py - trail[1]) * t) / dist;
-        stain.drop(x / CELL, y / CELL, 2.2 + Math.random() * 1.6, 1);
+        stain.drop(x / CELL, y / CELL, 1.4 + Math.random() * 1, 0.6);
       }
       trail = [px, py];
       dragged = true;
