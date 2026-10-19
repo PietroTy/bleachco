@@ -259,15 +259,13 @@ p  {
   0% { opacity: 0; } 18% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; }
 }
 
-/* ── SOBRE: time-lapse da gota ── */
-.drop-timelapse { image-rendering: pixelated; }
-.about-drop {
+/* ── SOBRE: o galão do esqueleto, em pé ── */
+.about-jug {
   position: absolute; z-index: 1; right: max(28px, calc((100% - 1180px) / 2)); top: 50%;
-  width: min(38vw, 440px); aspect-ratio: 1; transform: translateY(-46%);
-  border-radius: 50%; mask-image: radial-gradient(circle, #000 55%, transparent 71%);
-  -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 71%);
+  width: min(34vw, 380px); aspect-ratio: 3 / 4; transform: translateY(-42%);
 }
-@media (max-width: 960px) { .about-drop { opacity: 0.35; width: 70vw; right: -15vw; } }
+.jug-still-canvas { width: 100% !important; height: 100% !important; display: block; image-rendering: pixelated; }
+@media (max-width: 960px) { .about-jug { opacity: 0.4; width: 60vw; right: -8vw; } }
 
 /* ── 404 SEM SINAL ── */
 .no-signal { position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }

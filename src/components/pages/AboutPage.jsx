@@ -1,11 +1,13 @@
-import DropTimelapse from '../../art/DropTimelapse';
+import { lazy, Suspense } from 'react';
+
+const JugStill = lazy(() => import('../../art/JugStill'));
 
 export default function AboutPage() {
   return (
     <>
       {/* HERO PARALLAX */}
       <section className="product-hero parallax-section" style={{ minHeight: '70vh', position: 'relative', overflow: 'hidden' }} aria-label="Sobre">
-        <DropTimelapse className="about-drop" />
+        <Suspense fallback={null}><JugStill className="about-jug" /></Suspense>
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '1180px', margin: '0 auto', padding: '160px 28px 80px', width: '100%' }}>
           <span className="eyebrow reveal">Quem somos</span>
           <h1 className="reveal reveal-delay-1">
