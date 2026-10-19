@@ -175,7 +175,7 @@ export default function BleachBackground() {
         const extra = Math.round((pageW * pageH) / (480 * 480));
         for (let k = 0; k < extra; k++) {
           const side = Math.random() < 0.5 ? Math.random() * 0.2 : 0.8 + Math.random() * 0.2;
-          splashAt(side * pageW, Math.random() * pageH, 0.4 + Math.random() * 0.8, 0.3 + Math.random() * 0.6);
+          splashAt(side * pageW, Math.random() * pageH, 0.4 + Math.random() * 0.8);
         }
         stain.render(ctx);
         run();
