@@ -579,7 +579,7 @@ p  {
 /* ── PRODUCT HERO ── */
 .product-hero {
   min-height: 100svh;
-  position: relative; overflow: hidden;
+  position: relative; overflow: clip; /* clip (não hidden): o esqueleto sticky continua funcionando */
   display: flex; align-items: center;
 }
 .product-hero-bg {
@@ -605,12 +605,16 @@ p  {
   display: flex; align-items: center; justify-content: center;
 }
 #shirt-svg-thumb { width: 100%; max-width: 440px; }
-.product-shirt-preview svg {
+/* Página da estampa: esqueleto grande, preso na tela enquanto os detalhes rolam ao lado */
+.product-shirt-preview { align-self: start; position: sticky; top: 76px; }
+.product-shirt-preview #shirt-svg-thumb { max-width: none; width: calc(100% + 140px); margin-left: -140px; }
+.product-shirt-preview .skeleton3d { aspect-ratio: auto; height: min(calc(100svh - 90px), 900px); }
+.product-shirt-preview svg:not(.px-icon) {
   max-width: 320px; width: 100%;
   filter: drop-shadow(0 40px 80px rgba(0,0,0,0.7));
   transition: filter var(--t-slow);
 }
-.product-shirt-preview:hover svg {
+.product-shirt-preview:hover svg:not(.px-icon) {
   filter: drop-shadow(0 40px 100px rgba(212,82,30,0.25));
 }
 
@@ -1182,7 +1186,10 @@ footer {
   .hero-art { order: -1; justify-self: center; max-width: 240px; }
   .hero-3d { order: -1; justify-self: center; max-width: 300px; }
   .product-hero-content { grid-template-columns: 1fr; gap: 36px; padding-top: 130px; }
-  .product-shirt-preview svg { max-width: 200px; }
+  .product-shirt-preview svg:not(.px-icon) { max-width: 200px; }
+  .product-shirt-preview { position: static; }
+  .product-shirt-preview #shirt-svg-thumb { width: 100%; margin-left: 0; }
+  .product-shirt-preview .skeleton3d { height: 70svh; }
   .processo-grid { grid-template-columns: 1fr 1fr; }
   .checkout-grid { grid-template-columns: 1fr; }
   .checkout-sidebar { position: static; }
