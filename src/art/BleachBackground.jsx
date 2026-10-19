@@ -172,27 +172,6 @@ export default function BleachBackground() {
         stain.render(ctx);
         run();
       },
-      wash() {
-        drips = [];
-        stain.reset();
-        stain.render(ctx);
-      },
-      save() {
-        const big = document.createElement('canvas');
-        big.width = window.innerWidth * 2;
-        big.height = window.innerHeight * 2;
-        const c = big.getContext('2d');
-        c.imageSmoothingEnabled = false;
-        // Só o pedaço visível
-        c.drawImage(canvas, window.scrollX / CELL, window.scrollY / CELL, window.innerWidth / CELL, window.innerHeight / CELL, 0, 0, big.width, big.height);
-        c.fillStyle = 'rgba(242,238,232,0.85)';
-        c.font = '40px VT323, monospace';
-        c.fillText('BLEACH.CO — MANCHA ÚNICA', 32, big.height - 32);
-        const a = document.createElement('a');
-        a.download = 'minha-mancha-bleachco.png';
-        a.href = big.toDataURL('image/png');
-        a.click();
-      },
     };
 
     return () => {
@@ -216,26 +195,16 @@ export default function BleachBackground() {
     return () => clearTimeout(t);
   }, [pathname]);
 
-  const wash = () => {
-    apiRef.current.wash();
-    setTouched(false);
-  };
-
   return (
     <>
       <div className="bleach-bg-frame" aria-hidden="true">
         <canvas ref={canvasRef} className="bleach-bg" />
       </div>
-      <div className="bleach-bg-osd">
-        {touched ? (
-          <>
-            <button type="button" onClick={wash}>Lavar</button>
-            <button type="button" onClick={() => apiRef.current.save()}>Baixar</button>
-          </>
-        ) : (
+      {!touched && (
+        <div className="bleach-bg-osd">
           <span>clica ou arrasta pra alvejar</span>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
