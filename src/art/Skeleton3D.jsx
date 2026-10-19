@@ -403,7 +403,12 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
       const iw = Math.max(80, Math.round(w / scale));
       const ih = Math.max(80, Math.round(h / scale));
       renderer.setSize(iw, ih, false);
-      camera.aspect = iw / ih;
+      // Corpo inteiro: o canvas tem uma folga em cima (CSS --sk-headroom) pra cabeça não bater na
+      // borda ao girar; o enquadramento continua o da área de baixo (folga = vista estendida pra cima)
+      const room = full ? Math.round(parseFloat(getComputedStyle(wrap).getPropertyValue('--sk-headroom') || 0) / scale) : 0;
+      camera.aspect = iw / (ih - room);
+      if (room) camera.setViewOffset(iw, ih - room, 0, -room, iw, ih);
+      else camera.clearViewOffset();
       camera.updateProjectionMatrix();
       ps1Uniforms.uSnap.value.set(iw / 2, ih / 2);
     };
