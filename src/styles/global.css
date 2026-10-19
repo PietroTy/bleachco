@@ -273,7 +273,7 @@ p  {
 .no-signal-osd {
   position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px;
   font-family: var(--ff-mono); letter-spacing: 0.14em; color: var(--bone);
-  text-shadow: 2px 0 rgba(212,82,30,.8), -2px 0 rgba(80,140,255,.6);
+  text-shadow: 2px 0 rgba(212,82,30,.8), -2px 0 rgba(140,40,10,.7);
 }
 .no-signal-osd span { font-size: 1.4rem; opacity: 0.8; }
 .no-signal-osd strong { font-size: clamp(3.5rem, 12vw, 7rem); font-weight: 500; line-height: 1; }
@@ -292,15 +292,15 @@ p  {
 .skeleton3d-canvas:active { cursor: grabbing; }
 .skeleton3d-osd {
   position: absolute; left: 6%; bottom: 4%; pointer-events: none; white-space: nowrap;
-  font-family: var(--ff-mono); font-size: 1.2rem; letter-spacing: 0.12em; color: var(--bone);
-  text-shadow: 1px 0 rgba(212,82,30,.7), -1px 0 rgba(80,140,255,.5);
+  font-family: var(--ff-mono); font-size: 1.2rem; letter-spacing: 0.12em; color: var(--orange);
+  text-shadow: 1px 0 rgba(255,120,40,.6), -1px 0 rgba(140,40,10,.7);
 }
 .skeleton3d.is-glitching .skeleton3d-canvas { animation: vhs-tracking 0.32s steps(4) 1; }
 @keyframes vhs-tracking {
   0%   { transform: translateX(0); filter: none; }
-  25%  { transform: translateX(-6px) skewX(4deg); filter: hue-rotate(40deg) saturate(2); clip-path: inset(10% 0 55% 0); }
-  50%  { transform: translateX(8px); filter: contrast(1.6); clip-path: inset(45% 0 20% 0); }
-  75%  { transform: translateX(-3px); filter: hue-rotate(-30deg); clip-path: none; }
+  25%  { transform: translateX(-6px) skewX(4deg); filter: sepia(1) saturate(5) hue-rotate(-28deg); clip-path: inset(10% 0 55% 0); }
+  50%  { transform: translateX(8px); filter: sepia(1) saturate(4) contrast(1.6) hue-rotate(-30deg); clip-path: inset(45% 0 20% 0); }
+  75%  { transform: translateX(-3px); filter: sepia(0.8) saturate(4) hue-rotate(-24deg); clip-path: none; }
   100% { transform: translateX(0); filter: none; }
 }
 
@@ -459,9 +459,9 @@ p  {
 .product-card-media svg { transition: transform 0.7s cubic-bezier(0.4,0,0.2,1); }
 .product-card:hover .product-card-media svg { transform: scale(1.04); animation: vhs-chroma 0.9s steps(3) infinite; }
 @keyframes vhs-chroma {
-  0%   { filter: drop-shadow(2px 0 rgba(212,82,30,.55)) drop-shadow(-2px 0 rgba(80,140,255,.4)); }
-  50%  { filter: drop-shadow(-1px 0 rgba(212,82,30,.55)) drop-shadow(1px 0 rgba(80,140,255,.4)); }
-  100% { filter: drop-shadow(3px 0 rgba(212,82,30,.45)) drop-shadow(-1px 0 rgba(80,140,255,.35)); }
+  0%   { filter: drop-shadow(2px 0 rgba(212,82,30,.55)) drop-shadow(-2px 0 rgba(140,40,10,.5)); }
+  50%  { filter: drop-shadow(-1px 0 rgba(212,82,30,.55)) drop-shadow(1px 0 rgba(140,40,10,.5)); }
+  100% { filter: drop-shadow(3px 0 rgba(212,82,30,.45)) drop-shadow(-1px 0 rgba(140,40,10,.45)); }
 }
 .product-card-info {
   display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
