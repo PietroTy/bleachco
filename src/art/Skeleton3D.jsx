@@ -134,7 +134,7 @@ function hideInsideShirt(material) {
         diffuseColor.rgb = bone;`
       )
       // Parte da cor vale mesmo sem luz: osso continua claro do lado de sombra
-      .replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, diffuseColor.rgb, 0.35);\n#include <opaque_fragment>')
+      .replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, diffuseColor.rgb, 0.12);\n#include <opaque_fragment>')
       .replace(
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
@@ -352,14 +352,14 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     camera.position.set(0, 0.9, 2.5);
     camera.lookAt(0, 1.15, 0);
 
-    scene.add(new THREE.AmbientLight(0x34302c, 2.0));
-    const key = new THREE.DirectionalLight(0xfff8f2, 2.9);
+    scene.add(new THREE.AmbientLight(0x2a201a, 1.5));
+    const key = new THREE.DirectionalLight(0xfff1e6, 1.9);
     key.position.set(-1.4, 1.2, 1.6);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xff6a1a, 3.0);
+    const rim = new THREE.DirectionalLight(0xff3a1a, 3.4);
     rim.position.set(1.5, 1.4, -1.6);
     scene.add(rim);
-    const torch = new THREE.PointLight(0xff6a1a, 1.6, 0, 1.4);
+    const torch = new THREE.PointLight(0xff6a1a, 2.4, 0, 1.4);
     torch.position.set(0.9, 0.7, 0.9);
     scene.add(torch);
 
@@ -421,7 +421,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
           d.visible = p > 0.03;
         });
       }
-      torch.intensity = 1.6 * (0.8 + 0.14 * Math.sin(t * 13) + 0.06 * Math.sin(t * 31));
+      torch.intensity = 2.4 * (0.75 + 0.18 * Math.sin(t * 13) + 0.07 * Math.sin(t * 31));
 
       if (parts) {
         scene.updateMatrixWorld();
