@@ -1341,17 +1341,18 @@ footer {
   /* canvas bem mais largo que a coluna: girando, braço e galão não batem na borda (a câmera mede a
      altura, então o esqueleto fica do mesmo tamanho) */
   width: calc(100% + 360px); margin-left: -180px; }
-.skeleton3d--full .skeleton3d-osd { left: 200px; }
-.skeleton3d--full .skeleton3d-osd--hint { left: auto; right: 200px; }
 .skeleton3d--full .skeleton3d-canvas {
   -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
 }
-.skeleton3d--full .skeleton3d-osd { bottom: 70px; }
 @media (max-width: 960px) {
   .hero-3d--full { max-width: 360px; margin-top: 0; margin-bottom: 0; }
   .skeleton3d--full { height: calc(64svh + var(--sk-headroom)); width: 100%; margin-left: 0; }
-  .skeleton3d--full .skeleton3d-osd { left: 6%; }
-  .skeleton3d--full .skeleton3d-osd--hint { left: auto; right: 6%; }
-  .skeleton3d--full .skeleton3d-osd { bottom: 14px; }
 }
+/* Letreiro do esqueleto da home preso no rodapé da tela, à direita (o "clica pra alvejar" fica à esquerda) */
+.skeleton3d-osd-fixed {
+  position: fixed; right: 24px; bottom: 22px; z-index: 60; pointer-events: none;
+  display: flex; gap: 28px; align-items: baseline;
+}
+.skeleton3d-osd-fixed .skeleton3d-osd { position: static; }
+@media (max-width: 600px) { .skeleton3d-osd-fixed { bottom: 66px; right: 16px; } }

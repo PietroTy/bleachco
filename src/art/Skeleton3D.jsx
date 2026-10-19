@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas } from './ps1';
@@ -351,6 +352,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
   const [printId, setPrintId] = useState(PRINT_IDS.includes(print) ? print : PRINT_IDS[0]);
   const [glitch, setGlitch] = useState(false);
   const printRef = useRef(printId);
+  const [inView, setInView] = useState(true);
   const clothRef = useRef(null);
 
   useEffect(() => {
@@ -478,6 +480,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
+      setInView(visible);
       if (visible) { cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
     });
     io.observe(wrap);
@@ -557,8 +560,17 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
   return (
     <div ref={wrapRef} className={`skeleton3d${full ? ' skeleton3d--full' : ''}${glitch ? ' is-glitching' : ''}`}>
-      <span className="skeleton3d-osd">▶ {printName(printId)}</span>
-      <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
+      {(() => {
+        const osd = (
+          <>
+            <span className="skeleton3d-osd">▶ {printName(printId)}</span>
+            <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
+          </>
+        );
+        // Corpo inteiro: o letreiro fica preso no rodapé da tela enquanto o esqueleto está à vista
+        // (portal no body: dentro do .reveal, que tem transform, o fixed não prende na tela)
+        return full ? inView && createPortal(<div className="skeleton3d-osd-fixed">{osd}</div>, document.body) : osd;
+      })()}
     </div>
   );
 }
