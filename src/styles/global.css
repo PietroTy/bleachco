@@ -1336,7 +1336,12 @@ footer {
 .hero:has(.hero-3d--full) { overflow: visible; z-index: 2; }
 .hero-bg { -webkit-mask-image: linear-gradient(to bottom, #000 75%, transparent); mask-image: linear-gradient(to bottom, #000 75%, transparent); }
 .hero-3d--full { align-self: end; max-width: 600px; margin-top: 80px; margin-bottom: -350px; }
-.skeleton3d--full { aspect-ratio: auto; height: calc(min(100svh, 860px) + 100px); }
+.skeleton3d--full { aspect-ratio: auto; height: calc(min(100svh, 860px) + 100px);
+  /* canvas bem mais largo que a coluna: girando, braço e galão não batem na borda (a câmera mede a
+     altura, então o esqueleto fica do mesmo tamanho) */
+  width: calc(100% + 360px); margin-left: -180px; }
+.skeleton3d--full .skeleton3d-osd { left: 200px; }
+.skeleton3d--full .skeleton3d-osd--hint { left: auto; right: 200px; }
 .skeleton3d--full .skeleton3d-canvas {
   -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
@@ -1344,6 +1349,8 @@ footer {
 .skeleton3d--full .skeleton3d-osd { bottom: 70px; }
 @media (max-width: 960px) {
   .hero-3d--full { max-width: 360px; margin-top: 0; margin-bottom: 0; }
-  .skeleton3d--full { height: 64svh; }
+  .skeleton3d--full { height: 64svh; width: 100%; margin-left: 0; }
+  .skeleton3d--full .skeleton3d-osd { left: 6%; }
+  .skeleton3d--full .skeleton3d-osd--hint { left: auto; right: 6%; }
   .skeleton3d--full .skeleton3d-osd { bottom: 14px; }
 }
