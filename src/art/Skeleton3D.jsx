@@ -579,7 +579,6 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
         const osd = (
           <>
             <span className="skeleton3d-osd"><PixelIcon name="play" /> {printName(printId)}</span>
-            <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
           </>
         );
         // Corpo inteiro: o letreiro acompanha o rodapé da tela e para nos pés do esqueleto
