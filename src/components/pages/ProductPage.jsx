@@ -281,11 +281,8 @@ export default function ProductPage() {
               <div style={{ fontWeight: 600, color: 'var(--orange)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>Aviso de Produção Artesanal:</span>
               </div>
-              <p style={{ margin: '0 0 6px 0', color: '#d0c8be' }}>
-                Por ser um processo manual com água sanitária, o resultado final terá pequenas variações em relação à foto ilustrativa.
-              </p>
               <p style={{ margin: 0, color: '#d0c8be' }}>
-                <strong>Lave separadamente</strong> nas primeiras vezes para evitar manchas em outras roupas.
+                Por ser um processo manual com água sanitária, o resultado final terá pequenas variações em relação à foto ilustrativa.
               </p>
             </div>
 
