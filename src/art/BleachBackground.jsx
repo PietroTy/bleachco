@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createStain } from './stain';
 import { PX } from './ps1';
@@ -20,7 +20,6 @@ export default function BleachBackground() {
   const { pathname } = useLocation();
   const canvasRef = useRef(null);
   const apiRef = useRef(null);
-  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -88,18 +87,27 @@ export default function BleachBackground() {
     // pelo caminho, como garrafa sendo balançada. O dedo continua rolando a página.
     let trail = null; // última posição (px da página) do arrasto
     let dragged = false;
+    let phase = 0; // anda ao longo do traço: a grossura ondula em vez de ser um fio constante
     const trailTo = (px, py) => {
       const dist = Math.hypot(px - trail[0], py - trail[1]);
       const STEP = 2.5 * CELL;
       if (dist < STEP) return;
+      const nx = -(py - trail[1]) / dist;
+      const ny = (px - trail[0]) / dist;
       for (let t = 0; t < dist; t += STEP) {
         const x = trail[0] + ((px - trail[0]) * t) / dist;
         const y = trail[1] + ((py - trail[1]) * t) / dist;
-        stain.drop(x / CELL, y / CELL, (1.4 + Math.random() * 1) * K, 0.6);
+        phase += STEP / 40;
+        // Grosso e irregular: largura ondula, força varia, e de vez em quando um pingo solto do lado
+        const r = (1.9 + 1.1 * Math.sin(phase) + 0.8 * Math.sin(phase * 2.7 + 1) + Math.random() * 0.8) * K;
+        stain.drop(x / CELL, y / CELL, Math.max(1, r), 0.5 + Math.random() * 0.5);
+        if (Math.random() < 0.12) {
+          const off = (6 + Math.random() * 16) * (Math.random() < 0.5 ? -1 : 1);
+          stain.drop((x + nx * off) / CELL, (y + ny * off) / CELL, (0.6 + Math.random()) * K, 0.7);
+        }
       }
       trail = [px, py];
       dragged = true;
-      setTouched(true);
       run();
     };
     const onPointerDown = (e) => {
@@ -140,7 +148,6 @@ export default function BleachBackground() {
       }
       fit();
       splashAt(e.pageX, e.pageY, 0.8 + Math.random() * 0.5);
-      setTouched(true);
     };
     const passive = { passive: true };
     document.addEventListener('pointerdown', onPointerDown);
@@ -195,7 +202,6 @@ export default function BleachBackground() {
   // Página nova, pano novo: espera o conteúdo assentar pra mirar as manchas
   useEffect(() => {
     const t = setTimeout(() => apiRef.current.seed(), 250);
-    setTouched(false);
     return () => clearTimeout(t);
   }, [pathname]);
 
@@ -204,11 +210,6 @@ export default function BleachBackground() {
       <div className="bleach-bg-frame" aria-hidden="true">
         <canvas ref={canvasRef} className="bleach-bg" />
       </div>
-      {!touched && (
-        <div className="bleach-bg-osd">
-          <span>clica ou arrasta pra alvejar</span>
-        </div>
-      )}
     </>
   );
 }
