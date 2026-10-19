@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import PixelIcon from './PixelIcon';
 
 export default function CartDrawer() {
   const { cart, cartOpen, setCartOpen, updateQty } = useApp();
@@ -33,7 +34,7 @@ export default function CartDrawer() {
         <div className="cart-header">
           <h3>CARRINHO</h3>
           <button className="cart-close-btn" onClick={() => setCartOpen(false)}>
-            ✕
+            <PixelIcon name="close" />
           </button>
         </div>
         <div className="cart-body">
@@ -43,7 +44,7 @@ export default function CartDrawer() {
                 Nenhuma peça ainda.
                 <br />
                 <Link to="/produtos" style={{ color: 'var(--orange)' }} onClick={() => setCartOpen(false)}>
-                  Ver estampas →
+                  Ver estampas <PixelIcon name="arrow" />
                 </Link>
               </p>
             </div>
@@ -103,7 +104,7 @@ export default function CartDrawer() {
               }
             }}
           >
-            Finalizar pedido →
+            Finalizar pedido <PixelIcon name="arrow" />
           </Link>
         </div>
       </aside>

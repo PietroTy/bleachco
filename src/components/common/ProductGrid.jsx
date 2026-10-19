@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { EclipseSvg, SpySvg } from './SvgAssets';
+import PixelIcon from './PixelIcon';
 
 const PRODUCTS = [
   { id: 'eclipse', name: 'ECLIPSE', price: 157, Art: EclipseSvg },
@@ -22,7 +23,7 @@ export default function ProductGrid() {
               <span className="product-card-name">{name}</span>
               <span className="product-card-price">{fmt(price)}</span>
             </div>
-            <span className="product-card-cta">Ver estampa →</span>
+            <span className="product-card-cta">Ver estampa <PixelIcon name="arrow" /></span>
           </Link>
         ))}
       </div>

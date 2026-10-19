@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CONTACT, CONTACT_LINKS } from '../../config/contact';
 import { getApiUrl } from '../../config/apiConfig';
+import PixelIcon from '../common/PixelIcon';
 
 const SUBJECTS = ['Dúvida sobre pedido', 'Peça personalizada', 'Parceria', 'Outro assunto'];
 const EMPTY = { nome: '', email: '', assunto: SUBJECTS[0], mensagem: '', website: '' };
@@ -85,7 +86,7 @@ export default function ContactPage() {
                   <input className="contact-hp" name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={update} aria-hidden="true" />
                   {state === 'error' && <p className="form-error" style={{ marginBottom: 14 }}>{error}</p>}
                   <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={state === 'sending'}>
-                    {state === 'sending' ? 'Enviando...' : 'Enviar mensagem →'}
+                    {state === 'sending' ? 'Enviando...' : <>Enviar mensagem <PixelIcon name="arrow" /></>}
                   </button>
                 </form>
               )}
@@ -97,7 +98,7 @@ export default function ContactPage() {
                   <a key={c.label} href={c.href} className="contact-channel" target="_blank" rel="noopener noreferrer">
                     <span className="contact-channel-label">{c.label}</span>
                     <span className="contact-channel-value">{c.value}</span>
-                    <span className="contact-channel-arrow">→</span>
+                    <span className="contact-channel-arrow"><PixelIcon name="arrow" /></span>
                   </a>
                 ))}
               </div>

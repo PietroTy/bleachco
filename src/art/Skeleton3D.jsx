@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas, PX } from './ps1';
 import teeUrl from '../assets/tshirt.glb';
 import blenderPose from '../assets/pose.json';
+import PixelIcon from '../components/common/PixelIcon';
 
 // Inclinação fixa somada à respiração: só na pose do código; a do Blender já vem como a pessoa quis
 const LEAN = Object.keys(blenderPose).length ? { torso: 0, head: 0 } : { torso: 0.06, head: 0.05 };
@@ -577,7 +578,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
       {(() => {
         const osd = (
           <>
-            <span className="skeleton3d-osd">▶ {printName(printId)}</span>
+            <span className="skeleton3d-osd"><PixelIcon name="play" /> {printName(printId)}</span>
             <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
           </>
         );
