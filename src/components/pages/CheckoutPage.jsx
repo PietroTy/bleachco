@@ -141,7 +141,7 @@ export default function CheckoutPage() {
       const orderItems = cart.map((item) => ({
         id: item.id,
         name: item.name || (item.id === 'eclipse' ? 'ECLIPSE' : 'SPY'),
-        price: item.price || 139,
+        price: item.price || 157,
         qty: item.qty,
         size: item.size,
       }));

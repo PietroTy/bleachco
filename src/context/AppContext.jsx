@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useContext } from 'react';
 
 const AppContext = createContext(null);
 
-const CURRENT_PRODUCT_PRICES = { eclipse: 139, spy: 139 };
+const CURRENT_PRODUCT_PRICES = { eclipse: 157, spy: 157 };
 
 const safeStorage = {
   getItem: (key) => {
@@ -30,7 +30,7 @@ export function AppProvider({ children }) {
       const items = JSON.parse(raw || '[]');
       return items.map((item) => ({
         ...item,
-        price: CURRENT_PRODUCT_PRICES[item.id] || item.price || 139
+        price: CURRENT_PRODUCT_PRICES[item.id] || item.price || 157
       }));
     } catch (e) {
       return [];
