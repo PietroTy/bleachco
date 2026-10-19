@@ -1,10 +1,10 @@
-# Exporta o objeto "Shirt" do .blend aberto pro site (public/models/tshirt.glb).
+# Exporta o objeto "Shirt" do .blend aberto pro site (src/assets/tshirt.glb).
 # Uso: blender -b tools/tee.blend -P tools/export_tee.py   (ou pela aba Scripting com o Blender aberto)
 # Numa cópia, na pose de repouso: aplica o Mirror e move/gira/escala, acerta as normais, refaz a UV da
 # estampa projetando de frente (-Y no Blender) e exporta com os pesos dos ossos (rig_tee.py) + a Armature.
 import bpy, bmesh, os
 D = os.path.dirname(bpy.data.filepath)
-OUT = os.path.join(D, '..', 'public/models/tshirt.glb')
+OUT = os.path.join(D, '..', 'src/assets/tshirt.glb')
 src = bpy.data.objects['Shirt']
 if bpy.context.object and bpy.context.object.mode != 'OBJECT':
     bpy.ops.object.mode_set(mode='OBJECT')

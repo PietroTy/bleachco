@@ -6,7 +6,7 @@ from mathutils import Vector, Quaternion, Matrix
 P = dict(a.split('=') for a in sys.argv[sys.argv.index('--')+1:]) if '--' in sys.argv else {}
 f = lambda k, d: float(P.get(k, d))
 # Uso: blender -b -P tools/tee_fit.py -- sx=0.72 hem=0.87 top=1.50 margin=0.02 collar_sy=1.0 collar_sx=0.6 export=1
-# Lê tools/tshirt_orig.glb (o modelo original do Poly) e escreve tools/out/tshirt_fit.glb → public/models/tshirt.glb
+# Lê tools/tshirt_orig.glb (o modelo original do Poly) e escreve tools/out/tshirt_fit.glb (base do encaixe automático; o site usa src/assets/tshirt.glb, vindo do export_tee.py)
 import os
 OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out') + '/'
 os.makedirs(OUT, exist_ok=True)
