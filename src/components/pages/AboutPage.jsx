@@ -14,7 +14,7 @@ export default function AboutPage() {
             <span className="accent">DA MANCHA.</span>
           </h1>
           <p style={{ maxWidth: '480px', marginTop: '20px' }} className="reveal reveal-delay-2">
-            Uma garagem. Água sanitária. A pergunta certa.
+            Um respingo numa camiseta preta. Foi assim que começou.
           </p>
         </div>
       </section>
@@ -31,21 +31,21 @@ export default function AboutPage() {
                 a identidade.
               </h2>
               <p>
-                Tudo começou por acaso. Um respingo acidental de água sanitária em uma camiseta preta revelou que o alvejante não é produto de limpeza, mas sim tinta, ferramenta e arte.
+                Caiu água sanitária numa camiseta preta e, em vez de estragar, desenhou. Ali ficou claro: alvejante não é produto de limpeza. É tinta.
               </p>
               <p>
-                Criada em São Paulo, a bleach.co opera de forma intencionalmente pequena. Sem moldes ou estoque acumulado: cada peça é feita à mão e sob medida após a confirmação do seu pedido.
+                A bleach.co é pequena de propósito. Nada de molde, nada de estoque parado: cada peça é feita à mão, em São Paulo, depois que o seu pedido é confirmado.
               </p>
             </div>
             <div className="reveal reveal-delay-1">
               <div className="values-list">
                 {[
-                  'Cada peça é única — impossível de replicar',
-                  'Produção artesanal, sem linha de montagem',
+                  'Cada peça é única, nem a gente consegue repetir',
+                  'Feita à mão, sem linha de montagem',
                   'Algodão 100%, fornecedor nacional',
-                  'Sem estoque — produzimos após o pedido',
-                  'Foto da peça enviada antes do despacho',
-                  'Transparência no processo e no prazo',
+                  'Sem estoque: a gente produz depois do pedido',
+                  'Você recebe a foto da sua peça antes do envio',
+                  'Processo e prazo às claras',
                   'A mancha é intencional. A arte, inevitável.'
                 ].map((val, idx) => (
                   <div className="value-item" key={idx}>
@@ -74,22 +74,22 @@ export default function AboutPage() {
             <div className="processo-step reveal">
               <div className="step-num">01</div>
               <h3>Algodão selecionado</h3>
-              <p>Algodão premium 180g/m² preto. A base ideal para o contraste.</p>
+              <p>Algodão preto 180g/m². Quanto mais escuro o fundo, mais a mancha aparece.</p>
             </div>
             <div className="processo-step reveal reveal-delay-1">
               <div className="step-num">02</div>
               <h3>Técnica manual</h3>
-              <p>Aplicação com spray, drip ou imersão. Arte 100% manual e imprevisível.</p>
+              <p>Spray, pingo ou imersão. Tudo à mão, e cada peça reage de um jeito.</p>
             </div>
             <div className="processo-step reveal reveal-delay-2">
               <div className="step-num">03</div>
               <h3>Cura e Lavagem</h3>
-              <p>Cura, neutralização química e lavagem especial para durabilidade.</p>
+              <p>A gente neutraliza o alvejante e lava a peça, pra mancha ficar e o tecido durar.</p>
             </div>
             <div className="processo-step reveal reveal-delay-3">
               <div className="step-num">04</div>
               <h3>Envio Seguro</h3>
-              <p>Envio via transportadora com rastreamento incluído.</p>
+              <p>Vai por transportadora, com código de rastreio.</p>
             </div>
           </div>
         </div>

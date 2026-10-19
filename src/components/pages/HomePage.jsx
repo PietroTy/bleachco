@@ -15,21 +15,21 @@ export default function HomePage() {
         </div>
         <div className="hero-content">
           <div className="hero-text">
-            <p className="eyebrow reveal">Feito à mão — São Paulo</p>
+            <p className="eyebrow reveal">Alvejada à mão — São Paulo</p>
             <h1 className="reveal reveal-delay-1">
               A MANCHA
               <br />
               <span className="accent">É A ARTE.</span>
             </h1>
             <p className="hero-sub reveal reveal-delay-2">
-              Camisetas artesanais alvejadas à mão. Cada peça é única e irrepetível.
+              Camiseta preta, água sanitária e mão livre, sem molde. Nenhuma sai igual à outra, nem a sua.
             </p>
             <div className="hero-cta reveal reveal-delay-3">
               <Link to="/produtos" className="btn btn-primary btn-lg">
                 Ver estampas
               </Link>
               <Link to="/sobre" className="btn btn-ghost btn-lg">
-                Como fazemos
+                Como a gente faz
               </Link>
             </div>
           </div>
@@ -59,11 +59,11 @@ export default function HomePage() {
         <div className="manifesto-content">
           <p className="eyebrow reveal">Nosso manifesto</p>
           <p className="manifesto-quote reveal reveal-delay-1">
-            "Água sanitária não é ferramenta de limpeza.
+            "Água sanitária não foi feita pra limpar.
             <br />
             É <span className="accent">tinta.</span> É <span className="accent">voz.</span>
             <br />
-            A mancha que você acha imperfeita
+            A mancha que parece erro
             <br />
             é exatamente o ponto."
           </p>

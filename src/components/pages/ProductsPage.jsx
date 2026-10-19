@@ -4,14 +4,14 @@ export default function ProductsPage() {
   return (
     <>
       <div className="page-header" data-stain="0.9,0.3,1.1 0.04,0.85,0.7">
-        <span className="eyebrow reveal">Coleção 2025</span>
+        <span className="eyebrow reveal">Coleção atual</span>
         <h1 className="reveal reveal-delay-1">
           DUAS ESTAMPAS.
           <br />
           <span className="accent">INFINITAS MANCHAS.</span>
         </h1>
         <p className="reveal reveal-delay-2">
-          Camisetas feitas à mão sob encomenda. Sem estoque. Sem réplicas.
+          Feitas uma por uma, sob encomenda. Sem estoque, sem réplica.
         </p>
       </div>
 
@@ -29,13 +29,13 @@ export default function ProductsPage() {
             Sem pressa.
           </h2>
           <p className="reveal reveal-delay-2" style={{ maxWidth: '520px', margin: '0 auto 40px' }}>
-            Cada camiseta é produzida do zero sob encomenda, garantindo uma peça verdadeiramente única.
+            A sua camiseta só começa a existir depois do seu pedido. A gente alveja, cura, lava e só então manda. Por isso leva de 5 a 10 dias úteis.
           </p>
           <div
             style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}
             className="reveal reveal-delay-3"
           >
-            <span className="tag">Produção: 5–10 dias úteis</span>
+            <span className="tag">Produção: 5 a 10 dias úteis</span>
             <span className="tag">Foto antes do envio</span>
             <span className="tag">100% algodão preto</span>
             <span className="tag">Técnica artesanal</span>

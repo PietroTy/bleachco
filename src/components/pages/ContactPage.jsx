@@ -45,7 +45,7 @@ export default function ContactPage() {
           <span className="accent">UM OI.</span>
         </h1>
         <p className="reveal reveal-delay-2">
-          Dúvidas sobre pedidos, peças personalizadas, parcerias ou só curiosidade. A resposta chega no seu e-mail.
+          Pedido, peça personalizada, parceria ou só curiosidade: manda aqui que a resposta chega no seu e-mail.
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={submit}>
-                  <span className="eyebrow">Fale conosco</span>
+                  <span className="eyebrow">Manda uma mensagem</span>
                   <div className="form-row">
                     <div className="form-group">
                       <label htmlFor="nome">Nome *</label>
@@ -105,10 +105,10 @@ export default function ContactPage() {
               <div className="contact-note">
                 <span className="eyebrow">Peças personalizadas</span>
                 <p>
-                  Tem uma ideia de estampa? A gente pode criar uma peça exclusiva pra você. Escolhe "Peça
+                  Tem uma ideia de estampa? A gente pode criar uma peça só sua. Escolhe "Peça
                   personalizada" no assunto e explica o conceito — avaliamos caso a caso.
                 </p>
-                <p style={{ marginTop: '12px', fontSize: '1rem' }}>Prazo adicional para desenvolvimento.</p>
+                <p style={{ marginTop: '12px', fontSize: '1rem' }}>Leva um pouco mais de tempo, porque a estampa nasce do zero.</p>
               </div>
               <div className="contact-note contact-note--accent">
                 <p className="contact-quote">
