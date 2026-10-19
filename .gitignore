@@ -29,6 +29,7 @@ backend/
 deploy.sh
 google_credentials.json
 bleachco-*.json
-*.csvtools/out/
+*.csv
+tools/out/
 *.blend1
 pedidos_bleachco.csv
