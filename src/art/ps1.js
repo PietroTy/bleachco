@@ -3,6 +3,10 @@ import * as THREE from 'three';
 // Efeito PS1 nos materiais do three.js:
 // - vértices presos numa grade de tela (o "tremido" do PlayStation 1)
 // - cores reduzidas com pontilhado ordenado (dithering 4x4)
+// Pixel do site: tudo que é pixelado (fundo, letras alvejadas, logo, esqueleto, molduras e texturas do
+// CSS) usa esse tamanho em px de tela, pra no fim tudo ter a mesma "resolução"
+export const PX = 3;
+
 export const ps1Uniforms = { uSnap: { value: new THREE.Vector2(160, 120) } };
 
 export function ps1(material) {

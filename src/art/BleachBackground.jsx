@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { createStain } from './stain';
+import { PX } from './ps1';
 
-const CELL = 6; // px de tela por pixel de tecido
+const CELL = PX; // px de tela por pixel de tecido
+const K = 6 / CELL; // medidas abaixo foram feitas em grade de 6px
 // Onde o clique é da interface, não do pano
 const UI = 'a, button, input, select, textarea, label, summary, [role="button"], canvas:not(.skeleton3d-canvas), .cart-drawer, #navbar';
 // Canvas do esqueleto é maior que ele: só o próprio esqueleto é interface, o vazio em volta é pano
@@ -31,7 +33,7 @@ export default function BleachBackground() {
     let lastDrip = 0;
 
     const loop = (now) => {
-      if (drips.length && now - lastDrip > 90) {
+      if (drips.length && now - lastDrip > 90 / K) {
         lastDrip = now;
         drips = drips.filter((d) => {
           if ((d.wait -= 1) > 0) return true;
@@ -77,7 +79,7 @@ export default function BleachBackground() {
         // Começa da parte de baixo da mancha, depois de a poça assentar (wait em passos de ~90ms)
         const u = size * k * (Math.min(stain.w, stain.h) / 100);
         const len = Math.round((6 + Math.random() * 14) * u);
-        drips.push({ x: px / CELL + (Math.random() - 0.5) * 6 * u, y: py / CELL + 5 * u, r: 0.9 + u * 0.35, len, left: len, wait: 15 + Math.random() * 25 });
+        drips.push({ x: px / CELL + (Math.random() - 0.5) * 6 * u, y: py / CELL + 5 * u, r: 0.9 * K + u * 0.35, len, left: len, wait: 15 + Math.random() * 25 });
       }
       run();
     };
@@ -93,7 +95,7 @@ export default function BleachBackground() {
       for (let t = 0; t < dist; t += STEP) {
         const x = trail[0] + ((px - trail[0]) * t) / dist;
         const y = trail[1] + ((py - trail[1]) * t) / dist;
-        stain.drop(x / CELL, y / CELL, 1.4 + Math.random() * 1, 0.6);
+        stain.drop(x / CELL, y / CELL, (1.4 + Math.random() * 1) * K, 0.6);
       }
       trail = [px, py];
       dragged = true;

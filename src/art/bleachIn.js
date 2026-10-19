@@ -1,4 +1,5 @@
 import { createStain, dyeFor } from './stain';
+import { PX } from './ps1';
 
 // Texto/logo que aparece alvejado: começa preto como o pano do fundo e o mesmo motor das manchas
 // pinga alvejante até chegar na cor dele (preto → ferrugem → laranja → osso): branco vai até o
@@ -138,7 +139,7 @@ function stainText(el) {
     return;
   }
   const size = parseFloat(getComputedStyle(el).fontSize);
-  const cell = Math.max(2, Math.min(4, Math.round(size / 20)));
+  const cell = PX;
   const w = Math.ceil(box.width / cell);
   const h = Math.ceil(box.height / cell);
   const canvas = document.createElement('canvas');
@@ -180,8 +181,7 @@ function bleachImage(img) {
   const original = new Image();
   original.src = img.currentSrc || img.src;
   original.decode().then(() => {
-    // Grade de 1px: com 3px o pingo laranja (uns 4×6px) pegava a cor das letras vizinhas e encolhia
-    const cell = 1;
+    const cell = PX;
     const w = Math.max(8, Math.round(img.clientWidth / cell));
     const h = Math.max(4, Math.round(img.clientHeight / cell));
     // Cor da logo em cada ponto da grade
@@ -189,14 +189,32 @@ function bleachImage(img) {
     probe.width = w;
     probe.height = h;
     const pctx = probe.getContext('2d', { willReadFrequently: true });
-    pctx.drawImage(original, 0, 0, w, h);
-    const px = pctx.getImageData(0, 0, w, h).data;
+    // Cor de cada célula pela maioria dos px da logo dentro dela (média misturaria o pingo laranja com
+    // as letras brancas vizinhas e ele sumiria); laranja vence com 1/3 da célula
+    const SUB = 6;
+    probe.width = w * SUB;
+    probe.height = h * SUB;
+    pctx.drawImage(original, 0, 0, w * SUB, h * SUB);
+    const px = pctx.getImageData(0, 0, w * SUB, h * SUB).data;
     const floor = new Float32Array(w * h);
     const mask = new Uint8Array(w * h);
-    for (let i = 0; i < w * h; i++) {
-      if (px[i * 4 + 3] > 40) {
-        mask[i] = 1;
-        floor[i] = dyeFor([px[i * 4], px[i * 4 + 1], px[i * 4 + 2]]);
+    const orange = dyeFor([212, 82, 30]);
+    const bone = dyeFor([242, 238, 232]);
+    for (let cy = 0; cy < h; cy++) {
+      for (let cx = 0; cx < w; cx++) {
+        let solid = 0;
+        let warm = 0;
+        for (let y = cy * SUB; y < (cy + 1) * SUB; y++) {
+          for (let x = cx * SUB; x < (cx + 1) * SUB; x++) {
+            const i = (y * w * SUB + x) * 4;
+            if (px[i + 3] < 40) continue;
+            solid++;
+            if (px[i] - px[i + 2] > 80) warm++;
+          }
+        }
+        if (!solid) continue;
+        mask[cy * w + cx] = 1;
+        floor[cy * w + cx] = warm * 3 >= solid ? orange : bone;
       }
     }
     const grid = document.createElement('canvas');
@@ -223,7 +241,7 @@ function bleachImage(img) {
       floor,
       mask,
       keep: 0.06, // logo termina quase na cor dela (o laranja é o do site), só com o grão
-      scale: 3,
+      scale: 1,
       show(stain, last) {
         stain.render(gctx, 0);
         octx.globalCompositeOperation = 'copy';
