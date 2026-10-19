@@ -97,12 +97,17 @@ export function createStain(w, h, seed = 1) {
   function drop(cx, cy, radius = 3, amount = 1) {
     const r = Math.max(1, radius);
     const wobble = 0.55 + rand() * 0.6;
+    // fase e número de bicos sorteados por gota (antes todos usavam a mesma fase: bicos no mesmo ângulo)
+    const ph1 = rand() * Math.PI * 2;
+    const ph2 = rand() * Math.PI * 2;
+    const k1 = 2 + Math.floor(rand() * 3);
+    const k2 = 5 + Math.floor(rand() * 4);
     for (let y = Math.floor(cy - r * 1.6); y <= cy + r * 1.6; y++) {
       if (y < 0 || y >= h) continue;
       for (let x = Math.floor(cx - r * 1.6); x <= cx + r * 1.6; x++) {
         if (x < 0 || x >= w) continue;
         const ang = Math.atan2(y - cy, x - cx);
-        const edge = r * (1 + 0.28 * Math.sin(ang * 3 + seed) * wobble + 0.18 * Math.sin(ang * 7 + rand()));
+        const edge = r * (1 + 0.28 * Math.sin(ang * k1 + ph1) * wobble + 0.18 * Math.sin(ang * k2 + ph2));
         const d = Math.hypot(x - cx, y - cy);
         if (d <= edge) bleach[y * w + x] += amount * (1 - (d / edge) * 0.5);
       }
@@ -127,17 +132,59 @@ export function createStain(w, h, seed = 1) {
 
   // Mancha do fundo: um blob irregular (poça principal + lóbulos de tamanhos diferentes), cada um
   // diferente mas da mesma família. Força varia: fraca fica ferrugem, forte vai pro osso.
-  function blot(cx, cy, size = 1, strength = 0.6 + rand() * 0.8) {
+  function blot(cx, cy, size = 1, strength = 0.06 + Math.pow(rand(), 1.6) * 1.3) {
     const u = size * unit;
-    const R = (6 + rand() * 5) * u;
-    drop(cx, cy, R * 0.75, 1.4 * strength);
-    const lobes = 3 + Math.floor(rand() * 4);
-    for (let k = 0; k < lobes; k++) {
-      const ang = rand() * Math.PI * 2;
-      const d = R * (0.35 + rand() * 0.45);
-      drop(cx + Math.cos(ang) * d, cy + Math.sin(ang) * d * (0.8 + rand() * 0.4), R * (0.35 + rand() * 0.35), 1.2 * strength);
+    const R = (4 + rand() * 9) * u; // tamanho bem variado
+    const lobe = (x, y, r, k) => drop(x, y, r, k * strength);
+    // Uma poça irregular: miolo + lóbulos de tamanhos diferentes, num eixo achatado e girado
+    const puddle = (x, y, rr, nLobes, flat, rot) => {
+      lobe(x, y, rr * 0.7, 1.4);
+      for (let k = 0; k < nLobes; k++) {
+        const a = rand() * Math.PI * 2;
+        const d = rr * (0.3 + rand() * 0.6);
+        const dx = Math.cos(a) * d;
+        const dy = Math.sin(a) * d * flat;
+        lobe(x + dx * Math.cos(rot) - dy * Math.sin(rot), y + dx * Math.sin(rot) + dy * Math.cos(rot), rr * (0.2 + rand() * 0.45), 1.2);
+      }
+    };
+    const kind = rand();
+    const rot = rand() * Math.PI;
+    if (kind < 0.35) {
+      puddle(cx, cy, R, 2 + Math.floor(rand() * 8), 0.5 + rand() * 0.6, rot); // poça
+    } else if (kind < 0.6) {
+      // alongada: lóbulos enfileirados num eixo, larguras desiguais
+      const n = 3 + Math.floor(rand() * 4);
+      const len = R * (1.4 + rand());
+      for (let k = 0; k < n; k++) {
+        const t = (k / (n - 1) - 0.5) * len;
+        const off = (rand() - 0.5) * R * 0.5;
+        lobe(cx + Math.cos(rot) * t - Math.sin(rot) * off, cy + Math.sin(rot) * t + Math.cos(rot) * off, R * (0.3 + rand() * 0.4), 1.2);
+      }
+    } else if (kind < 0.82) {
+      // cacho: duas ou três poças coladas, uma maior
+      const n = 2 + Math.floor(rand() * 2);
+      for (let k = 0; k < n; k++) {
+        const a = rand() * Math.PI * 2;
+        const d = k ? R * (0.7 + rand() * 0.5) : 0;
+        puddle(cx + Math.cos(a) * d, cy + Math.sin(a) * d, R * (k ? 0.4 + rand() * 0.3 : 0.8), 2 + Math.floor(rand() * 4), 0.6 + rand() * 0.4, rand() * Math.PI);
+      }
+    } else {
+      // lavada: área grande e fraca (fica ferrugem) com um núcleo forte fora do centro
+      puddle(cx, cy, R * 1.5, 4 + Math.floor(rand() * 4), 0.6 + rand() * 0.4, rot);
+      bleachScale(cx, cy, R * 1.9, 0.45);
+      puddle(cx + (rand() - 0.5) * R, cy + (rand() - 0.5) * R, R * 0.4, 2 + Math.floor(rand() * 3), 0.8, rot);
     }
   }
+
+  // Enfraquece o alvejante recém pingado numa área (deixa a mancha "lavada", só ferrugem)
+  function bleachScale(cx, cy, r, k) {
+    for (let y = Math.max(0, Math.floor(cy - r)); y <= Math.min(h - 1, cy + r); y++) {
+      for (let x = Math.max(0, Math.floor(cx - r)); x <= Math.min(w - 1, cx + r); x++) {
+        if (Math.hypot(x - cx, y - cy) <= r) bleach[y * w + x] *= k;
+      }
+    }
+  }
+
 
   // Prende o corante entre floor e floor + above: floor é onde a cor para (um número, ou um por
   // ponto: logo com parte branca e parte laranja), above é o quanto ainda pode estar mais escuro
