@@ -156,6 +156,7 @@ function stainText(el) {
     webkitBackgroundClip: 'text',
     webkitTextFillColor: 'transparent',
     imageRendering: 'pixelated',
+    textShadow: 'none', // halo do parágrafo seria pintado por cima da mancha e apagaria a letra
   });
   const push = framePipe(canvas, (url) => (style.backgroundImage = `url(${url})`));
   runStain({

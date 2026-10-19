@@ -275,7 +275,7 @@ export default function ProductPage() {
               backgroundColor: 'rgba(212, 82, 30, 0.08)',
               border: '1px solid rgba(212, 82, 30, 0.25)',
               borderRadius: '4px',
-              fontSize: '0.88rem',
+              fontSize: '1rem',
               lineHeight: '1.5',
               color: 'var(--bone)'
             }}>
@@ -291,8 +291,8 @@ export default function ProductPage() {
             </div>
 
             {/* ── CALCULAR FRETE ── */}
-            <div className="shipping-calc-box" style={{ marginTop: '24px', padding: '16px', backgroundColor: 'var(--ink2)', border: '1px solid var(--gray-lt)', borderRadius: '4px' }}>
-              <div style={{ fontSize: '0.94rem', fontWeight: 600, color: 'var(--bone)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="shipping-calc-box" style={{ marginTop: '24px', padding: '16px' }}>
+              <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--bone)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>🚚</span> Calcular Frete e Prazo (Melhor Envio)
               </div>
               <form onSubmit={handleCalculateShipping} style={{ display: 'flex', gap: '8px' }}>
@@ -308,7 +308,7 @@ export default function ProductPage() {
                     backgroundColor: 'var(--ink)',
                     border: '1px solid var(--gray-lt)',
                     color: 'var(--bone)',
-                    fontSize: '0.94rem',
+                    fontSize: '1.05rem',
                     borderRadius: '4px',
                     outline: 'none'
                   }}
@@ -322,7 +322,7 @@ export default function ProductPage() {
                     color: '#fff',
                     border: 'none',
                     fontWeight: 600,
-                    fontSize: '0.88rem',
+                    fontSize: '1rem',
                     cursor: 'pointer',
                     borderRadius: '4px',
                     textTransform: 'uppercase',
@@ -333,15 +333,15 @@ export default function ProductPage() {
                 </button>
               </form>
               {shippingError && (
-                <div style={{ color: '#ff6b6b', fontSize: '0.88rem', marginTop: '8px' }}>{shippingError}</div>
+                <div style={{ color: '#ff6b6b', fontSize: '1rem', marginTop: '8px' }}>{shippingError}</div>
               )}
               {shippingOptions.length > 0 && (
                 <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {shippingOptions.map((opt) => (
-                    <div key={opt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem', padding: '8px 10px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div key={opt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1rem', padding: '8px 10px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.06)' }}>
                       <div>
                         <span style={{ fontWeight: 600, color: 'var(--bone)' }}>{opt.company} ({opt.name})</span>
-                        <div style={{ color: 'var(--gray)', fontSize: '0.84rem' }}>{opt.deliveryRange}</div>
+                        <div style={{ color: 'var(--gray)', fontSize: '0.95rem' }}>{opt.deliveryRange}</div>
                       </div>
                       <span style={{ fontWeight: 600, color: 'var(--orange)' }}>
                         R$ {opt.price.toFixed(2).replace('.', ',')}
@@ -352,7 +352,7 @@ export default function ProductPage() {
               )}
             </div>
 
-            <p style={{ fontSize: '0.84rem', color: 'var(--gray)', marginTop: '12px', textAlign: 'center' }}>
+            <p style={{ fontSize: '0.95rem', color: 'var(--gray)', marginTop: '12px', textAlign: 'center' }}>
               Produção: 5–10 dias úteis após pagamento confirmado
             </p>
           </div>
@@ -389,7 +389,7 @@ export default function ProductPage() {
                 <li>Lavar à mão, virada ao avesso, água fria</li>
                 <li>Não usar alvejante na lavagem</li>
               </ul>
-              <table style={{ marginTop: '24px', width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <table style={{ marginTop: '24px', width: '100%', borderCollapse: 'collapse', fontSize: '1rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--gray-lt)' }}>
                     <th style={{ textAlign: 'left', padding: '10px 0', color: 'var(--gray)', fontWeight: 500 }}>Tam.</th>

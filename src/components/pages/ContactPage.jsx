@@ -107,7 +107,7 @@ export default function ContactPage() {
                   Tem uma ideia de estampa? A gente pode criar uma peça exclusiva pra você. Escolhe "Peça
                   personalizada" no assunto e explica o conceito — avaliamos caso a caso.
                 </p>
-                <p style={{ marginTop: '12px', fontSize: '0.88rem' }}>Prazo adicional para desenvolvimento.</p>
+                <p style={{ marginTop: '12px', fontSize: '1rem' }}>Prazo adicional para desenvolvimento.</p>
               </div>
               <div className="contact-note contact-note--accent">
                 <p className="contact-quote">
