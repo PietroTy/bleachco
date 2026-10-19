@@ -6,6 +6,8 @@ const CELL = 6; // px de tela por pixel de tecido
 // Onde o clique é da interface, não do pano
 const UI = 'a, button, input, select, textarea, label, summary, [role="button"], canvas, .cart-drawer, #navbar';
 const SPLASH_PX = 70; // raio de um respingo na tela, seja qual for a grade
+// Arrasto que começa em texto é seleção, não pincel
+const TEXT = 'p, h1, h2, h3, h4, li, blockquote, label, span, strong, em, small, td, th';
 
 // O fundo do site inteiro é um pano preto do tamanho da página (rola junto com ela).
 // Cada página já chega com manchas onde marca data-stain="fx,fy[,tamanho] …" (frações do elemento);
@@ -59,13 +61,72 @@ export default function BleachBackground() {
       run();
     };
 
-    // click (e não pointerdown): no celular, arrastar pra rolar a página não pinga
+    // Clique pinga uma mancha; arrastar (mouse apertado ou dedo deslizando) deixa rastro de gotas
+    // finas pelo caminho, como garrafa sendo balançada. O dedo continua rolando a página.
+    let trail = null; // última posição (px da página) do arrasto
+    let dragged = false;
+    const trailTo = (px, py) => {
+      const dist = Math.hypot(px - trail[0], py - trail[1]);
+      const STEP = 2.5 * CELL;
+      if (dist < STEP) return;
+      for (let t = 0; t < dist; t += STEP) {
+        const x = trail[0] + ((px - trail[0]) * t) / dist;
+        const y = trail[1] + ((py - trail[1]) * t) / dist;
+        stain.drop(x / CELL, y / CELL, 0.9 + Math.random() * 0.9, 0.7);
+      }
+      trail = [px, py];
+      dragged = true;
+      setTouched(true);
+      run();
+    };
+    const onPointerDown = (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest(UI)) return;
+      if (e.target.closest(TEXT)) return;
+      fit();
+      trail = [e.pageX, e.pageY];
+      dragged = false;
+    };
+    // Seleção de texto nasce no mousedown: cancela só quando o arrasto é pincel
+    const onMouseDown = (e) => {
+      if (e.button === 0 && !e.target.closest(UI) && !e.target.closest(TEXT)) e.preventDefault();
+    };
+    const onPointerMove = (e) => {
+      if (e.pointerType === 'mouse' && trail && e.buttons & 1) trailTo(e.pageX, e.pageY);
+    };
+    const onPointerUp = (e) => {
+      if (e.pointerType === 'mouse') trail = null;
+    };
+    const onTouchStart = (e) => {
+      if (e.touches.length !== 1 || e.target.closest(UI)) return;
+      fit();
+      trail = [e.touches[0].pageX, e.touches[0].pageY];
+      dragged = false;
+    };
+    const onTouchMove = (e) => {
+      if (trail && e.touches.length === 1) trailTo(e.touches[0].pageX, e.touches[0].pageY);
+    };
+    const onTouchEnd = () => {
+      trail = null;
+    };
     const onClick = (e) => {
       if (e.target.closest(UI)) return;
+      // Fim de um arrasto não pinga mancha extra
+      if (dragged) {
+        dragged = false;
+        return;
+      }
       fit();
       splashAt(e.pageX, e.pageY, 0.8 + Math.random() * 0.5);
       setTouched(true);
     };
+    const passive = { passive: true };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('pointermove', onPointerMove, passive);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('touchstart', onTouchStart, passive);
+    document.addEventListener('touchmove', onTouchMove, passive);
+    document.addEventListener('touchend', onTouchEnd, passive);
     document.addEventListener('click', onClick);
 
     apiRef.current = {
@@ -116,6 +177,13 @@ export default function BleachBackground() {
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('pointermove', onPointerMove, passive);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('touchstart', onTouchStart, passive);
+      document.removeEventListener('touchmove', onTouchMove, passive);
+      document.removeEventListener('touchend', onTouchEnd, passive);
       document.removeEventListener('click', onClick);
     };
   }, []);
@@ -144,7 +212,7 @@ export default function BleachBackground() {
             <button type="button" onClick={() => apiRef.current.save()}>Baixar</button>
           </>
         ) : (
-          <span>clica em qualquer lugar pra alvejar</span>
+          <span>clica ou arrasta pra alvejar</span>
         )}
       </div>
     </>

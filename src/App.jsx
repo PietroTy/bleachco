@@ -27,6 +27,9 @@ import BleachBackground from './art/BleachBackground';
 
 const BLEACH = 'h1, h2, h3, h4, strong, .product-tile-name, .product-card-name, .product-price, .contact-channel-value, .nav-logo-img, .footer-logo-img';
 
+// Rótulos pequenos que não precisam do efeito
+const NO_BLEACH = '.footer-col h4';
+
 export default function App() {
   const location = useLocation();
 
@@ -68,7 +71,7 @@ export default function App() {
     const watchBleach = () => {
       document.querySelectorAll(BLEACH).forEach((el) => {
         // Dentro de outro (ex: negrito num título) quem mancha é o de fora
-        if (el.dataset.bleach || el.parentElement.closest(BLEACH)) return;
+        if (el.dataset.bleach || el.parentElement.closest(BLEACH) || el.matches(NO_BLEACH)) return;
         el.dataset.bleach = '1';
         pending.add(el);
         prepareBleach(el);

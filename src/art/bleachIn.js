@@ -9,7 +9,7 @@ const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matc
 
 // Núcleo: anima uma grade w×h até cada ponto chegar no seu floor (Float32Array).
 // mask: pontos que importam (as gotas extras e o "acabou?" só olham pra eles). show(stain, last) desenha.
-function runStain({ w, h, floor, mask, duration = 2600, show }) {
+function runStain({ w, h, floor, mask, duration = 2600, keep = 0.2, show }) {
   const stain = createStain(w, h, (Math.random() * 1e9) | 0);
   const r = stain.rand;
   const gap = 8;
@@ -25,10 +25,9 @@ function runStain({ w, h, floor, mask, duration = 2600, show }) {
 
   // Ritmo constante do começo ao fim: primeiro a grade de gotas, depois gotas mirando o que ainda
   // está escuro, até a mancha cobrir tudo sozinha. No finzinho os pontos que sobraram escuros
-  // clareiam até perto da cor, mas a variação da mancha fica (KEEP).
+  // clareiam até perto da cor, mas a variação da mancha fica (keep).
   const DRIP_EVERY = 30;
   const FINISH = 450;
-  const KEEP = 0.2;
   const dark = (i) => stain.dye[i] - floor[i];
   const start = performance.now();
   let last = start;
@@ -75,7 +74,7 @@ function runStain({ w, h, floor, mask, duration = 2600, show }) {
       }
     }
     const q = finishAt ? Math.min(1, (now - finishAt) / FINISH) : 0;
-    stain.bleachTo(finishAt ? KEEP + Math.max(0, finishFrom - KEEP) * (1 - q) : 1, floor);
+    stain.bleachTo(finishAt ? keep + Math.max(0, finishFrom - keep) * (1 - q) : 1, floor);
     show(stain, q >= 1);
     if (q < 1) requestAnimationFrame(tick);
   };
@@ -220,6 +219,7 @@ function bleachImage(img) {
       h,
       floor,
       mask,
+      keep: 0.06, // logo termina quase na cor dela (o laranja é o do site), só com o grão
       show(stain, last) {
         stain.render(gctx, 0);
         octx.globalCompositeOperation = 'copy';
