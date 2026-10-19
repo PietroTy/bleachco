@@ -58,7 +58,7 @@ function shirtTexture(printId) {
 }
 
 // Galão da logo (o "b" de bleach.co), desenhado em px da logo: corpo arredondado, ombro descendo
-// até a direita, alça vazada inclinada, janela escura no meio e tampa canelada em cima à esquerda.
+// até a direita, alça vazada inclinada, etiqueta laranja e tampa canelada em cima à esquerda.
 // Origem na barra da alça, entre o furo e o topo (onde os dedos fecham).
 function logoJug() {
   const S = 0.24 / 345; // px da logo → metros
@@ -82,19 +82,19 @@ function logoJug() {
   geo.translate(0, 0, -depth / 2);
   const jug = new THREE.Group();
   jug.add(new THREE.Mesh(geo, bone));
-  // Janela escura (o recorte vertical da logo), dos dois lados
-  const win = new THREE.Shape();
-  const w0 = p(75, 182); const w1 = p(112, 318); const r = 16 * S;
-  win.moveTo(w0.x + r, w0.y); win.lineTo(w1.x - r, w0.y); win.quadraticCurveTo(w1.x, w0.y, w1.x, w0.y - r);
-  win.lineTo(w1.x, w1.y + r); win.quadraticCurveTo(w1.x, w1.y, w1.x - r, w1.y); win.lineTo(w0.x + r, w1.y);
-  win.quadraticCurveTo(w0.x, w1.y, w0.x, w1.y + r); win.lineTo(w0.x, w0.y - r); win.quadraticCurveTo(w0.x, w0.y, w0.x + r, w0.y);
-  const dark = ps1(new THREE.MeshLambertMaterial({ color: 0x141210 }));
-  const winGeo = new THREE.ShapeGeometry(win, 3);
+  // Etiqueta laranja com as linhas pretas, dos dois lados
+  const lc = noiseCanvas(32, 40, [212, 82, 30], 16, 3);
+  const lctx = lc.getContext('2d');
+  lctx.fillStyle = '#080808';
+  [[5, 10, 22], [5, 15, 16], [5, 27, 22], [5, 32, 12]].forEach(([x, y, w]) => lctx.fillRect(x, y, w, 2));
+  const labelMat = ps1(new THREE.MeshLambertMaterial({ map: pixelTexture(lc) }));
+  const l0 = p(28, 165); const l1 = p(150, 320);
+  const labelGeo = new THREE.PlaneGeometry(l1.x - l0.x, l0.y - l1.y);
   [1, -1].forEach((side) => {
-    const w = new THREE.Mesh(winGeo, dark);
-    w.position.z = side * (depth / 2 + 0.0085);
-    if (side < 0) w.rotation.y = Math.PI;
-    jug.add(w);
+    const label = new THREE.Mesh(labelGeo, labelMat);
+    label.position.set((l0.x + l1.x) / 2, (l0.y + l1.y) / 2, side * (depth / 2 + 0.0085));
+    if (side < 0) label.rotation.y = Math.PI;
+    jug.add(label);
   });
   // Tampa canelada
   const c = noiseCanvas(16, 8, [236, 230, 220], 10, 9);
@@ -103,8 +103,8 @@ function logoJug() {
   for (let x = 1; x < 16; x += 3) cctx.fillRect(x, 0, 1, 8);
   const capTex = pixelTexture(c);
   capTex.wrapS = THREE.RepeatWrapping;
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(27 * S, 27 * S, 28 * S, 10), ps1(new THREE.MeshLambertMaterial({ map: capTex })));
-  cap.position.copy(new THREE.Vector3(...p(58, 18).toArray(), 0));
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(38 * S, 38 * S, 44 * S, 10), ps1(new THREE.MeshLambertMaterial({ map: capTex })));
+  cap.position.copy(new THREE.Vector3(...p(60, 12).toArray(), 0)); // assenta no topo (y 32 da logo)
   jug.add(cap);
   return { jug, cap };
 }
@@ -141,19 +141,24 @@ function rotateBoneWorld(bone, delta) {
 // do tronco e pelos dos braços (como no skinning) e testado contra medidas fixas da camiseta nessa pose:
 // um cilindro elíptico no tronco e um em volta do úmero. Pega ponta de clavícula e escápula rente ao tecido.
 const hideInverse = { value: [new THREE.Matrix4(), new THREE.Matrix4(), new THREE.Matrix4()] };
+// Índices (no esqueleto) da cabeça e do pescoço: o que é deles nunca some (com a cabeça baixa, o queixo
+// entra na área do tronco e era cortado)
+const keepBones = { value: new THREE.Vector2(-1, -1) };
 function hideInsideShirt(material) {
   const base = material.onBeforeCompile;
   material.onBeforeCompile = (shader) => {
     base(shader);
     shader.uniforms.uHideInv = hideInverse;
+    shader.uniforms.uKeep = keepBones;
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;\nvarying vec3 vObjPos;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvObjPos = transformed;');
+      .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;\nvarying vec3 vObjPos;\nvarying float vKeep;\nuniform vec2 uKeep;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvObjPos = transformed;\nvKeep = dot(skinWeight, vec4(equal(skinIndex, vec4(uKeep.x))) + vec4(equal(skinIndex, vec4(uKeep.y))));');
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
         `#include <common>
         uniform mat4 uHideInv[3];
+        varying float vKeep;
         varying vec3 vWorldPos;
         varying vec3 vObjPos;
         float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
@@ -180,6 +185,7 @@ function hideInsideShirt(material) {
       .replace(
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
+        if (vKeep < 0.5) {
         vec3 tp = (uHideInv[0] * vec4(vWorldPos, 1.0)).xyz;
         bool neck = tp.y > 1.45 && pow(tp.x / 0.04, 2.0) + pow((tp.z + 0.085) / 0.05, 2.0) < 1.0;
         if (tp.y > 0.9 && tp.y < 1.5 && !neck && pow(tp.x / 0.19, 2.0) + pow((tp.z + 0.042) / 0.14, 2.0) < 1.0) discard;
@@ -191,6 +197,7 @@ function hideInsideShirt(material) {
           vec3 ax = normalize(vec3(sd * 0.038, -0.296, 0.028));
           float al = dot(ap - sh, ax);
           if (sd * ap.x > 0.1 && al > -0.05 && al < 0.11 && length(ap - sh - ax * al) < 0.045) discard;
+        }
         }
 `
       );
@@ -230,6 +237,7 @@ function buildScene(gltf, teeGltf, printId) {
   let hideBones = [];
   if (teeMesh) {
     hideInsideShirt(skin.material); // osso dentro da camiseta some
+    keepBones.value.set(skin.skeleton.bones.indexOf(bones.Head), skin.skeleton.bones.indexOf(bones.Neck));
     teeMesh.material.dispose();
     const shirt = new THREE.SkinnedMesh(teeMesh.geometry, cloth);
     shirt.frustumCulled = false;
