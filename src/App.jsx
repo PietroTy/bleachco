@@ -22,8 +22,10 @@ import CheckoutPage from './components/pages/CheckoutPage';
 import ConfirmationPage from './components/pages/ConfirmationPage';
 import StainPage from './components/pages/StainPage';
 import NotFoundPage from './components/pages/NotFoundPage';
-import { bleachIn } from './art/bleachIn';
+import { bleachIn, prepareBleach } from './art/bleachIn';
 import BleachBackground from './art/BleachBackground';
+
+const BLEACH = 'h1, h2, h3, h4, strong, .product-tile-name, .product-card-name, .product-price, .contact-channel-value, .nav-logo-img, .footer-logo-img';
 
 export default function App() {
   const location = useLocation();
@@ -43,8 +45,6 @@ export default function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            const el = entry.target;
-            (el.matches('h1, h2') ? [el] : el.querySelectorAll('h1, h2')).forEach((h) => bleachIn(h));
             observer.unobserve(entry.target);
           }
         });
@@ -52,13 +52,47 @@ export default function App() {
       { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
 
-    // Give DOM a split second to render
+    // Títulos, negritos e logo aparecem alvejados quando entram na tela (uma vez cada)
+    const pending = new Set();
+    const bleacher = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          bleacher.unobserve(entry.target);
+          pending.delete(entry.target);
+          bleachIn(entry.target);
+        });
+      },
+      { threshold: 0.2 }
+    );
+    const watchBleach = () => {
+      document.querySelectorAll(BLEACH).forEach((el) => {
+        // Dentro de outro (ex: negrito num título) quem mancha é o de fora
+        if (el.dataset.bleach || el.parentElement.closest(BLEACH)) return;
+        el.dataset.bleach = '1';
+        pending.add(el);
+        prepareBleach(el);
+        bleacher.observe(el);
+      });
+    };
+
+    // Give DOM a split second to render (e de novo pro que chega depois, tipo dados do pedido)
     const timer = setTimeout(() => {
       document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+      watchBleach();
     }, 100);
+    const late = setTimeout(watchBleach, 900);
 
     return () => {
       clearTimeout(timer);
+      clearTimeout(late);
+      bleacher.disconnect();
+      // O que não chegou a aparecer (ex: rodapé) volta ao normal e é preparado de novo na próxima página
+      pending.forEach((el) => {
+        delete el.dataset.bleach;
+        el.style.opacity = '';
+        el.style.webkitTextFillColor = '';
+      });
       clearTimeout(cut);
       observer.disconnect();
     };

@@ -372,19 +372,19 @@ export default function CheckoutPage() {
                   </h3>
 
                   {shippingLoading && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--gray)', padding: '10px 0' }}>
+                    <div style={{ fontSize: '0.94rem', color: 'var(--gray)', padding: '10px 0' }}>
                       Calculando as melhores opções de frete...
                     </div>
                   )}
 
                   {shippingError && (
-                    <div style={{ color: '#ff6b6b', fontSize: '0.82rem', marginBottom: '10px' }}>
+                    <div style={{ color: '#ff6b6b', fontSize: '0.88rem', marginBottom: '10px' }}>
                       {shippingError}
                     </div>
                   )}
 
                   {!shippingLoading && shippingOptions.length === 0 && !shippingError && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--gray)' }}>
+                    <div style={{ fontSize: '0.94rem', color: 'var(--gray)' }}>
                       Preencha um CEP válido acima para consultar as opções de envio.
                     </div>
                   )}
@@ -417,15 +417,15 @@ export default function CheckoutPage() {
                                 style={{ accentColor: 'var(--orange)', width: '16px', height: '16px' }}
                               />
                               <div>
-                                <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--bone)' }}>
+                                <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--bone)' }}>
                                   {opt.company} — {opt.name}
                                 </div>
-                                <div style={{ fontSize: '0.78rem', color: 'var(--gray)' }}>
+                                <div style={{ fontSize: '0.84rem', color: 'var(--gray)' }}>
                                   Prazo: {opt.deliveryRange}
                                 </div>
                               </div>
                             </div>
-                            <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--orange)' }}>
+                            <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--orange)' }}>
                               {fmtPrice(opt.price)}
                             </div>
                           </label>
@@ -445,7 +445,7 @@ export default function CheckoutPage() {
                   background: 'rgba(212, 82, 30, 0.08)',
                   border: '1px solid rgba(212, 82, 30, 0.3)',
                   borderRadius: '6px',
-                  fontSize: '0.85rem',
+                  fontSize: '0.94rem',
                   color: 'var(--bone)'
                 }}>
                   <div style={{ fontWeight: 'bold', color: 'var(--orange)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -459,7 +459,7 @@ export default function CheckoutPage() {
                       <strong>Instruções de Lavagem:</strong> Lave separadamente nas primeiras lavagens para evitar manchas em outras roupas.
                     </li>
                   </ul>
-                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', fontSize: '0.84rem', marginTop: '10px', color: '#fff' }}>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', fontSize: '0.94rem', marginTop: '10px', color: '#fff' }}>
                     <input
                       type="checkbox"
                       checked={acceptedTerms}
@@ -487,10 +487,10 @@ export default function CheckoutPage() {
                   flexDirection: 'column',
                   gap: '8px'
                 }}>
-                  <span style={{ fontSize: '0.78rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>
+                  <span style={{ fontSize: '0.84rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>
                     💳 Formas de Pagamento Aceitas (Mercado Pago):
                   </span>
-                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '0.82rem', color: '#fff', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '0.88rem', color: '#fff', alignItems: 'center' }}>
                     <span style={{ background: '#222', padding: '4px 10px', borderRadius: '4px', border: '1px solid #333' }}>
                       💳 Cartão de Crédito (até 12x)
                     </span>
@@ -520,10 +520,10 @@ export default function CheckoutPage() {
                       dangerouslySetInnerHTML={{ __html: item.svgThumb }}
                     />
                     <div style={{ flexGrow: 1 }}>
-                      <div style={{ color: 'var(--bone)', fontWeight: 500, fontSize: '0.9rem' }}>{item.name}</div>
-                      <div style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>Tamanho {item.size} × {item.qty}</div>
+                      <div style={{ color: 'var(--bone)', fontWeight: 500, fontSize: '1rem' }}>{item.name}</div>
+                      <div style={{ color: 'var(--gray)', fontSize: '0.84rem' }}>Tamanho {item.size} × {item.qty}</div>
                     </div>
-                    <div style={{ color: 'var(--bone)', fontSize: '0.9rem', fontWeight: 500 }}>
+                    <div style={{ color: 'var(--bone)', fontSize: '1rem', fontWeight: 500 }}>
                       {fmtPrice(item.price * item.qty)}
                     </div>
                   </div>
@@ -531,11 +531,11 @@ export default function CheckoutPage() {
               </div>
 
               <div style={{ borderTop: '1px solid var(--gray-lt)', paddingTop: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--gray)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '1rem', color: 'var(--gray)' }}>
                   <span>Subtotal</span>
                   <span>{fmtPrice(subtotal)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '0.9rem', color: 'var(--gray)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '1rem', color: 'var(--gray)' }}>
                   <span>Frete {selectedShipping ? `(${selectedShipping.company} - ${selectedShipping.name})` : ''}</span>
                   <span style={{ color: selectedShipping ? 'var(--bone)' : 'var(--orange)', fontWeight: 500 }}>
                     {selectedShipping ? fmtPrice(selectedShipping.price) : 'Consulte pelo CEP'}

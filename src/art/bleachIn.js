@@ -1,51 +1,150 @@
 import { createStain, dyeFor } from './stain';
 
-const CELL = 4; // px de tela por pixel de tecido
+// Texto/logo que aparece alvejado: começa preto como o pano do fundo e o mesmo motor das manchas
+// pinga alvejante até chegar na cor dele (preto → ferrugem → laranja → osso): branco vai até o
+// osso, laranja para no laranja. Termina manchado de vez, não na cor chapada.
 
-const rgb = (el) => getComputedStyle(el).color.match(/\d+/g).slice(0, 3).map(Number);
+const rgbOf = (el) => getComputedStyle(el).color.match(/\d+/g).slice(0, 3).map(Number);
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Título que aparece alvejado: as letras são o pano preto do fundo, e o mesmo motor
-// das manchas pinga alvejante nelas até chegar na cor delas (preto → ferrugem → laranja → osso):
-// texto branco vai até o osso, trecho laranja (.accent) para no laranja.
-// A mancha vira o fundo do texto (background-clip: text) e fica: a letra termina manchada, não chapada.
-export function bleachIn(el, duration = 2600) {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const base = getComputedStyle(el).color;
-  stainText(el, duration);
-  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele
-  el.querySelectorAll('*').forEach((child) => {
-    if (getComputedStyle(child).color !== base) stainText(child, duration);
-  });
-}
-
-function stainText(el, duration) {
-  const floor = dyeFor(rgb(el));
-  const box = el.getBoundingClientRect();
-  if (!box.width || !box.height) return;
-  const w = Math.ceil(box.width / CELL);
-  const h = Math.ceil(box.height / CELL);
+// Núcleo: anima uma grade w×h até cada ponto chegar no seu floor (Float32Array).
+// mask: pontos que importam (as gotas extras e o "acabou?" só olham pra eles). show(stain, last) desenha.
+function runStain({ w, h, floor, mask, duration = 2600, show }) {
   const stain = createStain(w, h, (Math.random() * 1e9) | 0);
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
-
-  // Gotas espalhadas pelo título, cada uma caindo numa hora
+  const r = stain.rand;
   const gap = 8;
   const drops = [];
   for (let y = gap / 2; y < h + gap / 2; y += gap) {
     for (let x = gap / 2; x < w + gap / 2; x += gap) {
-      drops.push({
-        x: x + (stain.rand() - 0.5) * gap,
-        y: y + (stain.rand() - 0.5) * gap,
-        r: 2.5 + stain.rand() * 2.5,
-        at: stain.rand() * duration,
-      });
+      drops.push({ x: x + (r() - 0.5) * gap, y: y + (r() - 0.5) * gap, r: 2.5 + r() * 2.5, at: r() * duration });
     }
   }
   drops.sort((a, b) => a.at - b.at);
+  const cells = [];
+  for (let i = 0; i < w * h; i++) if (!mask || mask[i]) cells.push(i);
 
+  // Ritmo constante do começo ao fim: primeiro a grade de gotas, depois gotas mirando o que ainda
+  // está escuro, até a mancha cobrir tudo sozinha. No finzinho os pontos que sobraram escuros
+  // clareiam até perto da cor, mas a variação da mancha fica (KEEP).
+  const DRIP_EVERY = 30;
+  const FINISH = 450;
+  const KEEP = 0.2;
+  const dark = (i) => stain.dye[i] - floor[i];
+  const start = performance.now();
+  let last = start;
+  let pending = 0;
+  let next = 0;
+  let lastDrip = start;
+  let finishAt = 0;
+  let finishFrom = 1;
+
+  show(stain, false);
+  const tick = (now) => {
+    const t = now - start;
+    while (next < drops.length && drops[next].at <= t) {
+      const d = drops[next++];
+      stain.drop(d.x, d.y, d.r, 2);
+    }
+    if (next >= drops.length && !finishAt && now - lastDrip > DRIP_EVERY && cells.length) {
+      lastDrip = now;
+      for (let k = 0; k < 60; k++) {
+        const i = cells[Math.floor(r() * cells.length)];
+        if (dark(i) > 0.1) {
+          stain.drop(i % w, Math.floor(i / w), 2.5 + r() * 2.5, 2);
+          break;
+        }
+      }
+    }
+    // Passo da simulação por tempo (60/s), não por quadro: tela de 120Hz não acelera
+    pending += (now - last) / (1000 / 60);
+    last = now;
+    const steps = Math.min(4, Math.floor(pending));
+    pending -= steps;
+    if (steps) stain.step(steps);
+    if (!finishAt && next >= drops.length) {
+      let left = 0;
+      let max = 0;
+      for (const i of cells) {
+        const d = dark(i);
+        if (d > 0.15) left++;
+        if (d > max) max = d;
+      }
+      if (left < cells.length * 0.015 || t > duration * 3) {
+        finishAt = now;
+        finishFrom = max;
+      }
+    }
+    const q = finishAt ? Math.min(1, (now - finishAt) / FINISH) : 0;
+    stain.bleachTo(finishAt ? KEEP + Math.max(0, finishFrom - KEEP) * (1 - q) : 1, floor);
+    show(stain, q >= 1);
+    if (q < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Quadro → data URL, aplicado só depois de decodificado: trocar a imagem direto deixa o Firefox
+// sem pintar nada até o fim. Só entra quadro mais novo que o da tela; o último sempre entra.
+function framePipe(canvas, apply) {
+  let seq = 0;
+  let shown = 0;
+  let inflight = false;
+  return (last) => {
+    if (inflight && !last) return;
+    inflight = true;
+    const id = ++seq;
+    const url = canvas.toDataURL();
+    const frame = new Image();
+    frame.src = url;
+    frame
+      .decode()
+      .then(() => {
+        if (id > shown) {
+          shown = id;
+          apply(url);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (id === seq) inflight = false;
+      });
+  };
+}
+
+// Antes de entrar na tela o texto já fica "pano preto" (senão pisca na cor normal e depois escurece)
+export function prepareBleach(el) {
+  if (reduced()) return;
+  if (el.tagName === 'IMG') el.style.opacity = '0';
+  else el.style.webkitTextFillColor = 'rgb(12,12,12)';
+}
+
+export function bleachIn(el) {
+  if (el.tagName === 'IMG') return bleachImage(el);
+  if (reduced()) return undefined;
+  const base = getComputedStyle(el).color;
+  stainText(el);
+  // Trecho de outra cor mancha por conta própria, por cima, e para na cor dele
+  el.querySelectorAll('*').forEach((child) => {
+    if (getComputedStyle(child).color !== base) stainText(child);
+  });
+  return undefined;
+}
+
+// A mancha vira o fundo do texto (background-clip: text). Grade mais fina em texto menor.
+function stainText(el) {
   const style = el.style;
+  const box = el.getBoundingClientRect();
+  if (!box.width || !box.height) {
+    style.webkitTextFillColor = '';
+    return;
+  }
+  const size = parseFloat(getComputedStyle(el).fontSize);
+  const cell = Math.max(2, Math.min(4, Math.round(size / 20)));
+  const w = Math.ceil(box.width / cell);
+  const h = Math.ceil(box.height / cell);
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
   // A mancha é a entrada: sem o fade/subida do .reveal por cima dela
   Object.assign(style, {
     opacity: '1',
@@ -59,97 +158,78 @@ function stainText(el, duration) {
     webkitTextFillColor: 'transparent',
     imageRendering: 'pixelated',
   });
-  // Cada quadro só entra no fundo depois de decodificado: trocar a imagem direto deixa o
-  // Firefox sem pintar nada até a animação acabar (letra invisível e depois "pop")
-  // (só entra quadro mais novo que o da tela; o último quadro sempre entra)
-  let seq = 0;
-  let shown = 0;
-  let inflight = false;
-  const paint = (last = false) => {
-    stain.render(ctx, 0); // sem o "molhado escurece": na letra clara vira pisca-pisca escuro
-    if (inflight && !last) return;
-    inflight = true;
-    const id = ++seq;
-    const url = canvas.toDataURL();
-    const frame = new Image();
-    frame.src = url;
-    frame
-      .decode()
-      .then(() => {
-        if (id > shown) {
-          shown = id;
-          style.backgroundImage = `url(${url})`;
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (id === seq) inflight = false;
-      });
-  };
-  paint();
+  const push = framePipe(canvas, (url) => (style.backgroundImage = `url(${url})`));
+  runStain({
+    w,
+    h,
+    floor: new Float32Array(w * h).fill(dyeFor(rgbOf(el))),
+    show(stain, last) {
+      stain.render(ctx, 0); // sem o "molhado escurece": na letra clara vira pisca-pisca escuro
+      push(last);
+    },
+  });
+}
 
-  // Ritmo constante do começo ao fim: primeiro a grade de gotas, depois gotas mirando
-  // o que ainda está escuro, até a mancha cobrir tudo sozinha. No finzinho os pontos que
-  // sobraram escuros clareiam até perto da cor, mas a variação da mancha fica.
-  const DRIP_EVERY = 30;
-  const FINISH = 450;
-  const start = performance.now();
-  let last = start;
-  let pending = 0;
-  let next = 0;
-  let lastDrip = start;
-  let finishAt = 0;
-  let finishFrom = 1;
-  // Quanto do título ainda está longe da cor (fração) e o mais escuro que sobrou
-  const remaining = () => {
-    let dark = 0;
-    let max = 0;
-    for (let i = 0; i < stain.dye.length; i++) {
-      if (stain.dye[i] > floor + 0.15) dark++;
-      if (stain.dye[i] > max) max = stain.dye[i];
-    }
-    return { left: dark / stain.dye.length, max };
-  };
-  const dripOnDark = () => {
-    for (let k = 0; k < 60; k++) {
-      const i = Math.floor(stain.rand() * stain.dye.length);
-      if (stain.dye[i] > floor + 0.1) {
-        stain.drop(i % w, Math.floor(i / w), 2.5 + stain.rand() * 2.5, 2);
-        return;
+// Logo (imagem): mancha recortada pelo formato dela; cada ponto para na cor que a logo tem ali
+function bleachImage(img) {
+  if (reduced()) {
+    img.style.opacity = '';
+    return;
+  }
+  const original = new Image();
+  original.src = img.currentSrc || img.src;
+  original.decode().then(() => {
+    const cell = 3;
+    const w = Math.max(8, Math.round(img.clientWidth / cell));
+    const h = Math.max(4, Math.round(img.clientHeight / cell));
+    // Cor da logo em cada ponto da grade
+    const probe = document.createElement('canvas');
+    probe.width = w;
+    probe.height = h;
+    const pctx = probe.getContext('2d', { willReadFrequently: true });
+    pctx.drawImage(original, 0, 0, w, h);
+    const px = pctx.getImageData(0, 0, w, h).data;
+    const floor = new Float32Array(w * h);
+    const mask = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) {
+      if (px[i * 4 + 3] > 40) {
+        mask[i] = 1;
+        floor[i] = dyeFor([px[i * 4], px[i * 4 + 1], px[i * 4 + 2]]);
       }
     }
-  };
-  const tick = (now) => {
-    const t = now - start;
-    while (next < drops.length && drops[next].at <= t) {
-      const d = drops[next++];
-      stain.drop(d.x, d.y, d.r, 2);
-    }
-    if (next >= drops.length && !finishAt && now - lastDrip > DRIP_EVERY) {
-      lastDrip = now;
-      dripOnDark();
-    }
-    // Passo da simulação por tempo (60/s), não por quadro: tela de 120Hz não acelera
-    pending += (now - last) / (1000 / 60);
-    last = now;
-    const steps = Math.min(4, Math.floor(pending));
-    pending -= steps;
-    if (steps) stain.step(steps);
-    // Nunca passa da cor do texto
-    if (!finishAt && next >= drops.length) {
-      const { left, max } = remaining();
-      if (left < 0.015 || t > duration * 3) {
-        finishAt = now;
-        finishFrom = max;
+    const grid = document.createElement('canvas');
+    grid.width = w;
+    grid.height = h;
+    const gctx = grid.getContext('2d');
+    // Saída em resolução boa pra tela (recorte nítido), a mancha por cima em pixel duro
+    const out = document.createElement('canvas');
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    out.width = Math.round(img.clientWidth * dpr);
+    out.height = Math.round(img.clientHeight * dpr);
+    const octx = out.getContext('2d');
+    let first = true;
+    const push = framePipe(out, (url) => {
+      img.src = url;
+      if (first) {
+        first = false;
+        img.style.opacity = '';
       }
-    }
-    const q = finishAt ? Math.min(1, (now - finishAt) / FINISH) : 0;
-    const keep = floor + 0.2; // o quanto de variação acima da cor fica pra sempre
-    stain.bleachTo(finishAt ? keep + Math.max(0, finishFrom - keep) * (1 - q) : 1, floor);
-    if (q < 1) {
-      paint();
-      requestAnimationFrame(tick);
-    } else paint(true);
-  };
-  requestAnimationFrame(tick);
+    });
+    runStain({
+      w,
+      h,
+      floor,
+      mask,
+      show(stain, last) {
+        stain.render(gctx, 0);
+        octx.globalCompositeOperation = 'copy';
+        octx.imageSmoothingEnabled = false;
+        octx.drawImage(grid, 0, 0, out.width, out.height);
+        octx.globalCompositeOperation = 'destination-in';
+        octx.imageSmoothingEnabled = true;
+        octx.drawImage(original, 0, 0, out.width, out.height);
+        push(last);
+      },
+    });
+  }, () => (img.style.opacity = ''));
 }
