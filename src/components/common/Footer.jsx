@@ -37,7 +37,7 @@ export default function Footer() {
             Esqueleto 3D: <a href="https://opengameart.org/content/low-poly-retro-psx-skeleton" target="_blank" rel="noopener noreferrer">LonesomeDucky</a>, CC-BY 4.0 ·
             Camiseta 3D: <a href="https://poly.pizza/m/bdOMzzh-fSl" target="_blank" rel="noopener noreferrer">Poly by Google</a>, CC-BY 3.0
           </span>
-          <span>Feito à mão ✦ SP</span>
+          <span>Feito à mão em SP</span>
         </div>
       </div>
     </footer>

@@ -111,7 +111,10 @@ function hideInsideShirt(material) {
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
         vec3 tp = (uTeeInv * vec4(vWorldPos, 1.0)).xyz;
-        if (tp.y > 0.04 && tp.y < 0.93 && pow(tp.x / 0.3, 2.0) + pow(tp.z / 0.17, 2.0) < 1.0) discard;
+        // Corpo da camiseta, até um pouco acima do ombro (clavícula e escápula não furam a gola),
+        // menos um cilindro em volta do pescoço, que sai pela gola
+        bool neck = tp.y > 0.97 && pow(tp.x / 0.1, 2.0) + pow((tp.z + 0.02) / 0.12, 2.0) < 1.0;
+        if (tp.y > 0.04 && tp.y < 1.1 && !neck && pow(tp.x / 0.3, 2.0) + pow(tp.z / 0.17, 2.0) < 1.0) discard;
         for (int k = 0; k < 2; k++) {
           vec3 ap = (uArmInv[k] * vec4(vWorldPos, 1.0)).xyz;
           float along = dot(ap, uArmAxis[k].xyz);
@@ -152,13 +155,13 @@ function buildScene(gltf, teeGltf, printId) {
     }
   });
   // Medidas da malha (altura 1): costura do ombro em x 0.27 / z 0.9 → encaixa no ombro do esqueleto
-  tee.scale.set(0.6, 0.62, 0.8); // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
+  tee.scale.set(0.6, 0.57, 0.8); // gola em ~1.45: abraça o pescoço, não o queixo // um pouco mais funda que a malha (tórax do esqueleto), sem virar bloco de lado
   // O modelo vem com o pescoço caído pra frente: endireita pra cabeça ficar em cima da gola
   rotateBoneWorld(bones.Neck, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.28));
   root.updateWorldMatrix(true, true);
   rotateBoneWorld(bones.Head, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.3)); // e o rosto volta a olhar pra frente
   root.updateWorldMatrix(true, true);
-  tee.position.set(bones.Neck.getWorldPosition(new THREE.Vector3()).x, 0.9, -0.035); // esqueleto não é simétrico: centra no pescoço
+  tee.position.set(bones.Neck.getWorldPosition(new THREE.Vector3()).x, 0.88, -0.035); // esqueleto não é simétrico: centra no pescoço
   root.add(tee);
   root.updateWorldMatrix(true, true);
 

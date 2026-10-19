@@ -368,7 +368,7 @@ export default function CheckoutPage() {
                 {/* ── OPÇÕES DE FRETE MELHOR ENVIO ── */}
                 <div style={{ marginTop: '24px', marginBottom: '24px', padding: '20px', backgroundColor: 'var(--ink2)', border: '1px solid var(--gray-lt)', borderRadius: '6px' }}>
                   <h3 style={{ fontSize: '1rem', marginBottom: '14px', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>🚚</span> Opções de Entrega (Melhor Envio)
+                    Opções de Entrega (Melhor Envio)
                   </h3>
 
                   {shippingLoading && (
@@ -449,7 +449,7 @@ export default function CheckoutPage() {
                   color: 'var(--bone)'
                 }}>
                   <div style={{ fontWeight: 'bold', color: 'var(--orange)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>⚠️ Termos do Processo Artesanal & Cuidados:</span>
+                    <span>Termos do Processo Artesanal & Cuidados:</span>
                   </div>
                   <ul style={{ margin: '0 0 12px 18px', padding: 0, lineHeight: 1.5, color: '#d0c8be' }}>
                     <li style={{ marginBottom: '6px' }}>
@@ -488,17 +488,17 @@ export default function CheckoutPage() {
                   gap: '8px'
                 }}>
                   <span style={{ fontSize: '0.95rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>
-                    💳 Formas de Pagamento Aceitas (Mercado Pago):
+                    Formas de Pagamento Aceitas (Mercado Pago):
                   </span>
                   <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', fontSize: '1rem', color: '#fff', alignItems: 'center' }}>
                     <span style={{ background: '#222', padding: '4px 10px', borderRadius: '4px', border: '1px solid #333' }}>
-                      💳 Cartão de Crédito (até 12x)
+                      Cartão de Crédito (até 12x)
                     </span>
                     <span style={{ background: '#222', padding: '4px 10px', borderRadius: '4px', border: '1px solid #333' }}>
-                      ⚡ Pix Instantâneo
+                      Pix Instantâneo
                     </span>
                     <span style={{ background: '#222', padding: '4px 10px', borderRadius: '4px', border: '1px solid #333' }}>
-                      📄 Boleto Bancário
+                      Boleto Bancário
                     </span>
                   </div>
                 </div>

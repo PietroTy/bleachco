@@ -88,7 +88,7 @@ export default function Nav() {
         </ul>
         <div className="nav-actions">
           <button className="nav-cart-btn" onClick={() => setCartOpen(true)}>
-            ◎ Carrinho{' '}
+            Carrinho{' '}
             {totalItems > 0 && <span id="cart-count">{totalItems}</span>}
           </button>
         </div>
