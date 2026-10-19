@@ -1357,4 +1357,13 @@ footer {
 .skeleton3d-osd-fixed .skeleton3d-osd { position: static; }
 @media (max-width: 600px) { .skeleton3d-osd-fixed { bottom: 96px; right: 16px; } }
 /* Celular: slogan primeiro, esqueleto embaixo dele */
-@media (max-width: 960px) { .hero-3d.hero-3d--full { order: 0; margin-top: 24px; } .skeleton3d--full { --sk-headroom: 30px; } }
+/* Celular: slogan, esqueleto e depois o texto e os botões (o bloco de texto se desfaz no grid) */
+@media (max-width: 960px) {
+  .hero-content:has(.hero-3d--full) .hero-text { display: contents; }
+  .hero-content:has(.hero-3d--full) .eyebrow { order: 1; }
+  .hero-content:has(.hero-3d--full) h1 { order: 2; }
+  .hero-3d.hero-3d--full { order: 3; margin: 0 0 8px; }
+  .hero-content:has(.hero-3d--full) .hero-sub { order: 4; }
+  .hero-content:has(.hero-3d--full) .hero-cta { order: 5; }
+  .skeleton3d--full { --sk-headroom: 30px; }
+}
