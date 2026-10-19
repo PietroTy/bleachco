@@ -20,7 +20,7 @@
 
   /* Tipografia: título estreito como a logo, texto com personalidade, mono de VHS pros letreiros */
   --ff-display: 'Saira Extra Condensed', 'Saira Condensed', sans-serif;
-  --ff-body:    'Space Grotesk', sans-serif;
+  --ff-body:    'Saira', sans-serif; /* mesma família dos títulos, largura normal e encorpada */
   --ff-mono:    'VT323', monospace;
   --r:   3px;
   --t:   0.26s cubic-bezier(0.4,0,0.2,1);
@@ -29,11 +29,12 @@
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 18px; }
 body {
   background: var(--ink);
   color: var(--bone);
   font-family: var(--ff-body);
+  font-weight: 500;
   font-size: 1.0625rem;
   line-height: 1.6;
   overflow-x: hidden;
@@ -284,7 +285,7 @@ p  {
   text-shadow: 2px 0 rgba(212,82,30,.8), -2px 0 rgba(80,140,255,.6);
 }
 .no-signal-osd span { font-size: 1.4rem; opacity: 0.8; }
-.no-signal-osd strong { font-size: clamp(3.5rem, 12vw, 7rem); font-weight: 400; line-height: 1; }
+.no-signal-osd strong { font-size: clamp(3.5rem, 12vw, 7rem); font-weight: 500; line-height: 1; }
 .no-signal-osd a { margin-top: 18px; font-size: 1.5rem; color: var(--orange); background: rgba(8,8,8,.75); padding: 4px 14px; }
 .no-signal-osd a:hover { color: var(--bone); }
 
