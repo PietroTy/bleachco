@@ -175,9 +175,14 @@ export function createStain(w, h, seed = 1) {
     }
   }
 
-  // Prende o corante entre minDye e maxDye: maxDye termina o serviço, minDye é onde a cor para
-  function bleachTo(maxDye, minDye = 0) {
-    for (let i = 0; i < n; i++) dye[i] = Math.min(maxDye, Math.max(minDye, dye[i]));
+  // Prende o corante entre floor e floor + above: floor é onde a cor para (um número, ou um por
+  // ponto: logo com parte branca e parte laranja), above é o quanto ainda pode estar mais escuro
+  function bleachTo(above, floor = 0) {
+    const per = typeof floor !== 'number';
+    for (let i = 0; i < n; i++) {
+      const lo = per ? floor[i] : floor;
+      dye[i] = Math.min(lo + above, Math.max(lo, dye[i]));
+    }
     dirty0 = 0;
     dirty1 = h - 1;
   }
