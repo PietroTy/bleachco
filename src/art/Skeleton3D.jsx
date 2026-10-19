@@ -61,6 +61,7 @@ function shirtTexture(printId) {
 // até a direita, alça vazada inclinada, etiqueta laranja e tampa canelada em cima à esquerda.
 // Origem no centro do furo da alça: é ali que entram os dedos.
 const HANDLE_AT = 0.13; // distância do punho até o furo, no osso da mão
+const TILT_X = THREE.MathUtils.degToRad(20); // tampa 20° pra direita (eixo X do galão)
 const ROLL = 0.8 + Math.PI; // de cabeça pra baixo: tampa embaixo, base pra cima
 
 function logoJug() {
@@ -292,7 +293,8 @@ function buildScene(gltf, teeGltf, printId) {
   bottle.position.copy(hand).add(v(0, HANDLE_AT, 0).applyQuaternion(handQ));
   const inHand = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(v(0, 0, 1), v(0, -1, 0), v(1, 0, 0)));
   bottle.quaternion.copy(handQ).multiply(inHand).multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 0, 1), ROLL))
-    .multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 1, 0), Math.PI)); // virado no eixo da altura: lado da alça pra baixo
+    .multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 1, 0), Math.PI)) // virado no eixo da altura: lado da alça pra baixo
+    .multiply(new THREE.Quaternion().setFromAxisAngle(v(1, 0, 0), TILT_X));
   root.add(bottle);
   bones.HandR.attach(bottle);
 
