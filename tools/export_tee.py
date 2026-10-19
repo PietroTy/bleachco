@@ -9,6 +9,17 @@ src = bpy.data.objects['Shirt']
 if bpy.context.object and bpy.context.object.mode != 'OBJECT':
     bpy.ops.object.mode_set(mode='OBJECT')
 arm = bpy.data.objects['Armature']
+# Pose feita no Blender (Pose Mode) → src/assets/pose.json: rotação de cada osso posado em relação ao
+# repouso, no espaço da armature, já em Y-cima (glTF). Sem osso posado, o site usa a pose do código.
+import json
+pose = {}
+for pb in arm.pose.bones:
+    q = (pb.matrix @ pb.bone.matrix_local.inverted()).to_quaternion()
+    if abs(q.w) < 0.99999:
+        pose[pb.name.replace('.', '')] = [round(q.x, 5), round(q.z, 5), round(-q.y, 5), round(q.w, 5)]
+with open(os.path.join(D, '..', 'src/assets/pose.json'), 'w') as fh:
+    json.dump(pose, fh, indent=1)
+print('pose:', sorted(pose) or 'nenhum osso posado (usa a pose do código)')
 pose_was = arm.data.pose_position
 arm.data.pose_position = 'REST'  # posado no Blender ou não, a camiseta sai na pose de repouso
 bpy.context.view_layer.update()
