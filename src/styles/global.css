@@ -1164,17 +1164,28 @@ footer {
 /* ── RESPONSIVE ── */
 @media (max-width: 960px) {
   .hero-line { display: none; }
+  /* Menu do celular: tela cheia abaixo da barra, links grandes na fonte dos títulos.
+     (top em % da barra: o #navbar tem transform, então o fixed é relativo a ele) */
   .nav-links {
     display: none; flex-direction: column; gap: 0;
-    position: fixed; top: 76px; left: 0; right: 0;
-    background: rgba(8,8,8,0.98);
-    padding: 18px 28px;
-    border-bottom: 1px solid var(--gray-lt);
-    z-index: 890;
+    position: fixed; top: 100%; left: 0; right: 0; height: calc(100svh - 76px);
+    align-items: stretch; text-align: left;
+    background: var(--ink);
+    padding: 12px 24px 40px;
+    border-top: 1px solid var(--gray-lt);
+    z-index: 890; overflow-y: auto;
   }
   .nav-links.open { display: flex; }
-  .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--gray-lt); font-size: 1.05rem; }
-  .nav-toggle { display: flex; }
+  .nav-links li { border-bottom: 1px solid var(--gray-lt); }
+  .nav-links a {
+    display: block; padding: 18px 0 14px;
+    font-family: var(--ff-display); font-weight: 900; font-size: 2.6rem; line-height: 1;
+    letter-spacing: 0.02em; color: var(--bone2);
+  }
+  .nav-links a::after { display: none; }
+  .nav-links a.active { color: var(--orange); }
+  #navbar.menu-open { background: var(--ink); }
+  .nav-toggle { display: flex; padding: 10px 4px; }
 
   .products-grid { grid-template-columns: 1fr; }
   .hero { padding-top: 96px; }

@@ -37,6 +37,19 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Menu aberto no celular: tela travada, Esc fecha, trocar de página fecha
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => e.key === 'Escape' && setMobileMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [mobileMenuOpen]);
+  useEffect(() => setMobileMenuOpen(false), [location.pathname]);
+
   const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
   const isActive = (path) => location.pathname === path;
@@ -44,9 +57,9 @@ export default function Nav() {
   return (
     <nav
       id="navbar"
-      className={scrolled ? 'scrolled' : ''}
+      className={`${scrolled ? 'scrolled' : ''}${mobileMenuOpen ? ' menu-open' : ''}`}
       style={{
-        transform,
+        transform: mobileMenuOpen ? 'translateY(0)' : transform,
         transition: 'background 0.4s ease, border-color 0.4s ease, transform 0.3s ease',
       }}
     >
@@ -54,16 +67,6 @@ export default function Nav() {
         <Link to="/" className="logo-brand-link" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src={logoImg} alt="Bleach.Co Logo" className="nav-logo-img" />
         </Link>
-        <button
-          className={`nav-toggle ${mobileMenuOpen ? 'open' : ''}`}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Menu"
-          aria-expanded={mobileMenuOpen}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
         <ul className={`nav-links ${mobileMenuOpen ? 'open' : ''}`}>
           <li>
             <Link to="/" className={isActive('/') ? 'active' : ''} onClick={() => setMobileMenuOpen(false)}>
@@ -90,6 +93,16 @@ export default function Nav() {
           <button className="nav-cart-btn" onClick={() => setCartOpen(true)}>
             Carrinho{' '}
             {totalItems > 0 && <span id="cart-count">{totalItems}</span>}
+          </button>
+          <button
+            className={`nav-toggle ${mobileMenuOpen ? 'open' : ''}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
         </div>
       </div>
