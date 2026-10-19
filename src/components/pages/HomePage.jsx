@@ -33,8 +33,8 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="hero-3d reveal reveal-delay-2">
-            <Suspense fallback={null}><Skeleton3D /></Suspense>
+          <div className="hero-3d hero-3d--full reveal reveal-delay-2">
+            <Suspense fallback={null}><Skeleton3D full /></Suspense>
           </div>
         </div>
       </section>
