@@ -1355,4 +1355,6 @@ footer {
   display: flex; gap: 28px; align-items: baseline;
 }
 .skeleton3d-osd-fixed .skeleton3d-osd { position: static; }
-@media (max-width: 600px) { .skeleton3d-osd-fixed { bottom: 66px; right: 16px; } }
+@media (max-width: 600px) { .skeleton3d-osd-fixed { bottom: 96px; right: 16px; } }
+/* Celular: slogan primeiro, esqueleto embaixo dele */
+@media (max-width: 960px) { .hero-3d.hero-3d--full { order: 0; margin-top: 24px; } .skeleton3d--full { --sk-headroom: 30px; } }
