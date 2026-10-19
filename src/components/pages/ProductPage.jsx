@@ -11,7 +11,7 @@ const PRODUCTS_DATA = {
     id: 'eclipse',
     name: 'ECLIPSE',
     tagline: 'Eclipse solar feito à mão com água sanitária. Peças exclusivas.',
-    price: 139,
+    price: 157,
     svgThumb: ECLIPSE_SVG_RAW,
     heroSvg: (
       <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', minHeight: '120vh' }}>
@@ -83,7 +83,7 @@ const PRODUCTS_DATA = {
     id: 'spy',
     name: 'SPY',
     tagline: 'Ilustração do olho que tudo vê. Alvejado manualmente sobre algodão 100% preto.',
-    price: 139,
+    price: 157,
     svgThumb: SPY_SVG_RAW,
     heroSvg: (
       <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%', minHeight: '120vh' }}>
@@ -255,7 +255,7 @@ export default function ProductPage() {
             </div>
 
             <div className="product-price-row">
-              <span className="product-price">R$ 139,00</span>
+              <span className="product-price">R$ 157,00</span>
               <span className="product-price-note">à vista · parcelamento disponível</span>
             </div>
 
@@ -438,7 +438,7 @@ export default function ProductPage() {
             </div>
             <div className="product-tile-info">
               <div className="product-tile-name">{product.otherProductName}</div>
-              <div className="product-tile-price">A partir de R$ 139,00</div>
+              <div className="product-tile-price">A partir de R$ 157,00</div>
             </div>
           </Link>
         </div>

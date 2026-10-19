@@ -103,16 +103,38 @@ function hideInsideShirt(material) {
     shader.uniforms.uArmInv = armInverse;
     shader.uniforms.uArmAxis = armAxis;
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;\nvarying vec3 vObjPos;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvObjPos = transformed;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform mat4 uTeeInv;\nuniform mat4 uArmInv[2];\nuniform vec4 uArmAxis[2];\nvarying vec3 vWorldPos;')
-      // Osso branco: a textura do modelo é amarelada, tira boa parte da cor e clareia
+      .replace(
+        '#include <common>',
+        `#include <common>
+        uniform mat4 uTeeInv;
+        uniform mat4 uArmInv[2];
+        uniform vec4 uArmAxis[2];
+        varying vec3 vWorldPos;
+        varying vec3 vObjPos;
+        float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+        float vnoise(vec3 p) {
+          vec3 i = floor(p); vec3 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+          return mix(mix(mix(hash3(i), hash3(i + vec3(1,0,0)), f.x), mix(hash3(i + vec3(0,1,0)), hash3(i + vec3(1,1,0)), f.x), f.y),
+                     mix(mix(hash3(i + vec3(0,0,1)), hash3(i + vec3(1,0,1)), f.x), mix(hash3(i + vec3(0,1,1)), hash3(i + vec3(1,1,1)), f.x), f.y), f.z);
+        }`
+      )
+      // Osso na cor das letras: creme quase branco com manchas laranja/ferrugem (presas no corpo,
+      // não escorregam quando ele gira). O relevo da textura original fica só como sombreado.
       .replace(
         '#include <map_fragment>',
         `#include <map_fragment>
-        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114))), 0.7) * 1.15;`
+        float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+        vec3 bone = vec3(0.96, 0.94, 0.9) * clamp(lum * 1.7, 0.0, 1.05); // claro-escuro da textura (órbitas, dentes)
+        float n = vnoise(vObjPos * 14.0) * 0.65 + vnoise(vObjPos * 37.0) * 0.35;
+        bone = mix(bone, bone * vec3(0.95, 0.68, 0.48), smoothstep(0.5, 0.62, n));
+        bone = mix(bone, bone * vec3(0.88, 0.36, 0.14), smoothstep(0.64, 0.76, n));
+        diffuseColor.rgb = bone;`
       )
+      // Parte da cor vale mesmo sem luz: osso continua claro do lado de sombra
+      .replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, diffuseColor.rgb, 0.35);\n#include <opaque_fragment>')
       .replace(
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
@@ -256,12 +278,12 @@ function buildScene(gltf, teeGltf, printId) {
   // Pose final: braços mais soltos junto ao corpo, a manga vem junto. Antebraço direito desce pro galão
   const relax = (side, upper, lower, hand, fore) => {
     const sh = P(upper);
-    aimBone(upper, lower, sh.clone().add(v(side * 0.075, -0.3, 0.03)));
+    aimBone(upper, lower, sh.clone().add(v(side * 0.15, -0.3, 0.03))); // perto do ângulo da manga: ombro não torce
     const el = P(lower);
     aimBone(lower, hand, el.clone().add(fore));
   };
-  relax(-1, bones.UpperArmR, bones.LowerArmR, bones.HandR, v(0.03, -0.24, 0.1));
-  relax(1, bones.UpperArmL, bones.LowerArmL, bones.HandL, v(-0.02, -0.25, 0.05));
+  relax(-1, bones.UpperArmR, bones.LowerArmR, bones.HandR, v(0.06, -0.24, 0.1));
+  relax(1, bones.UpperArmL, bones.LowerArmL, bones.HandL, v(-0.07, -0.24, 0.05));
   root.updateWorldMatrix(true, true);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando

@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { EclipseSvg, SpySvg } from './SvgAssets';
 
 const PRODUCTS = [
-  { id: 'eclipse', name: 'ECLIPSE', price: 139, Art: EclipseSvg },
-  { id: 'spy',     name: 'SPY',     price: 139, Art: SpySvg },
+  { id: 'eclipse', name: 'ECLIPSE', price: 157, Art: EclipseSvg },
+  { id: 'spy',     name: 'SPY',     price: 157, Art: SpySvg },
 ];
 
 const fmt = (v) => `R$ ${v.toFixed(2).replace('.', ',')}`;
