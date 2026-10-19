@@ -1314,7 +1314,7 @@ footer {
   span:not(.tag, #cart-count, [style*="background"]), a:not(.btn, [style*="background"])) {
   background-image: linear-gradient(currentColor, currentColor), url('../assets/text-stain.png');
   background-blend-mode: multiply;
-  background-size: auto, 192px 192px;
+  background-size: auto, 288px 288px; /* 96px de ladrilho × 3 = pixel do site (PX em ps1.js) */
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

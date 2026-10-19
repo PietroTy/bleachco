@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { ps1, ps1Uniforms, pixelTexture, noiseCanvas } from './ps1';
+import { ps1, ps1Uniforms, pixelTexture, noiseCanvas, PX } from './ps1';
 import teeUrl from '../assets/tshirt.glb';
 import blenderPose from '../assets/pose.json';
 
@@ -401,7 +401,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     const resize = () => {
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
-      const scale = w < 500 ? 2 : 2.4;
+      const scale = PX;
       const iw = Math.max(80, Math.round(w / scale));
       const ih = Math.max(80, Math.round(h / scale));
       renderer.setSize(iw, ih, false);
