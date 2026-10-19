@@ -55,8 +55,9 @@ h2 { font-family: var(--ff-display); font-weight: 900; font-size: clamp(2.4rem, 
 h3 { font-family: var(--ff-display); font-weight: 900; font-size: clamp(1.4rem, 2.8vw, 2.1rem); line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
 p  {
   font-size: 1.2rem; color: var(--text); line-height: 1.75;
-  /* halo escuro: separa a letra de mancha clara atrás */
-  text-shadow: 0 0 10px rgba(8,8,8,0.85), 0 1px 2px rgba(8,8,8,0.9);
+  /* halo escuro: separa a letra de mancha clara atrás (filter, não text-shadow: text-shadow
+     seria pintado por cima da textura manchada e apagaria a letra) */
+  filter: drop-shadow(0 0 5px rgba(8,8,8,0.9));
 }
 
 .eyebrow {
@@ -1306,3 +1307,21 @@ footer {
 .nav-cart-btn { padding: 2px 12px; }
 .tag { padding: 1px 10px; }
 .form-group input, .form-group select, .form-group textarea { padding: 6px 9px; }
+
+/* ── TEXTO MANCHADO ──
+   Todo texto corrido tem a textura das letras alvejadas, parada: um ladrilho quase branco com manchas
+   alaranjadas multiplicado pela cor do próprio texto e recortado na letra. Serve pra qualquer cor
+   (branco ganha mancha laranja, laranja ganha ferrugem). Fica de fora o que tem fundo próprio. */
+:where(p, li, label, small, em, blockquote, td, th, dd, dt, figcaption,
+  span:not(.tag, #cart-count, [style*="background"]), a:not(.btn, [style*="background"])) {
+  background-image: linear-gradient(currentColor, currentColor), url('../assets/text-stain.png');
+  background-blend-mode: multiply;
+  background-size: auto, 192px 192px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  image-rendering: pixelated;
+}
+/* Esses têm fundo próprio (shorthand "background" no CSS deles): letra volta a ser cor sólida */
+.no-signal-osd a { -webkit-text-fill-color: currentColor; }
+@media (max-width: 600px) { .skeleton3d-osd--hint { display: none; } }
