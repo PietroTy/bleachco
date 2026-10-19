@@ -61,7 +61,7 @@ export default function HomePage() {
           <p className="manifesto-quote reveal reveal-delay-1">
             "Água sanitária não é ferramenta de limpeza.
             <br />
-            É <span className="accent">tinta</span>. É <span className="accent">voz</span>.
+            É <span className="accent">tinta.</span> É <span className="accent">voz.</span>
             <br />
             A mancha que você acha imperfeita
             <br />
