@@ -212,7 +212,7 @@ p  {
   padding: 112px 0 88px;
   position: relative; overflow: hidden;
 }
-.hero-bg { position: absolute; inset: 0; pointer-events: none; }
+.hero-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .hero-stain {
   position: absolute; pointer-events: none;
 }
@@ -1333,3 +1333,19 @@ footer {
 /* Esses têm fundo próprio (shorthand "background" no CSS deles): letra volta a ser cor sólida */
 .no-signal-osd a { -webkit-text-fill-color: currentColor; }
 @media (max-width: 600px) { .skeleton3d-osd--hint { display: none; } }
+
+/* Home: esqueleto de corpo inteiro, maior que o hero: as pernas descem abaixo do texto e passam da borda */
+.hero:has(.hero-3d--full) { overflow: visible; z-index: 2; }
+.hero-bg { -webkit-mask-image: linear-gradient(to bottom, #000 75%, transparent); mask-image: linear-gradient(to bottom, #000 75%, transparent); }
+.hero-3d--full { align-self: end; max-width: 600px; margin-top: -40px; margin-bottom: -230px; }
+.skeleton3d--full { aspect-ratio: auto; height: calc(min(100svh, 860px) + 100px); }
+.skeleton3d--full .skeleton3d-canvas {
+  -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
+}
+.skeleton3d--full .skeleton3d-osd { bottom: 70px; }
+@media (max-width: 960px) {
+  .hero-3d--full { max-width: 360px; margin-top: 0; margin-bottom: 0; }
+  .skeleton3d--full { height: 64svh; }
+  .skeleton3d--full .skeleton3d-osd { bottom: 14px; }
+}

@@ -41,19 +41,49 @@ const PRINTS = {
     },
   },
 };
-const PRINT_IDS = Object.keys(PRINTS);
+// Fotos das camisetas de verdade: src/assets/camisetas/<id>-frente.png e <id>-costas.png (moldes do
+// tamanho certo em _molde-*.png, gerados por tools/make_molde.py). Com foto, ela substitui a estampa
+// desenhada daquele lado; parte transparente vira tecido. Sem foto, fica a estampa desenhada.
+const PHOTOS = {};
+const photoCtx = require.context('../assets/camisetas', false, /^\.\/[a-z0-9][a-z0-9-]*-(frente|costas)\.png$/);
+photoCtx.keys().forEach((k) => {
+  const [, id, side] = k.match(/^\.\/(.+)-(frente|costas)\.png$/);
+  (PHOTOS[id] = PHOTOS[id] || {})[side] = photoCtx(k);
+});
+const PRINT_IDS = [...new Set([...Object.keys(PRINTS), ...Object.keys(PHOTOS)])];
+const printName = (id) => (PRINTS[id] ? PRINTS[id].name : id.toUpperCase());
 
+// Textura em duas metades (UV feita no export_tee.py): esquerda = frente, direita = costas, cada uma é a
+// caixa da camiseta vista daquele lado. Desenho em unidades de 128 por metade, canvas em dobro.
 function shirtTexture(printId) {
-  const c = noiseCanvas(128, 128, [34, 33, 36], 16, 11);
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 256;
   const ctx = c.getContext('2d');
-  // UV é uma projeção de frente (largura x altura da camiseta): peito em ~30% do topo.
-  // Costas e laterais apontam pro canto (0,0) da textura, que é só tecido.
-  PRINTS[printId].draw(ctx, 64, 40, 19);
-  // Respingos soltos de alvejante pelo tecido
-  ctx.fillStyle = 'rgba(212,82,30,0.55)';
-  [[40, 70], [88, 30], [70, 92], [20, 50], [104, 80]].forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(noiseCanvas(256, 128, [34, 33, 36], 16, 11), 0, 0, 512, 256);
   const tex = pixelTexture(c);
   tex.flipY = false; // UV de glTF: topo da imagem = topo da camiseta
+  const photos = PHOTOS[printId] || {};
+  if (PRINTS[printId] && !photos.frente) {
+    ctx.save();
+    ctx.scale(2, 2);
+    PRINTS[printId].draw(ctx, 64, 40, 19); // peito em ~30% do topo
+    // Respingos soltos de alvejante pelo tecido
+    ctx.fillStyle = 'rgba(212,82,30,0.55)';
+    [[40, 70], [88, 30], [70, 92], [20, 50], [104, 80]].forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
+    ctx.restore();
+  }
+  ['frente', 'costas'].forEach((side, k) => {
+    if (!photos[side]) return;
+    const img = new Image();
+    img.onload = () => {
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, k * 256, 0, 256, 256);
+      tex.needsUpdate = true;
+    };
+    img.src = photos[side];
+  });
   return tex;
 }
 
@@ -313,12 +343,12 @@ function buildScene(gltf, teeGltf, printId) {
 }
 
 // Esqueleto PSX vestindo a camiseta, luz quente: osso branco com contraluz laranja (cores da marca)
-// print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa
-export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true }) {
+// print: estampa inicial (ou fixa, com cycle=false); cycle: clique troca a estampa; full: corpo inteiro
+export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = true, full = false }) {
   const wrapRef = useRef(null);
   const apiRef = useRef(null);
   const [failed, setFailed] = useState(false);
-  const [printId, setPrintId] = useState(PRINTS[print] ? print : PRINT_IDS[0]);
+  const [printId, setPrintId] = useState(PRINT_IDS.includes(print) ? print : PRINT_IDS[0]);
   const [glitch, setGlitch] = useState(false);
   const printRef = useRef(printId);
   const clothRef = useRef(null);
@@ -342,8 +372,13 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     scene.fog = new THREE.Fog(0x0c0806, 2.6, 5.2);
     const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
     // Câmera baixa olhando pra cima: o esqueleto fica imponente
-    camera.position.set(0, 0.9, 2.5);
-    camera.lookAt(0, 1.15, 0);
+    if (full) {
+      camera.position.set(0, 0.62, 3.15); // da cabeça aos pés
+      camera.lookAt(0, 0.8, 0);
+    } else {
+      camera.position.set(0, 0.9, 2.5);
+      camera.lookAt(0, 1.15, 0);
+    }
 
     scene.add(new THREE.AmbientLight(0x2a201a, 1.5));
     const key = new THREE.DirectionalLight(0xfff1e6, 1.9);
@@ -490,7 +525,7 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
   // Estampa definida por fora (ex: página de produto trocando de eclipse pra spy)
   useEffect(() => {
-    if (PRINTS[print] && apiRef.current) {
+    if (PRINT_IDS.includes(print) && apiRef.current) {
       apiRef.current.setPrint(print);
       setPrintId(print);
     }
@@ -516,8 +551,8 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
   if (failed) return fallback || null;
 
   return (
-    <div ref={wrapRef} className={`skeleton3d${glitch ? ' is-glitching' : ''}`}>
-      <span className="skeleton3d-osd">▶ {PRINTS[printId].name}</span>
+    <div ref={wrapRef} className={`skeleton3d${full ? ' skeleton3d--full' : ''}${glitch ? ' is-glitching' : ''}`}>
+      <span className="skeleton3d-osd">▶ {printName(printId)}</span>
       <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
     </div>
   );

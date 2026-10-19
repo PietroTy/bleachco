@@ -1,7 +1,7 @@
 # Exporta o objeto "Shirt" do .blend aberto pro site (src/assets/tshirt.glb).
 # Uso: blender -b tools/tee.blend -P tools/export_tee.py   (ou pela aba Scripting com o Blender aberto)
 # Numa cópia, na pose de repouso: aplica o Mirror e move/gira/escala, acerta as normais, refaz a UV da
-# estampa projetando de frente (-Y no Blender) e exporta com os pesos dos ossos (rig_tee.py) + a Armature.
+# estampa (frente e costas, projeção plana) e exporta com os pesos dos ossos (rig_tee.py) + a Armature.
 import bpy, bmesh, os
 D = os.path.dirname(bpy.data.filepath)
 OUT = os.path.join(D, '..', 'src/assets/tshirt.glb')
@@ -32,10 +32,15 @@ bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
 uv = bm.loops.layers.uv.active or bm.loops.layers.uv.new('UVMap')
 xs = [v.co.x for v in bm.verts]; zs = [v.co.z for v in bm.verts]
 x0, w = min(xs), max(xs) - min(xs); z0, hgt = min(zs), max(zs) - min(zs)
+# UV em duas metades da textura: frente em u 0–0.5 (vista de frente) e costas em u 0.5–1 (vista de trás,
+# espelhada pra foto das costas não sair invertida). Lateral vai pro lado que ela encara mais.
+# A imagem de cada lado = caixa da camiseta (ponta de manga a ponta de manga, gola à barra): tools/make_molde.py
+x1 = x0 + w
 for f in bm.faces:
-    front = f.normal.y < -0.15
+    front = f.normal.y < 0
     for l in f.loops:
-        l[uv].uv = ((l.vert.co.x - x0) / w, (l.vert.co.z - z0) / hgt) if front else (0.02, 0.02)
+        x, v = l.vert.co.x, (l.vert.co.z - z0) / hgt
+        l[uv].uv = ((x - x0) / w * 0.5, v) if front else (0.5 + (x1 - x) / w * 0.5, v)
     f.smooth = True
 bm.to_mesh(me); bm.free()
 tmp = bpy.data.objects.new('Shirt', me) if 'Shirt' not in bpy.data.objects else bpy.data.objects.new('ShirtExport', me)
