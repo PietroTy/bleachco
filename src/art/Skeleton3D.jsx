@@ -485,7 +485,22 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     });
     io.observe(wrap);
 
+    // O canvas é bem maior que o esqueleto: só o que cai em cima dele (osso, camiseta, galão) gira/troca
+    // a estampa; o resto é fundo e o BleachBackground alveja (ele pergunta por canvas.hitTest)
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    canvas.hitTest = (clientX, clientY) => {
+      if (!parts) return false;
+      const r = canvas.getBoundingClientRect();
+      // folga de alguns px em volta: osso é fino
+      return [[0, 0], [7, 0], [-7, 0], [0, 7], [0, -7]].some(([dx, dy]) => {
+        ndc.set(((clientX + dx - r.left) / r.width) * 2 - 1, -((clientY + dy - r.top) / r.height) * 2 + 1);
+        raycaster.setFromCamera(ndc, camera);
+        return raycaster.intersectObject(parts.root, true).some((h) => h.object.visible && h.object.name !== 'Icosphere');
+      });
+    };
     const onDown = (e) => {
+      if (!canvas.hitTest(e.clientX, e.clientY)) return;
       dragging = { x: e.clientX, moved: 0, last: e.clientX };
       canvas.setPointerCapture(e.pointerId);
     };

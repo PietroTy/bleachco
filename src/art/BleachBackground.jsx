@@ -4,7 +4,9 @@ import { createStain } from './stain';
 
 const CELL = 6; // px de tela por pixel de tecido
 // Onde o clique é da interface, não do pano
-const UI = 'a, button, input, select, textarea, label, summary, [role="button"], canvas, .cart-drawer, #navbar';
+const UI = 'a, button, input, select, textarea, label, summary, [role="button"], canvas:not(.skeleton3d-canvas), .cart-drawer, #navbar';
+// Canvas do esqueleto é maior que ele: só o próprio esqueleto é interface, o vazio em volta é pano
+const ui = (target, x, y) => target.closest(UI) || (target.classList?.contains('skeleton3d-canvas') && target.hitTest?.(x, y));
 const SPLASH_PX = 70; // raio de um respingo na tela, seja qual for a grade
 // Arrasto que começa em texto é seleção, não pincel
 const TEXT = 'p, h1, h2, h3, h4, li, blockquote, label, span, strong, em, small, td, th';
@@ -99,7 +101,7 @@ export default function BleachBackground() {
       run();
     };
     const onPointerDown = (e) => {
-      if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest(UI)) return;
+      if (e.pointerType !== 'mouse' || e.button !== 0 || ui(e.target, e.clientX, e.clientY)) return;
       if (e.target.closest(TEXT)) return;
       fit();
       trail = [e.pageX, e.pageY];
@@ -107,7 +109,7 @@ export default function BleachBackground() {
     };
     // Seleção de texto nasce no mousedown: cancela só quando o arrasto é pincel
     const onMouseDown = (e) => {
-      if (e.button === 0 && !e.target.closest(UI) && !e.target.closest(TEXT)) e.preventDefault();
+      if (e.button === 0 && !ui(e.target, e.clientX, e.clientY) && !e.target.closest(TEXT)) e.preventDefault();
     };
     const onPointerMove = (e) => {
       if (e.pointerType === 'mouse' && trail && e.buttons & 1) trailTo(e.pageX, e.pageY);
@@ -116,7 +118,7 @@ export default function BleachBackground() {
       if (e.pointerType === 'mouse') trail = null;
     };
     const onTouchStart = (e) => {
-      if (e.touches.length !== 1 || e.target.closest(UI)) return;
+      if (e.touches.length !== 1 || ui(e.target, e.touches[0].clientX, e.touches[0].clientY)) return;
       fit();
       trail = [e.touches[0].pageX, e.touches[0].pageY];
       dragged = false;
@@ -128,7 +130,7 @@ export default function BleachBackground() {
       trail = null;
     };
     const onClick = (e) => {
-      if (e.target.closest(UI)) return;
+      if (ui(e.target, e.clientX, e.clientY)) return;
       // Fim de um arrasto não pinga mancha extra
       if (dragged) {
         dragged = false;
