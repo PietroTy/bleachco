@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas, PX } from './ps1';
@@ -91,6 +90,8 @@ function shirtTexture(printId) {
 // Galão da logo (o "b" de bleach.co), desenhado em px da logo: corpo arredondado, ombro descendo
 // até a direita, alça vazada inclinada, etiqueta laranja e tampa canelada em cima à esquerda.
 // Origem no centro do furo da alça: é ali que entram os dedos.
+// Pontos testados em volta do clique (px): anel de 14px, pega osso fino de braço/perna
+const HIT_RING = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [14 * Math.cos((k * Math.PI) / 4), 14 * Math.sin((k * Math.PI) / 4)])];
 const HANDLE_AT = 0.13; // distância do punho até o furo, no osso da mão
 const TILT_X = THREE.MathUtils.degToRad(20); // tampa 20° pra direita (eixo X do galão)
 const ROLL = 0.8 + Math.PI; // de cabeça pra baixo: tampa embaixo, base pra cima
@@ -352,7 +353,6 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
   const [printId, setPrintId] = useState(PRINT_IDS.includes(print) ? print : PRINT_IDS[0]);
   const [glitch, setGlitch] = useState(false);
   const printRef = useRef(printId);
-  const [inView, setInView] = useState(true);
   const clothRef = useRef(null);
 
   useEffect(() => {
@@ -480,7 +480,6 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
-      setInView(visible);
       if (visible) { cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
     });
     io.observe(wrap);
@@ -492,8 +491,8 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
     canvas.hitTest = (clientX, clientY) => {
       if (!parts) return false;
       const r = canvas.getBoundingClientRect();
-      // folga de alguns px em volta: osso é fino
-      return [[0, 0], [7, 0], [-7, 0], [0, 7], [0, -7]].some(([dx, dy]) => {
+      // folga em volta (osso é fino): braço e perna clicáveis um pouco mais grossos do que são
+      return HIT_RING.some(([dx, dy]) => {
         ndc.set(((clientX + dx - r.left) / r.width) * 2 - 1, -((clientY + dy - r.top) / r.height) * 2 + 1);
         raycaster.setFromCamera(ndc, camera);
         return raycaster.intersectObject(parts.root, true).some((h) => h.object.visible && h.object.name !== 'Icosphere');
@@ -582,9 +581,12 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
             <span className="skeleton3d-osd skeleton3d-osd--hint">{cycle ? 'arrasta · clica' : 'arrasta'}</span>
           </>
         );
-        // Corpo inteiro: o letreiro fica preso no rodapé da tela enquanto o esqueleto está à vista
-        // (portal no body: dentro do .reveal, que tem transform, o fixed não prende na tela)
-        return full ? inView && createPortal(<div className="skeleton3d-osd-fixed">{osd}</div>, document.body) : osd;
+        // Corpo inteiro: o letreiro acompanha o rodapé da tela e para nos pés do esqueleto
+        return full ? (
+          <div className="skeleton3d-osd-rail">
+            <div className="skeleton3d-osd-sticky">{osd}</div>
+          </div>
+        ) : osd;
       })()}
     </div>
   );

@@ -1224,12 +1224,6 @@ footer {
   position: absolute; top: 0; left: 0;
   image-rendering: pixelated; opacity: 0.55;
 }
-.bleach-bg-osd {
-  position: fixed; left: 14px; bottom: 14px; z-index: 50; display: flex; gap: 14px;
-  padding: 2px 10px; background: rgba(8,8,8,0.72); border-radius: 2px;
-  font-family: var(--ff-mono); font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--bone2);
-}
 .nav-logo-img { height: 76px; width: auto; display: block; }
 @media (max-width: 960px) {
   #navbar { height: 76px; }
@@ -1254,11 +1248,10 @@ footer {
   --frame-fill-ink3: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'><path fill='%231e1e1e' fill-opacity='1' d='M2 1h4v1h-4zM1 2h6v4h-6zM2 6h4v1h-4z'/><path fill='%2346423d' fill-opacity='1' d='M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM0 2h1v4h-1zM7 2h1v4h-1zM1 6h1v1h-1zM6 6h1v1h-1zM2 7h4v1h-4z'/></svg>");
   --frame-fill-ink3-orange: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'><path fill='%231e1e1e' fill-opacity='1' d='M2 1h4v1h-4zM1 2h6v4h-6zM2 6h4v1h-4z'/><path fill='%23D4521E' fill-opacity='1' d='M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM0 2h1v4h-1zM7 2h1v4h-1zM1 6h1v1h-1zM6 6h1v1h-1zM2 7h4v1h-4z'/></svg>");
   --frame-fill-notice: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'><path fill='%23D4521E' fill-opacity='0.1' d='M2 1h4v1h-4zM1 2h6v4h-6zM2 6h4v1h-4z'/><path fill='%23D4521E' fill-opacity='0.55' d='M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM0 2h1v4h-1zM7 2h1v4h-1zM1 6h1v1h-1zM6 6h1v1h-1zM2 7h4v1h-4z'/></svg>");
-  --frame-fill-osd: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'><path fill='%23080808' fill-opacity='0.85' d='M2 1h4v1h-4zM1 2h6v4h-6zM2 6h4v1h-4z'/><path fill='%2346423d' fill-opacity='1' d='M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM0 2h1v4h-1zM7 2h1v4h-1zM1 6h1v1h-1zM6 6h1v1h-1zM2 7h4v1h-4z'/></svg>");
   --grain: url('../assets/px-grain.png');
   --hard-shadow: drop-shadow(6px 6px 0 rgba(0,0,0,0.8));
 }
-.btn, .add-to-cart-btn, .nav-cart-btn, .size-btn, .tag, #back-to-top, .bleach-bg-osd,
+.btn, .add-to-cart-btn, .nav-cart-btn, .size-btn, .tag, #back-to-top,
 .form-group input, .form-group select, .form-group textarea,
 .product-card, .processo-step, .handmade-notice, .shipping-calc-box,
 .contact-form-box, .contact-note, .contact-channel, .order-summary {
@@ -1278,7 +1271,6 @@ footer {
 }
 .form-group input, .form-group select, .form-group textarea { border-image-source: var(--frame-fill-ink3); background-color: var(--ink3); }
 .handmade-notice { border-image-source: var(--frame-fill-notice); background-color: var(--orange-dim); }
-.bleach-bg-osd { border-image-source: var(--frame-fill-osd); background-color: rgba(8,8,8,0.85); padding: 0 6px; }
 /* Só contorno */
 .btn-ghost, .nav-cart-btn, .size-btn, .tag { background-color: transparent; }
 
@@ -1349,13 +1341,17 @@ footer {
   .hero-3d--full { max-width: 360px; margin-top: 0; margin-bottom: 0; }
   .skeleton3d--full { height: calc(64svh + var(--sk-headroom)); width: 100%; margin-left: 0; }
 }
-/* Letreiro do esqueleto da home preso no rodapé da tela, à direita (o "clica pra alvejar" fica à esquerda) */
-.skeleton3d-osd-fixed {
-  position: fixed; right: 24px; bottom: 22px; z-index: 60; pointer-events: none;
+/* Letreiro do esqueleto da home: acompanha o rodapé da tela (sticky) e para no fim do esqueleto */
+.skeleton3d-osd-rail {
+  position: absolute; inset: 0; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 60px;
+}
+.skeleton3d-osd-sticky {
+  position: sticky; bottom: 22px; align-self: flex-end; margin-right: 200px;
   display: flex; gap: 28px; align-items: baseline;
 }
-.skeleton3d-osd-fixed .skeleton3d-osd { position: static; }
-@media (max-width: 600px) { .skeleton3d-osd-fixed { bottom: 96px; right: 16px; } }
+.skeleton3d-osd-sticky .skeleton3d-osd { position: static; }
+@media (max-width: 960px) { .skeleton3d-osd-sticky { margin-right: 16px; } .skeleton3d-osd-rail { padding-bottom: 14px; } }
 /* Celular: slogan primeiro, esqueleto embaixo dele */
 /* Celular: slogan, esqueleto e depois o texto e os botões (o bloco de texto se desfaz no grid) */
 @media (max-width: 960px) {
