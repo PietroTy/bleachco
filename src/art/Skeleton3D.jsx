@@ -59,10 +59,13 @@ function shirtTexture(printId) {
 
 // Galão da logo (o "b" de bleach.co), desenhado em px da logo: corpo arredondado, ombro descendo
 // até a direita, alça vazada inclinada, etiqueta laranja e tampa canelada em cima à esquerda.
-// Origem na barra da alça, entre o furo e o topo (onde os dedos fecham).
+// Origem no centro do furo da alça: é ali que entram os dedos.
+const HANDLE_AT = 0.13; // distância do punho até o furo, no osso da mão
+const ROLL = 0.8;
+
 function logoJug() {
   const S = 0.24 / 345; // px da logo → metros
-  const HX = 128; const HY = 54; // barra da alça
+  const HX = 118; const HY = 100; // centro do furo da alça
   const p = (x, y) => new THREE.Vector2((x - HX) * S, (HY - y) * S);
   const body = new THREE.Shape();
   const m = (x, y) => body.moveTo(...p(x, y).toArray());
@@ -282,10 +285,13 @@ function buildScene(gltf, teeGltf, printId) {
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
   const { jug: bottle, cap } = logoJug();
   const hand = P(bones.HandR);
-  // Na altura dos dedos: um pouco além do punho, na direção do osso da mão (+Y local do osso)
-  bottle.position.copy(hand).add(v(0, 1, 0).applyQuaternion(bones.HandR.getWorldQuaternion(new THREE.Quaternion())).multiplyScalar(0.07));
-  // Pendurado pela alça e girado no próprio plano: corpo pra baixo/fora, tampa pra baixo/dentro, de onde pinga
-  bottle.rotation.set(0.55, Math.PI, 0.8);
+  // Furo da alça no meio dos dedos (eixo do osso da mão = +Y local dele), com o furo atravessado
+  // pelos dedos: no espaço da mão, o eixo do furo (Z do galão) é o X da mão e o galão pende pros dedos.
+  // ROLL gira o galão em volta do próprio furo (tampa pra baixo → o pingo sai dela).
+  const handQ = bones.HandR.getWorldQuaternion(new THREE.Quaternion());
+  bottle.position.copy(hand).add(v(0, HANDLE_AT, 0).applyQuaternion(handQ));
+  const inHand = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(v(0, 0, 1), v(0, -1, 0), v(1, 0, 0)));
+  bottle.quaternion.copy(handQ).multiply(inHand).multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 0, 1), ROLL));
   root.add(bottle);
   bones.HandR.attach(bottle);
 
