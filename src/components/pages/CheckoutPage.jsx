@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { createOrder } from '../../services/paymentService';
 import { calculateShipping } from '../../services/shippingService';
+import PixelIcon from '../common/PixelIcon';
 
 export default function CheckoutPage() {
   const { cart, clearCart, showToast, selectedShipping, setSelectedShipping } = useApp();
@@ -501,7 +502,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading} style={{ marginTop: '10px' }}>
-                  {loading ? 'Redirecionando...' : 'Ir para Pagamento (Cartão / Pix / Boleto) →'}
+                  {loading ? 'Redirecionando...' : <>Ir para Pagamento (Cartão / Pix / Boleto) <PixelIcon name="arrow" /></>}
                 </button>
               </form>
             </div>

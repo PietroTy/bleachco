@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { checkPaymentStatus, getOrderDetails } from '../../services/paymentService';
 import OrderStain, { stainCode } from '../../art/OrderStain';
+import PixelIcon from '../common/PixelIcon';
 
 const fmt = (v) => `R$ ${parseFloat(v).toFixed(2).replace('.', ',')}`;
 const FAILED = ['rejected', 'cancelled', 'refunded', 'charged_back', 'amount_mismatch'];
@@ -80,7 +81,7 @@ export default function ConfirmationPage() {
             <div className="confirm-stain">
               <OrderStain code={code} />
               <p>
-                Sua mancha nº {code}: gerada só pra este pedido. <Link to={`/mancha/${code}`}>Link pra compartilhar →</Link>
+                Sua mancha nº {code}: gerada só pra este pedido. <Link to={`/mancha/${code}`}>Link pra compartilhar <PixelIcon name="arrow" /></Link>
               </p>
             </div>
           )}

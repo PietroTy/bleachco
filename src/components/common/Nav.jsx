@@ -2,15 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import logoImg from '../../assets/logo-mark.png';
-
-// Carrinho de compras em pixel art (grade 12×12), na cor do texto
-function CartIcon() {
-  return (
-    <svg className="nav-cart-icon" viewBox="0 0 12 12" shapeRendering="crispEdges" aria-hidden="true">
-      <path fill="currentColor" d="M0 1h2v1H0zM2 2h1v1H2zM2 3h10v1H2zM3 4h1v2H3zM11 4h1v1h-1zM10 5h1v1h-1zM4 6h6v1H4zM6 4h1v2H6zM8 4h1v2H8zM4 7h1v1H4zM4 8h7v1H4zM4 9h2v2H4zM9 9h2v2H9z" />
-    </svg>
-  );
-}
+import PixelIcon from './PixelIcon';
 
 export default function Nav() {
   const { cart, setCartOpen } = useApp();
@@ -100,7 +92,7 @@ export default function Nav() {
         </ul>
         <div className="nav-actions">
           <button className="nav-cart-btn" onClick={() => setCartOpen(true)} aria-label={`Carrinho${totalItems ? `, ${totalItems} ${totalItems > 1 ? 'itens' : 'item'}` : ''}`}>
-            <CartIcon />
+            <PixelIcon name="cart" className="nav-cart-icon" />
             {totalItems > 0 && <span id="cart-count">{totalItems}</span>}
           </button>
           <button
@@ -109,9 +101,7 @@ export default function Nav() {
             aria-label="Menu"
             aria-expanded={mobileMenuOpen}
           >
-            <span></span>
-            <span></span>
-            <span></span>
+            <PixelIcon name={mobileMenuOpen ? 'close' : 'menu'} />
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { EclipseSvg, SpySvg, ECLIPSE_SVG_RAW, SPY_SVG_RAW } from '../common/SvgAssets';
 import { calculateShipping } from '../../services/shippingService';
+import PixelIcon from '../common/PixelIcon';
 
 const Skeleton3D = lazy(() => import('../../art/Skeleton3D'));
 
@@ -426,7 +427,7 @@ export default function ProductPage() {
         <div className="container">
           <div className="section-head reveal">
             <span className="eyebrow">Também disponível</span>
-            <h2>VER {product.otherProductName} →</h2>
+            <h2>VER {product.otherProductName} <PixelIcon name="arrow" /></h2>
           </div>
           <Link
             to={`/produto/${product.otherProductId}`}

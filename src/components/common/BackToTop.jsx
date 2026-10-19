@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PixelIcon from './PixelIcon';
 
 export default function BackToTop() {
   const [show, setShow] = useState(false);
@@ -26,7 +27,7 @@ export default function BackToTop() {
       onClick={scrollToTop}
       aria-label="Voltar ao topo"
     >
-      ↑
+      <PixelIcon name="up" />
     </button>
   );
 }
