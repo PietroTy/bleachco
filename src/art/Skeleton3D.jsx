@@ -173,7 +173,7 @@ function buildScene(gltf, teeGltf, printId) {
 
   // Camiseta: já vem encaixada no esqueleto, na pose de repouso dele (feita no Blender:
   // corpo moldado na caixa torácica, gola no pescoço, mangas descendo em volta do úmero).
-  // A cor do vértice diz o quanto ele segue o braço (r) e de que lado (g: 1 esquerdo).
+  // A cor do vértice diz o quanto ele segue o braço (r); o lado é o da posição (x > 0 = esquerdo).
   const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
   const teeMesh = teeGltf.scene.getObjectByProperty('isMesh', true);
   const geo = teeMesh.geometry;
@@ -183,7 +183,7 @@ function buildScene(gltf, teeGltf, printId) {
   const skinWeight = new Float32Array(count * 4);
   for (let i = 0; i < count; i++) {
     const arm = col.getX(i);
-    skinIndex.set([0, col.getY(i) > 0.5 ? 1 : 2, 0, 0], i * 4);
+    skinIndex.set([0, geo.attributes.position.getX(i) > 0 ? 1 : 2, 0, 0], i * 4);
     skinWeight.set([1 - arm, arm, 0, 0], i * 4);
   }
   geo.deleteAttribute('color');
