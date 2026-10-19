@@ -9,14 +9,15 @@ const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matc
 
 // Núcleo: anima uma grade w×h até cada ponto chegar no seu floor (Float32Array).
 // mask: pontos que importam (as gotas extras e o "acabou?" só olham pra eles). show(stain, last) desenha.
-function runStain({ w, h, floor, mask, duration = 2600, keep = 0.2, show }) {
+function runStain({ w, h, floor, mask, duration = 2600, keep = 0.2, scale = 1, show }) {
   const stain = createStain(w, h, (Math.random() * 1e9) | 0);
   const r = stain.rand;
-  const gap = 8;
+  // scale: grade mais fina que o normal mantém o tamanho das gotas em px de tela
+  const gap = 8 * scale;
   const drops = [];
   for (let y = gap / 2; y < h + gap / 2; y += gap) {
     for (let x = gap / 2; x < w + gap / 2; x += gap) {
-      drops.push({ x: x + (r() - 0.5) * gap, y: y + (r() - 0.5) * gap, r: 2.5 + r() * 2.5, at: r() * duration });
+      drops.push({ x: x + (r() - 0.5) * gap, y: y + (r() - 0.5) * gap, r: (2.5 + r() * 2.5) * scale, at: r() * duration });
     }
   }
   drops.sort((a, b) => a.at - b.at);
@@ -49,7 +50,7 @@ function runStain({ w, h, floor, mask, duration = 2600, keep = 0.2, show }) {
       for (let k = 0; k < 60; k++) {
         const i = cells[Math.floor(r() * cells.length)];
         if (dark(i) > 0.1) {
-          stain.drop(i % w, Math.floor(i / w), 2.5 + r() * 2.5, 2);
+          stain.drop(i % w, Math.floor(i / w), (2.5 + r() * 2.5) * scale, 2);
           break;
         }
       }
@@ -179,7 +180,8 @@ function bleachImage(img) {
   const original = new Image();
   original.src = img.currentSrc || img.src;
   original.decode().then(() => {
-    const cell = 3;
+    // Grade de 1px: com 3px o pingo laranja (uns 4×6px) pegava a cor das letras vizinhas e encolhia
+    const cell = 1;
     const w = Math.max(8, Math.round(img.clientWidth / cell));
     const h = Math.max(4, Math.round(img.clientHeight / cell));
     // Cor da logo em cada ponto da grade
@@ -221,6 +223,7 @@ function bleachImage(img) {
       floor,
       mask,
       keep: 0.06, // logo termina quase na cor dela (o laranja é o do site), só com o grão
+      scale: 3,
       show(stain, last) {
         stain.render(gctx, 0);
         octx.globalCompositeOperation = 'copy';

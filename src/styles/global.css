@@ -706,7 +706,6 @@ p  {
   background: var(--orange-dim);
   margin-bottom: 24px;
 }
-.handmade-notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; color: var(--orange); }
 .handmade-notice p { font-size: 1rem; color: var(--bone); opacity: 0.88; }
 
 /* Scroll hint */
@@ -804,7 +803,6 @@ p  {
   text-align: center; padding: 60px 20px;
   color: var(--gray); font-size: 1.05rem;
 }
-.cart-empty-icon { font-size: 2rem; margin-bottom: 14px; opacity: 0.3; }
 
 .cart-item {
   display: flex; gap: 14px;

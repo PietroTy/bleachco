@@ -234,7 +234,6 @@ export default function ProductPage() {
             <p className="product-tagline">{product.tagline}</p>
 
             <div className="handmade-notice">
-              <span className="handmade-notice-icon">✦</span>
               <p>
                 <strong>100% artesanal.</strong> Produzida individualmente a cada pedido. Sem moldes ou telas.
               </p>
@@ -280,7 +279,7 @@ export default function ProductPage() {
               color: 'var(--bone)'
             }}>
               <div style={{ fontWeight: 600, color: 'var(--orange)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>⚠️ Aviso de Produção Artesanal:</span>
+                <span>Aviso de Produção Artesanal:</span>
               </div>
               <p style={{ margin: '0 0 6px 0', color: '#d0c8be' }}>
                 Por ser um processo manual com água sanitária, o resultado final terá pequenas variações em relação à foto ilustrativa.
@@ -293,7 +292,7 @@ export default function ProductPage() {
             {/* ── CALCULAR FRETE ── */}
             <div className="shipping-calc-box" style={{ marginTop: '24px', padding: '16px' }}>
               <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--bone)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>🚚</span> Calcular Frete e Prazo (Melhor Envio)
+                Calcular Frete e Prazo (Melhor Envio)
               </div>
               <form onSubmit={handleCalculateShipping} style={{ display: 'flex', gap: '8px' }}>
                 <input
