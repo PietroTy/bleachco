@@ -57,15 +57,56 @@ function shirtTexture(printId) {
   return tex;
 }
 
-function bottleTexture() {
-  const c = noiseCanvas(32, 32, [226, 222, 214], 18, 5);
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = ORANGE;
-  ctx.fillRect(0, 12, 32, 9);
-  ctx.fillStyle = '#080808';
-  ctx.fillRect(6, 15, 20, 1);
-  ctx.fillRect(6, 18, 14, 1);
-  return pixelTexture(c);
+// Galão da logo (o "b" de bleach.co), desenhado em px da logo: corpo arredondado, ombro descendo
+// até a direita, alça vazada inclinada, janela escura no meio e tampa canelada em cima à esquerda.
+// Origem na barra da alça, entre o furo e o topo (onde os dedos fecham).
+function logoJug() {
+  const S = 0.24 / 345; // px da logo → metros
+  const HX = 128; const HY = 54; // barra da alça
+  const p = (x, y) => new THREE.Vector2((x - HX) * S, (HY - y) * S);
+  const body = new THREE.Shape();
+  const m = (x, y) => body.moveTo(...p(x, y).toArray());
+  const l = (x, y) => body.lineTo(...p(x, y).toArray());
+  const q = (cx, cy, x, y) => body.quadraticCurveTo(...p(cx, cy).toArray(), ...p(x, y).toArray());
+  m(30, 32); l(92, 32);
+  q(150, 60, 168, 140); // ombro
+  l(168, 330); q(168, 350, 148, 350);
+  l(25, 350); q(5, 350, 5, 330);
+  l(5, 85); q(5, 45, 30, 32);
+  const hole = new THREE.Path();
+  hole.absellipse(...p(118, 100).toArray(), 20 * S, 40 * S, 0, Math.PI * 2, false, -0.6);
+  body.holes.push(hole);
+  const depth = 0.06;
+  const bone = ps1(new THREE.MeshLambertMaterial({ color: 0xece6dc, flatShading: true }));
+  const geo = new THREE.ExtrudeGeometry(body, { depth, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.006, bevelSegments: 1, curveSegments: 5 });
+  geo.translate(0, 0, -depth / 2);
+  const jug = new THREE.Group();
+  jug.add(new THREE.Mesh(geo, bone));
+  // Janela escura (o recorte vertical da logo), dos dois lados
+  const win = new THREE.Shape();
+  const w0 = p(75, 182); const w1 = p(112, 318); const r = 16 * S;
+  win.moveTo(w0.x + r, w0.y); win.lineTo(w1.x - r, w0.y); win.quadraticCurveTo(w1.x, w0.y, w1.x, w0.y - r);
+  win.lineTo(w1.x, w1.y + r); win.quadraticCurveTo(w1.x, w1.y, w1.x - r, w1.y); win.lineTo(w0.x + r, w1.y);
+  win.quadraticCurveTo(w0.x, w1.y, w0.x, w1.y + r); win.lineTo(w0.x, w0.y - r); win.quadraticCurveTo(w0.x, w0.y, w0.x + r, w0.y);
+  const dark = ps1(new THREE.MeshLambertMaterial({ color: 0x141210 }));
+  const winGeo = new THREE.ShapeGeometry(win, 3);
+  [1, -1].forEach((side) => {
+    const w = new THREE.Mesh(winGeo, dark);
+    w.position.z = side * (depth / 2 + 0.0085);
+    if (side < 0) w.rotation.y = Math.PI;
+    jug.add(w);
+  });
+  // Tampa canelada
+  const c = noiseCanvas(16, 8, [236, 230, 220], 10, 9);
+  const cctx = c.getContext('2d');
+  cctx.fillStyle = '#5a554e';
+  for (let x = 1; x < 16; x += 3) cctx.fillRect(x, 0, 1, 8);
+  const capTex = pixelTexture(c);
+  capTex.wrapS = THREE.RepeatWrapping;
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(27 * S, 27 * S, 28 * S, 10), ps1(new THREE.MeshLambertMaterial({ map: capTex })));
+  cap.position.copy(new THREE.Vector3(...p(58, 18).toArray(), 0));
+  jug.add(cap);
+  return { jug, cap };
 }
 
 // Modelo: "Low poly retro PSX skeleton" por LonesomeDucky (OpenGameArt, CC-BY 4.0)
@@ -230,21 +271,11 @@ function buildScene(gltf, teeGltf, printId) {
   root.updateWorldMatrix(true, true);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
-  const bottleMat = ps1(new THREE.MeshLambertMaterial({ map: bottleTexture(), flatShading: true }));
-  const bottle = new THREE.Group();
-  const jug = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.2, 0.13), bottleMat);
-  jug.position.set(0, -0.12, 0.03);
-  bottle.add(jug);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.011, 3, 6, Math.PI), bottleMat);
-  handle.rotation.y = Math.PI / 2;
-  handle.position.set(0, -0.025, -0.0);
-  bottle.add(handle);
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.035, 6), ps1(new THREE.MeshLambertMaterial({ color: 0xd4521e })));
-  cap.position.set(0, -0.005, 0.075);
-  bottle.add(cap);
+  const { jug: bottle, cap } = logoJug();
   const hand = P(bones.HandR);
-  bottle.position.copy(hand).add(v(0, -0.07, 0.02));
-  bottle.rotation.x = 0.55;
+  // Na altura dos dedos: um pouco além do punho, na direção do osso da mão (+Y local do osso)
+  bottle.position.copy(hand).add(v(0, 1, 0).applyQuaternion(bones.HandR.getWorldQuaternion(new THREE.Quaternion())).multiplyScalar(0.07));
+  bottle.rotation.x = 0.35; // inclinado pra frente, a tampa vira pra baixo e pinga
   root.add(bottle);
   bones.HandR.attach(bottle);
 
