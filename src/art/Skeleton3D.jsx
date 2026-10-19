@@ -89,15 +89,15 @@ function rotateBoneWorld(bone, delta) {
   bone.quaternion.copy(parentQ.invert().multiply(delta.clone().multiply(worldQ)));
 }
 
-// Osso que fica dentro da camiseta não aparece: descarta o fragmento se ele cai num cilindro elíptico
-// um pouco menor que o corpo da camiseta (coordenadas de repouso, preso ao tronco). Pega ponta de
-// clavícula e escápula rente ao tecido. O pescoço, que sai pela gola, fica de fora.
-const teeInverse = { value: new THREE.Matrix4() };
+// Osso que fica dentro da camiseta não aparece: cada ponto é levado de volta pra pose de repouso pelo osso
+// do tronco e pelos dos braços (como no skinning) e testado contra medidas fixas da camiseta nessa pose:
+// um cilindro elíptico no tronco e um em volta do úmero. Pega ponta de clavícula e escápula rente ao tecido.
+const hideInverse = { value: [new THREE.Matrix4(), new THREE.Matrix4(), new THREE.Matrix4()] };
 function hideInsideShirt(material) {
   const base = material.onBeforeCompile;
   material.onBeforeCompile = (shader) => {
     base(shader);
-    shader.uniforms.uTeeInv = teeInverse;
+    shader.uniforms.uHideInv = hideInverse;
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vWorldPos;\nvarying vec3 vObjPos;')
       .replace('#include <project_vertex>', '#include <project_vertex>\nvWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvObjPos = transformed;');
@@ -105,7 +105,7 @@ function hideInsideShirt(material) {
       .replace(
         '#include <common>',
         `#include <common>
-        uniform mat4 uTeeInv;
+        uniform mat4 uHideInv[3];
         varying vec3 vWorldPos;
         varying vec3 vObjPos;
         float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
@@ -132,14 +132,18 @@ function hideInsideShirt(material) {
       .replace(
         '#include <clipping_planes_fragment>',
         `#include <clipping_planes_fragment>
-        vec3 tp = (uTeeInv * vec4(vWorldPos, 1.0)).xyz;
+        vec3 tp = (uHideInv[0] * vec4(vWorldPos, 1.0)).xyz;
         bool neck = tp.y > 1.45 && pow(tp.x / 0.04, 2.0) + pow((tp.z + 0.085) / 0.05, 2.0) < 1.0;
-        if (tp.y > 0.86 && tp.y < 1.5 && !neck && pow(tp.x / 0.19, 2.0) + pow((tp.z + 0.042) / 0.14, 2.0) < 1.0) discard;
-        // Úmero dentro da manga (o braço fica na pose de repouso, então dá pra usar a medida fixa)
-        vec3 sh = vec3(sign(tp.x) * 0.168, 1.398, -0.081);
-        vec3 ax = normalize(vec3(sign(tp.x) * 0.038, -0.296, 0.028));
-        float al = dot(tp - sh, ax);
-        if (al > -0.05 && al < 0.13 && length(tp - sh - ax * al) < 0.045) discard;
+        if (tp.y > 0.9 && tp.y < 1.5 && !neck && pow(tp.x / 0.19, 2.0) + pow((tp.z + 0.042) / 0.14, 2.0) < 1.0) discard;
+        // Úmero dentro da manga, no repouso de cada braço
+        for (int k = 1; k < 3; k++) {
+          vec3 ap = (uHideInv[k] * vec4(vWorldPos, 1.0)).xyz;
+          float sd = k == 1 ? 1.0 : -1.0;
+          vec3 sh = vec3(sd * 0.168, 1.398, -0.081);
+          vec3 ax = normalize(vec3(sd * 0.038, -0.296, 0.028));
+          float al = dot(ap - sh, ax);
+          if (sd * ap.x > 0.1 && al > -0.05 && al < 0.11 && length(ap - sh - ax * al) < 0.045) discard;
+        }
 `
       );
   };
@@ -171,36 +175,23 @@ function buildScene(gltf, teeGltf, printId) {
   rotateBoneWorld(bones.Head, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.3)); // e o rosto volta a olhar pra frente
   root.updateWorldMatrix(true, true);
 
-  // Camiseta: já vem encaixada no esqueleto, na pose de repouso dele (feita no Blender:
-  // corpo moldado na caixa torácica, gola no pescoço, mangas descendo em volta do úmero).
-  // A cor do vértice diz o quanto ele segue o braço (r); o lado é o da posição (x > 0 = esquerdo).
+  // Camiseta: moldada no Blender (tools/teefixed.blend) e presa nos ossos lá (tools/rig_tee.py): vem com o
+  // rig, cada vértice com peso no tronco/ombro/braço. Aqui só troca os ossos do arquivo dela pelos ossos de
+  // mesmo nome deste esqueleto (a pose de repouso é a mesma), então qualquer pose deforma a camiseta junto.
   const cloth = ps1(new THREE.MeshLambertMaterial({ map: shirtTexture(printId), side: THREE.DoubleSide }));
-  const teeMesh = teeGltf.scene.getObjectByProperty('isMesh', true);
-  const geo = teeMesh.geometry;
-  const col = geo.attributes.color;
-  const count = geo.attributes.position.count;
-  const skinIndex = new Uint16Array(count * 4);
-  const skinWeight = new Float32Array(count * 4);
-  for (let i = 0; i < count; i++) {
-    const arm = col.getX(i);
-    skinIndex.set([0, geo.attributes.position.getX(i) > 0 ? 1 : 2, 0, 0], i * 4);
-    skinWeight.set([1 - arm, arm, 0, 0], i * 4);
-  }
-  geo.deleteAttribute('color');
-  geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndex, 4));
-  geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeight, 4));
+  let teeMesh = null;
+  teeGltf.scene.traverse((o) => {
+    if (o.isSkinnedMesh) teeMesh = o;
+  });
   teeMesh.material.dispose();
-  const shirt = new THREE.SkinnedMesh(geo, cloth);
+  const shirt = new THREE.SkinnedMesh(teeMesh.geometry, cloth);
   shirt.frustumCulled = false;
   root.add(shirt);
   root.updateWorldMatrix(true, true);
-  // Presa nos ossos com o tronco e os braços ainda na pose de repouso (a mesma do Blender)
-  shirt.bind(new THREE.Skeleton([bones.Torso, bones.UpperArmL, bones.UpperArmR]), shirt.matrixWorld);
-
-  // Referência presa no tronco (identidade na pose de repouso), pro shader esconder osso dentro da camiseta
-  const teeFrame = new THREE.Object3D();
-  root.add(teeFrame);
-  bones.Torso.attach(teeFrame);
+  const teeBones = teeMesh.skeleton.bones.map((b) => bones[b.name]);
+  shirt.bind(new THREE.Skeleton(teeBones, teeMesh.skeleton.boneInverses.map((m) => m.clone())), new THREE.Matrix4());
+  // Ossos que o shader usa pra esconder osso dentro da camiseta (repouso → pose atual de cada um)
+  const hideBones = ['Torso', 'UpperArmL', 'UpperArmR'].map((n) => ({ bone: bones[n], inv: shirt.skeleton.boneInverses[teeBones.indexOf(bones[n])] }));
 
   // Pose final: braço fica no ângulo da manga (o de repouso), só o antebraço mexe. Direito desce pro galão
   const P = (b) => b.getWorldPosition(new THREE.Vector3());
@@ -239,7 +230,7 @@ function buildScene(gltf, teeGltf, printId) {
   }
 
   const rest = Object.fromEntries(['Torso', 'Neck', 'Head'].map((n) => [n, bones[n].quaternion.clone()]));
-  return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth, teeFrame };
+  return { root, bones, rest, cap, drips, spout: new THREE.Vector3(), cloth, hideBones };
 }
 
 // Esqueleto PSX vestindo a camiseta, luz quente: osso branco com contraluz laranja (cores da marca)
@@ -348,7 +339,8 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
 
       if (parts) {
         scene.updateMatrixWorld();
-        teeInverse.value.copy(parts.teeFrame.matrixWorld).invert();
+        // mundo → repouso de cada osso (o inverso da matriz de skinning dele)
+        parts.hideBones.forEach((h, k) => hideInverse.value[k].multiplyMatrices(h.bone.matrixWorld, h.inv).invert());
       }
       renderer.render(scene, camera);
       if (visible) raf = requestAnimationFrame(frame);
