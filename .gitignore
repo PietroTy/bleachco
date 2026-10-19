@@ -30,3 +30,5 @@ deploy.sh
 google_credentials.json
 bleachco-*.json
 *.csvtools/out/
+*.blend1
+pedidos_bleachco.csv
