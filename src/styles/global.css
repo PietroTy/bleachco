@@ -297,7 +297,6 @@ p  {
   font-family: var(--ff-mono); font-size: 1.2rem; letter-spacing: 0.12em; color: var(--bone);
   text-shadow: 1px 0 rgba(212,82,30,.7), -1px 0 rgba(80,140,255,.5);
 }
-.skeleton3d-osd--hint { left: auto; right: 6%; color: var(--gray); text-shadow: none; }
 .skeleton3d.is-glitching .skeleton3d-canvas { animation: vhs-tracking 0.32s steps(4) 1; }
 @keyframes vhs-tracking {
   0%   { transform: translateX(0); filter: none; }
@@ -1322,7 +1321,6 @@ footer {
 }
 /* Esses têm fundo próprio (shorthand "background" no CSS deles): letra volta a ser cor sólida */
 .no-signal-osd a { -webkit-text-fill-color: currentColor; }
-@media (max-width: 600px) { .skeleton3d-osd--hint { display: none; } }
 
 /* Home: esqueleto de corpo inteiro, maior que o hero: as pernas descem abaixo do texto e passam da borda */
 .hero:has(.hero-3d--full) { overflow: visible; z-index: 2; }
