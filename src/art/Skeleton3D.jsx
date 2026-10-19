@@ -61,7 +61,7 @@ function shirtTexture(printId) {
 // até a direita, alça vazada inclinada, etiqueta laranja e tampa canelada em cima à esquerda.
 // Origem no centro do furo da alça: é ali que entram os dedos.
 const HANDLE_AT = 0.13; // distância do punho até o furo, no osso da mão
-const ROLL = 0.5 + Math.PI; // de cabeça pra baixo: tampa embaixo, base pra cima
+const ROLL = 0.8 + Math.PI; // de cabeça pra baixo: tampa embaixo, base pra cima
 
 function logoJug() {
   const S = 0.24 / 345; // px da logo → metros
