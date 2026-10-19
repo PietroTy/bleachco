@@ -1230,8 +1230,6 @@ footer {
   font-family: var(--ff-mono); font-size: 1.05rem; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--bone2);
 }
-.bleach-bg-osd button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-transform: inherit; letter-spacing: inherit; }
-.bleach-bg-osd button:hover { color: var(--orange); }
 .nav-logo-img { height: 76px; width: auto; display: block; }
 @media (max-width: 960px) {
   #navbar { height: 76px; }
@@ -1337,7 +1335,7 @@ footer {
 /* Home: esqueleto de corpo inteiro, maior que o hero: as pernas descem abaixo do texto e passam da borda */
 .hero:has(.hero-3d--full) { overflow: visible; z-index: 2; }
 .hero-bg { -webkit-mask-image: linear-gradient(to bottom, #000 75%, transparent); mask-image: linear-gradient(to bottom, #000 75%, transparent); }
-.hero-3d--full { align-self: end; max-width: 600px; margin-top: -40px; margin-bottom: -230px; }
+.hero-3d--full { align-self: end; max-width: 600px; margin-top: 80px; margin-bottom: -350px; }
 .skeleton3d--full { aspect-ratio: auto; height: calc(min(100svh, 860px) + 100px); }
 .skeleton3d--full .skeleton3d-canvas {
   -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent 100%);
