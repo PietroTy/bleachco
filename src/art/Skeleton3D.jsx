@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas } from './ps1';
+import teeUrl from '../assets/tshirt.glb';
 
 const ORANGE = '#D4521E';
 
@@ -66,7 +67,9 @@ function bottleTexture() {
 // Modelo: "Low poly retro PSX skeleton" por LonesomeDucky (OpenGameArt, CC-BY 4.0)
 const MODEL_URL = `${process.env.PUBLIC_URL}/models/skeleton/skeleton.gltf`;
 // Camiseta: "T-shirt" por Poly by Google (poly.pizza, CC-BY 3.0), com UV refeito pra estampa
-const TEE_URL = `${process.env.PUBLIC_URL}/models/tshirt.glb`;
+// importado (não em public/): o build dá um nome novo a cada versão, então o navegador nunca mistura
+// código novo com camiseta velha em cache
+const TEE_URL = teeUrl;
 
 const _q2 = new THREE.Quaternion();
 const _a = new THREE.Vector3();
@@ -166,7 +169,7 @@ function buildScene(gltf, teeGltf, printId) {
   map.minFilter = THREE.NearestFilter;
   map.generateMipmaps = false;
   skin.material.dispose();
-  skin.material = hideInsideShirt(ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide })));
+  skin.material = ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide }));
   skin.frustumCulled = false;
 
   // O modelo vem com o pescoço caído pra frente: endireita pra cabeça ficar em cima da gola
@@ -183,15 +186,20 @@ function buildScene(gltf, teeGltf, printId) {
   teeGltf.scene.traverse((o) => {
     if (o.isSkinnedMesh) teeMesh = o;
   });
-  teeMesh.material.dispose();
-  const shirt = new THREE.SkinnedMesh(teeMesh.geometry, cloth);
-  shirt.frustumCulled = false;
-  root.add(shirt);
-  root.updateWorldMatrix(true, true);
-  const teeBones = teeMesh.skeleton.bones.map((b) => bones[b.name]);
-  shirt.bind(new THREE.Skeleton(teeBones, teeMesh.skeleton.boneInverses.map((m) => m.clone())), new THREE.Matrix4());
-  // Ossos que o shader usa pra esconder osso dentro da camiseta (repouso → pose atual de cada um)
-  const hideBones = ['Torso', 'UpperArmL', 'UpperArmR'].map((n) => ({ bone: bones[n], inv: shirt.skeleton.boneInverses[teeBones.indexOf(bones[n])] }));
+  // Sem camiseta com rig (arquivo inesperado), o esqueleto aparece mesmo assim, só sem ela
+  let hideBones = [];
+  if (teeMesh) {
+    hideInsideShirt(skin.material); // osso dentro da camiseta some
+    teeMesh.material.dispose();
+    const shirt = new THREE.SkinnedMesh(teeMesh.geometry, cloth);
+    shirt.frustumCulled = false;
+    root.add(shirt);
+    root.updateWorldMatrix(true, true);
+    const teeBones = teeMesh.skeleton.bones.map((b) => bones[b.name]);
+    shirt.bind(new THREE.Skeleton(teeBones, teeMesh.skeleton.boneInverses.map((m) => m.clone())), new THREE.Matrix4());
+    // Ossos que o shader usa pra esconder osso dentro da camiseta (repouso → pose atual de cada um)
+    hideBones = ['Torso', 'UpperArmL', 'UpperArmR'].map((n) => ({ bone: bones[n], inv: shirt.skeleton.boneInverses[teeBones.indexOf(bones[n])] }));
+  }
 
   // Pose final: braço fica no ângulo da manga (o de repouso), só o antebraço mexe. Direito desce pro galão
   const P = (b) => b.getWorldPosition(new THREE.Vector3());
