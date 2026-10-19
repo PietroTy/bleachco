@@ -291,7 +291,8 @@ function buildScene(gltf, teeGltf, printId) {
   const handQ = bones.HandR.getWorldQuaternion(new THREE.Quaternion());
   bottle.position.copy(hand).add(v(0, HANDLE_AT, 0).applyQuaternion(handQ));
   const inHand = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(v(0, 0, 1), v(0, -1, 0), v(1, 0, 0)));
-  bottle.quaternion.copy(handQ).multiply(inHand).multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 0, 1), ROLL));
+  bottle.quaternion.copy(handQ).multiply(inHand).multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 0, 1), ROLL))
+    .multiply(new THREE.Quaternion().setFromAxisAngle(v(0, 1, 0), Math.PI)); // virado no eixo da altura: lado da alça pra baixo
   root.add(bottle);
   bones.HandR.attach(bottle);
 
