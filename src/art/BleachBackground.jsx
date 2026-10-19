@@ -10,8 +10,6 @@ const UI = 'a, button, input, select, textarea, label, summary, [role="button"],
 // Canvas do esqueleto é maior que ele: só o próprio esqueleto é interface, o vazio em volta é pano
 const ui = (target, x, y) => target.closest(UI) || (target.classList?.contains('skeleton3d-canvas') && target.hitTest?.(x, y));
 const SPLASH_PX = 70; // raio de um respingo na tela, seja qual for a grade
-// Arrasto que começa em texto é seleção, não pincel
-const TEXT = 'p, h1, h2, h3, h4, li, blockquote, label, span, strong, em, small, td, th';
 
 // O fundo do site inteiro é um pano preto do tamanho da página (rola junto com ela).
 // Cada página já chega com manchas onde marca data-stain="fx,fy[,tamanho] …" (frações do elemento);
@@ -112,14 +110,13 @@ export default function BleachBackground() {
     };
     const onPointerDown = (e) => {
       if (e.pointerType !== 'mouse' || e.button !== 0 || ui(e.target, e.clientX, e.clientY)) return;
-      if (e.target.closest(TEXT)) return;
       fit();
       trail = [e.pageX, e.pageY];
       dragged = false;
     };
-    // Seleção de texto nasce no mousedown: cancela só quando o arrasto é pincel
+    // Sem isso o navegador começa a arrastar imagem/seleção no mousedown
     const onMouseDown = (e) => {
-      if (e.button === 0 && !ui(e.target, e.clientX, e.clientY) && !e.target.closest(TEXT)) e.preventDefault();
+      if (e.button === 0 && !ui(e.target, e.clientX, e.clientY)) e.preventDefault();
     };
     const onPointerMove = (e) => {
       if (e.pointerType === 'mouse' && trail && e.buttons & 1) trailTo(e.pageX, e.pageY);

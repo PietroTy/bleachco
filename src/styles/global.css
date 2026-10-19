@@ -1376,3 +1376,7 @@ footer {
 .contact-channel-arrow .px-icon { width: 1.2em; height: 1.2em; }
 #back-to-top { background: none; color: var(--orange); font-size: 34px; width: auto; height: auto; box-shadow: none; filter: drop-shadow(0 0 4px rgba(8,8,8,0.95)); }
 #back-to-top:hover { transform: translateY(-3px); box-shadow: none; color: var(--bone); }
+
+/* Texto não seleciona (arrastar é pra alvejar o fundo); campos de formulário continuam normais */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea, select, [contenteditable] { -webkit-user-select: text; user-select: text; }
