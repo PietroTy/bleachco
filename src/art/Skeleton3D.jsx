@@ -285,7 +285,7 @@ function buildScene(gltf, teeGltf, printId) {
   // Na altura dos dedos: um pouco além do punho, na direção do osso da mão (+Y local do osso)
   bottle.position.copy(hand).add(v(0, 1, 0).applyQuaternion(bones.HandR.getWorldQuaternion(new THREE.Quaternion())).multiplyScalar(0.07));
   // Pendurado pela alça e girado no próprio plano: corpo pra baixo/fora, tampa pra baixo/dentro, de onde pinga
-  bottle.rotation.set(0.15, Math.PI, 0.8);
+  bottle.rotation.set(0.55, Math.PI, 0.8);
   root.add(bottle);
   bones.HandR.attach(bottle);
 
