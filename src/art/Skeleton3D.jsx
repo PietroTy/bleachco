@@ -3,6 +3,10 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { ps1, ps1Uniforms, pixelTexture, noiseCanvas } from './ps1';
 import teeUrl from '../assets/tshirt.glb';
+import blenderPose from '../assets/pose.json';
+
+// Inclinação fixa somada à respiração: só na pose do código; a do Blender já vem como a pessoa quis
+const LEAN = Object.keys(blenderPose).length ? { torso: 0, head: 0 } : { torso: 0.06, head: 0.05 };
 
 const ORANGE = '#D4521E';
 
@@ -172,11 +176,6 @@ function buildScene(gltf, teeGltf, printId) {
   skin.material = ps1(new THREE.MeshLambertMaterial({ map, alphaTest: 0.5, side: THREE.DoubleSide }));
   skin.frustumCulled = false;
 
-  // O modelo vem com o pescoço caído pra frente: endireita pra cabeça ficar em cima da gola
-  rotateBoneWorld(bones.Neck, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.28));
-  root.updateWorldMatrix(true, true);
-  rotateBoneWorld(bones.Head, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.3)); // e o rosto volta a olhar pra frente
-  root.updateWorldMatrix(true, true);
 
   // Camiseta: moldada no Blender (tools/teefixed.blend) e presa nos ossos lá (tools/rig_tee.py): vem com o
   // rig, cada vértice com peso no tronco/ombro/braço. Aqui só troca os ossos do arquivo dela pelos ossos de
@@ -201,11 +200,33 @@ function buildScene(gltf, teeGltf, printId) {
     hideBones = ['Torso', 'UpperArmL', 'UpperArmR'].map((n) => ({ bone: bones[n], inv: shirt.skeleton.boneInverses[teeBones.indexOf(bones[n])] }));
   }
 
-  // Pose final: braço fica no ângulo da manga (o de repouso), só o antebraço mexe. Direito desce pro galão
+  // Pose: a do Blender (tools/teefixed.blend, Pose Mode → export_tee.py grava src/assets/pose.json) se tiver;
+  // senão a do código. A camiseta presa nos ossos acompanha qualquer uma.
   const P = (b) => b.getWorldPosition(new THREE.Vector3());
-  const bend = (lower, hand, fore) => aimBone(lower, hand, P(lower).add(fore));
-  bend(bones.LowerArmR, bones.HandR, v(0.04, -0.24, 0.1));
-  bend(bones.LowerArmL, bones.HandL, v(-0.03, -0.24, 0.05));
+  root.updateWorldMatrix(true, true);
+  if (Object.keys(blenderPose).length) {
+    // Cada entrada é a rotação do osso desde o repouso, no espaço do esqueleto (root ainda sem pai):
+    // mundo desejado = delta × mundo de repouso; pais primeiro (ordem da árvore)
+    const restWorld = new Map();
+    root.traverse((o) => o.isBone && restWorld.set(o, o.getWorldQuaternion(new THREE.Quaternion())));
+    root.traverse((o) => {
+      const q = o.isBone && blenderPose[o.name.replace('.', '')];
+      if (!q) return;
+      const want = new THREE.Quaternion(...q).multiply(restWorld.get(o));
+      o.quaternion.copy(o.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(want));
+      o.updateWorldMatrix(false, true);
+    });
+  } else {
+    // Pescoço do modelo vem caído pra frente: endireita, e o rosto volta a olhar pra frente
+    rotateBoneWorld(bones.Neck, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -0.28));
+    root.updateWorldMatrix(true, true);
+    rotateBoneWorld(bones.Head, new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.3));
+    root.updateWorldMatrix(true, true);
+    // Braço no ângulo da manga (o de repouso), só o antebraço dobra. Direito desce pro galão
+    const bend = (lower, hand, fore) => aimBone(lower, hand, P(lower).add(fore));
+    bend(bones.LowerArmR, bones.HandR, v(0.04, -0.24, 0.1));
+    bend(bones.LowerArmL, bones.HandL, v(-0.03, -0.24, 0.05));
+  }
   root.updateWorldMatrix(true, true);
 
   // Galão de alvejante pendurado na mão, inclinado pra frente, pingando
@@ -329,9 +350,9 @@ export default function Skeleton3D({ fallback, print = PRINT_IDS[0], cycle = tru
         const { bones, rest } = parts;
         // Respira, cabeça pende e balança
         bones.Torso.quaternion.copy(rest.Torso);
-        rotateBoneWorld(bones.Torso, tmpQ.setFromAxisAngle(axisX, 0.06 + Math.sin(t * 1.4) * 0.015));
+        rotateBoneWorld(bones.Torso, tmpQ.setFromAxisAngle(axisX, LEAN.torso + Math.sin(t * 1.4) * 0.015));
         bones.Head.quaternion.copy(rest.Head);
-        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisX, 0.05 + Math.sin(t * 0.7) * 0.04));
+        rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisX, LEAN.head + Math.sin(t * 0.7) * 0.04));
         rotateBoneWorld(bones.Head, tmpQ.setFromAxisAngle(axisZ, Math.sin(t * 0.4) * 0.08));
 
         parts.cap.getWorldPosition(parts.spout);
