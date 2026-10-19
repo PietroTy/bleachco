@@ -11,7 +11,7 @@ const PRODUCTS_DATA = {
   eclipse: {
     id: 'eclipse',
     name: 'ECLIPSE',
-    tagline: 'Eclipse solar feito à mão com água sanitária. Peças exclusivas.',
+    tagline: 'Um eclipse total queimado no algodão preto com água sanitária. O halo e os respingos mudam de peça pra peça.',
     price: 157,
     svgThumb: ECLIPSE_SVG_RAW,
     heroSvg: (
@@ -56,14 +56,14 @@ const PRODUCTS_DATA = {
     aboutSub: 'O que é Eclipse',
     aboutText: (
       <>
-        <p>Inspirada no eclipse solar total. O halo externo e os respingos são criados à mão, garantindo que cada peça seja única.</p>
+        <p>Inspirada no eclipse solar total. O halo e os respingos são feitos à mão, então nenhuma Eclipse sai igual.</p>
       </>
     ),
     aboutBullets: [
-      'Disco central apagado pelo alvejante puro',
-      'Coroa em spray diluído — cria o degradê natural',
-      'Respingos livres à mão — posição sempre diferente',
-      'Cada camiseta é fotografada antes do envio'
+      'Disco central apagado com alvejante puro',
+      'Coroa em spray diluído, que faz o degradê sozinha',
+      'Respingos à mão livre, nunca no mesmo lugar',
+      'Você recebe a foto da sua antes do envio'
     ],
     otherProductId: 'spy',
     otherProductName: 'SPY',
@@ -83,7 +83,7 @@ const PRODUCTS_DATA = {
   spy: {
     id: 'spy',
     name: 'SPY',
-    tagline: 'Ilustração do olho que tudo vê. Alvejado manualmente sobre algodão 100% preto.',
+    tagline: 'O olho que tudo vê, alvejado à mão em algodão preto. Contorno no spray, cílios no pincel.',
     price: 157,
     svgThumb: SPY_SVG_RAW,
     heroSvg: (
@@ -123,14 +123,14 @@ const PRODUCTS_DATA = {
     aboutSub: 'O que é Spy',
     aboutText: (
       <>
-        <p>O olho aberto como símbolo. Contorno feito em spray diluído e cílios desenhados individualmente com pincel fino.</p>
+        <p>Um olho aberto, encarando de volta. O contorno sai do spray diluído e cada cílio é desenhado com pincel fino.</p>
       </>
     ),
     aboutBullets: [
       'Contorno da pálpebra em spray livre',
       'Íris central alvejada em concentração alta',
-      'Cílios com pincel fino — posição única em cada peça',
-      'Foto da sua peça enviada antes do despacho'
+      'Cílios no pincel fino, diferentes em cada peça',
+      'Você recebe a foto da sua antes do envio'
     ],
     otherProductId: 'eclipse',
     otherProductName: 'ECLIPSE',
@@ -236,7 +236,7 @@ export default function ProductPage() {
 
             <div className="handmade-notice">
               <p>
-                <strong>100% artesanal.</strong> Produzida individualmente a cada pedido. Sem moldes ou telas.
+                <strong>Feita à mão, do zero.</strong> A sua só é alvejada depois do pedido. Sem molde, sem tela.
               </p>
             </div>
 
@@ -280,17 +280,17 @@ export default function ProductPage() {
               color: 'var(--bone)'
             }}>
               <div style={{ fontWeight: 600, color: 'var(--orange)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>Aviso de Produção Artesanal:</span>
+                <span>Não vai sair igual à foto:</span>
               </div>
               <p style={{ margin: 0, color: '#d0c8be' }}>
-                Por ser um processo manual com água sanitária, o resultado final terá pequenas variações em relação à foto ilustrativa.
+                A água sanitária nunca reage igual duas vezes, então a sua vai ter diferenças em relação à foto. É isso que faz dela única.
               </p>
             </div>
 
             {/* ── CALCULAR FRETE ── */}
             <div className="shipping-calc-box" style={{ marginTop: '24px', padding: '16px' }}>
               <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--bone)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                Calcular Frete e Prazo (Melhor Envio)
+                Calcular frete e prazo
               </div>
               <form onSubmit={handleCalculateShipping} style={{ display: 'flex', gap: '8px' }}>
                 <input
@@ -350,7 +350,7 @@ export default function ProductPage() {
             </div>
 
             <p style={{ fontSize: '0.95rem', color: 'var(--gray)', marginTop: '12px', textAlign: 'center' }}>
-              Produção: 5–10 dias úteis após pagamento confirmado
+              Produção: 5 a 10 dias úteis depois do pagamento confirmado, mais o frete
             </p>
           </div>
         </div>

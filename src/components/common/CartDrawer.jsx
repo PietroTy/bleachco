@@ -41,7 +41,7 @@ export default function CartDrawer() {
           {cart.length === 0 ? (
             <div className="cart-empty">
               <p>
-                Nenhuma peça ainda.
+                Carrinho limpo. Por enquanto.
                 <br />
                 <Link to="/produtos" style={{ color: 'var(--orange)' }} onClick={() => setCartOpen(false)}>
                   Ver estampas <PixelIcon name="arrow" />
@@ -87,7 +87,7 @@ export default function CartDrawer() {
         </div>
         <div className="cart-footer">
           <div className="cart-handmade-note">
-            Cada peça é feita à mão após o pedido. Prazo: 5–10 dias úteis.
+            Cada peça é feita à mão depois do pedido: 5 a 10 dias úteis de produção, mais o frete.
           </div>
           <div className="cart-total-row">
             <span className="cart-total-label">Total</span>

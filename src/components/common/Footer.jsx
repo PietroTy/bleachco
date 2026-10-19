@@ -12,7 +12,7 @@ export default function Footer() {
               <img src={logoImg} alt="Bleach.Co Logo" className="footer-logo-img" />
             </Link>
             <p className="eyebrow" style={{ marginBottom: '12px', display: 'block' }}>A mancha é a arte.</p>
-            <p>Camisetas artesanais feitas à mão. São Paulo, SP.</p>
+            <p>Camisetas alvejadas à mão em São Paulo.</p>
           </div>
           <div className="footer-col">
             <h4>Estampas</h4>
