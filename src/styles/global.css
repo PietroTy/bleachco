@@ -10,7 +10,8 @@
   --ink4:         #282828;
   --bone:         #F2EEE8;
   --bone2:        #C8C4BE;
-  --gray:         #888888;
+  --gray:         #A39E97;
+  --text:         #ECE7DF; /* texto corrido: claro pra não sumir no pano manchado */
   --gray-lt:      #303030;
   --orange:       #D4521E;
   --orange-mid:   rgba(212,82,30,0.18);
@@ -51,7 +52,11 @@ button { cursor: pointer; font-family: var(--ff-body); }
 h1 { font-family: var(--ff-display); font-weight: 900; font-size: clamp(3.6rem, 9.2vw, 8rem); line-height: 0.9; letter-spacing: 0.01em; text-transform: uppercase; }
 h2 { font-family: var(--ff-display); font-weight: 900; font-size: clamp(2.4rem, 5vw, 4.8rem); line-height: 0.95; letter-spacing: 0.01em; text-transform: uppercase; }
 h3 { font-family: var(--ff-display); font-weight: 900; font-size: clamp(1.4rem, 2.8vw, 2.1rem); line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
-p  { font-size: 1rem; color: var(--gray); line-height: 1.85; }
+p  {
+  font-size: 1.125rem; color: var(--text); line-height: 1.75;
+  /* halo escuro: separa a letra de mancha clara atrás */
+  text-shadow: 0 0 10px rgba(8,8,8,0.85), 0 1px 2px rgba(8,8,8,0.9);
+}
 
 .eyebrow {
   display: inline-block;
@@ -314,8 +319,8 @@ p  { font-size: 1rem; color: var(--gray); line-height: 1.85; }
 }
 .hero-content h1 { margin-bottom: 22px; }
 .hero-sub {
-  font-size: 1.0rem;
-  max-width: 400px;
+  font-size: 1.25rem;
+  max-width: 460px;
   margin-bottom: 44px;
   line-height: 1.75;
 }
@@ -558,7 +563,7 @@ p  { font-size: 1rem; color: var(--gray); line-height: 1.85; }
 }
 .step-num::before { content: '▶ CAP. '; color: var(--gray); }
 .processo-step h3 { font-size: 1.1rem; margin-bottom: 12px; }
-.processo-step p  { font-size: 0.94rem; }
+.processo-step p  { font-size: 1.05rem; }
 
 /* ── PAGE HEADER ── */
 .page-header {
@@ -619,7 +624,7 @@ p  { font-size: 1rem; color: var(--gray); line-height: 1.85; }
 }
 
 .product-name { font-size: clamp(3rem,7.5vw,6.5rem); margin-bottom: 14px; }
-.product-tagline { font-size: 1rem; color: var(--gray); margin-bottom: 28px; max-width: 380px; }
+.product-tagline { font-size: 1.15rem; color: var(--text); margin-bottom: 28px; max-width: 380px; }
 
 /* Size selector */
 .size-selector { margin-bottom: 28px; }
@@ -739,7 +744,7 @@ p  { font-size: 1rem; color: var(--gray); line-height: 1.85; }
   display: flex; align-items: flex-start; gap: 12px;
   padding: 14px 0;
   border-bottom: 1px solid var(--gray-lt);
-  font-size: 0.94rem; color: var(--gray);
+  font-size: 1.05rem; color: var(--text);
 }
 .info-list li::before { content:'—'; color:var(--orange); flex-shrink:0; }
 .info-list li:last-child { border-bottom: none; }

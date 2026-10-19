@@ -125,53 +125,17 @@ export function createStain(w, h, seed = 1) {
     }
   }
 
-  // Variedade: cada mancha sai de um jeito, e com força diferente (fraca fica ferrugem, forte vai pro osso)
+  // Mancha do fundo: um blob irregular (poça principal + lóbulos de tamanhos diferentes), cada um
+  // diferente mas da mesma família. Força varia: fraca fica ferrugem, forte vai pro osso.
   function blot(cx, cy, size = 1, strength = 0.6 + rand() * 0.8) {
     const u = size * unit;
-    const kind = rand();
-    if (kind < 0.4) {
-      splash(cx, cy, size * Math.min(1, strength));
-    } else if (kind < 0.5) {
-      // Escorrido: poça que desceu em fios
-      drop(cx, cy, (4 + rand() * 4) * u, 1.4 * strength);
-      const trails = 1 + Math.floor(rand() * 3);
-      for (let t = 0; t < trails; t++) {
-        let x = cx + (rand() - 0.5) * 6 * u;
-        const len = (20 + rand() * 45) * u;
-        for (let d = 0; d < len; d += 1) {
-          x += (rand() - 0.5) * 0.5;
-          drop(x, cy + d, Math.max(0.7, (1 - d / len) * 2.2 * u), 0.55 * strength);
-        }
-      }
-    } else if (kind < 0.57) {
-      // Spray: névoa de pinguinhos
-      const n = 30 + Math.floor(rand() * 50);
-      const spread = (14 + rand() * 16) * u;
-      for (let k = 0; k < n; k++) {
-        const ang = rand() * Math.PI * 2;
-        const d = Math.pow(rand(), 0.7) * spread;
-        drop(cx + Math.cos(ang) * d, cy + Math.sin(ang) * d * 0.7, (0.4 + rand() * 1.1) * u, 0.9 * strength);
-      }
-    } else if (kind < 0.75) {
-      // Rastro: passada de pano molhado, falhando
-      const ang = rand() * Math.PI;
-      const len = (30 + rand() * 40) * u;
-      const r = (2 + rand() * 2.5) * u;
-      for (let d = -len / 2; d < len / 2; d += 1) {
-        if (rand() < 0.25) continue;
-        const wob = Math.sin(d * 0.08 + rand()) * r * 0.6;
-        drop(cx + Math.cos(ang) * d - Math.sin(ang) * wob, cy + Math.sin(ang) * d + Math.cos(ang) * wob, r * (0.6 + rand() * 0.5), 0.45 * strength);
-      }
-    } else {
-      // Poça seca: miolo fraco e anel mais forte na borda
-      const R = (9 + rand() * 9) * u;
-      drop(cx, cy, R, 0.35 * strength);
-      const n = Math.ceil(R * 2.5);
-      for (let k = 0; k < n; k++) {
-        const ang = (k / n) * Math.PI * 2;
-        const rr = R * (0.95 + rand() * 0.2);
-        drop(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, (1 + rand()) * u, 0.9 * strength);
-      }
+    const R = (6 + rand() * 5) * u;
+    drop(cx, cy, R * 0.75, 1.4 * strength);
+    const lobes = 3 + Math.floor(rand() * 4);
+    for (let k = 0; k < lobes; k++) {
+      const ang = rand() * Math.PI * 2;
+      const d = R * (0.35 + rand() * 0.45);
+      drop(cx + Math.cos(ang) * d, cy + Math.sin(ang) * d * (0.8 + rand() * 0.4), R * (0.35 + rand() * 0.35), 1.2 * strength);
     }
   }
 
@@ -232,8 +196,8 @@ export function createStain(w, h, seed = 1) {
     return active > 0;
   }
 
-  // wetness: quanto o molhado escurece (0 = não escurece)
-  function render(ctx, wetness = 0.4) {
+  // wetness: quanto o molhado escurece. Padrão 0: no site virava sombra escura/pisca onde pingava
+  function render(ctx, wetness = 0) {
     if (dirty1 < dirty0) return;
     if (!img) img = ctx.createImageData(w, h);
     const px = img.data;
