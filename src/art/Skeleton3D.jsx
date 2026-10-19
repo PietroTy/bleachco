@@ -87,23 +87,24 @@ function logoJug() {
   const lctx = lc.getContext('2d');
   lctx.fillStyle = '#080808';
   [[5, 10, 22], [5, 15, 16], [5, 27, 22], [5, 32, 12]].forEach(([x, y, w]) => lctx.fillRect(x, y, w, 2));
-  const labelMat = ps1(new THREE.MeshLambertMaterial({ map: pixelTexture(lc) }));
+  // polygonOffset + afastada da face: senão briga com o corpo (o tremido de vértice do PS1 piora)
+  const labelMat = ps1(new THREE.MeshLambertMaterial({ map: pixelTexture(lc), polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
   const l0 = p(28, 165); const l1 = p(150, 320);
   const labelGeo = new THREE.PlaneGeometry(l1.x - l0.x, l0.y - l1.y);
   [1, -1].forEach((side) => {
     const label = new THREE.Mesh(labelGeo, labelMat);
-    label.position.set((l0.x + l1.x) / 2, (l0.y + l1.y) / 2, side * (depth / 2 + 0.0085));
+    label.position.set((l0.x + l1.x) / 2, (l0.y + l1.y) / 2, side * (depth / 2 + 0.011));
     if (side < 0) label.rotation.y = Math.PI;
     jug.add(label);
   });
   // Tampa canelada
-  const c = noiseCanvas(16, 8, [236, 230, 220], 10, 9);
+  const c = noiseCanvas(16, 8, [240, 234, 224], 8, 9);
   const cctx = c.getContext('2d');
-  cctx.fillStyle = '#5a554e';
-  for (let x = 1; x < 16; x += 3) cctx.fillRect(x, 0, 1, 8);
+  cctx.fillStyle = '#b9b2a6';
+  for (let x = 1; x < 16; x += 4) cctx.fillRect(x, 0, 1, 8);
   const capTex = pixelTexture(c);
   capTex.wrapS = THREE.RepeatWrapping;
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(38 * S, 38 * S, 44 * S, 10), ps1(new THREE.MeshLambertMaterial({ map: capTex })));
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(38 * S, 38 * S, 44 * S, 10), ps1(new THREE.MeshLambertMaterial({ map: capTex, emissive: 0x2a2622 })));
   cap.position.copy(new THREE.Vector3(...p(60, 12).toArray(), 0)); // assenta no topo (y 32 da logo)
   jug.add(cap);
   return { jug, cap };
@@ -283,7 +284,8 @@ function buildScene(gltf, teeGltf, printId) {
   const hand = P(bones.HandR);
   // Na altura dos dedos: um pouco além do punho, na direção do osso da mão (+Y local do osso)
   bottle.position.copy(hand).add(v(0, 1, 0).applyQuaternion(bones.HandR.getWorldQuaternion(new THREE.Quaternion())).multiplyScalar(0.07));
-  bottle.rotation.x = 0.35; // inclinado pra frente, a tampa vira pra baixo e pinga
+  // Pendurado pela alça e girado no próprio plano: corpo pra baixo/fora, tampa pra baixo/dentro, de onde pinga
+  bottle.rotation.set(0.15, Math.PI, 0.8);
   root.add(bottle);
   bones.HandR.attach(bottle);
 
