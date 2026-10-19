@@ -13,15 +13,23 @@ shirt = bpy.data.objects['Shirt_adid']; shirt.name = 'Shirt'
 # solda os pedaços (o modelo vem picotado, com vértice repetido em cada emenda)
 bm = bmesh.new(); bm.from_mesh(shirt.data)
 bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.002)
+# Simétrica: fica a metade direita (x < 0, a manga desse lado aponta mais perto do braço) e o
+# modificador Mirror faz a outra; tudo que mexer num lado aparece no outro
+bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, 0, 0), plane_no=(1, 0, 0), clear_outer=True)
+for v in bm.verts:
+    if abs(v.co.x) < 1e-4: v.co.x = 0
 bm.to_mesh(shirt.data); bm.free()
+mir = shirt.modifiers.new('Mirror', 'MIRROR')
+mir.use_axis = (True, False, False); mir.use_clip = True; mir.use_mirror_merge = True; mir.merge_threshold = 0.001
+mir.show_on_cage = True
 
 def ss(x, a, b):
     t = min(1, max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t)
-# Peso do braço por vértice (cor 'Col': r = quanto segue o braço, g = lado), nas medidas da malha original
+# Peso do braço por vértice (cor 'Col', r = quanto segue o braço; o lado o site tira da posição), nas medidas da malha original
 ca = shirt.data.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
 for v in shirt.data.vertices:
     a = ss(abs(v.co.x), 0.22, 0.3) * ss(v.co.z, 0.42, 0.5)
-    ca.data[v.index].color = (a, 1.0 if v.co.x > 0 else 0.0, 0, 1)
+    ca.data[v.index].color = (a, 0, 0, 1)
 shirt.data.color_attributes.active_color = ca
 
 # Só posiciona: largura/altura do tronco do esqueleto, gola no pescoço (o resto é com você)
