@@ -70,38 +70,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── PROCESSO ── */}
-      <section className="processo" aria-label="Processo de produção">
-        <div className="container">
-          <div className="section-head reveal">
-            <span className="eyebrow">Do pedido à peça</span>
-            <h2>COMO FUNCIONA.</h2>
-          </div>
-          <div className="processo-grid">
-            <div className="processo-step reveal">
-              <div className="step-num">01</div>
-              <h3>Você escolhe</h3>
-              <p>Selecione estampa e tamanho. Cada peça é feita sob encomenda.</p>
-            </div>
-            <div className="processo-step reveal reveal-delay-1">
-              <div className="step-num">02</div>
-              <h3>Fazemos à mão</h3>
-              <p>Alvejamos o algodão preto à mão com água sanitária. Resultado único.</p>
-            </div>
-            <div className="processo-step reveal reveal-delay-2">
-              <div className="step-num">03</div>
-              <h3>Cura e lavagem</h3>
-              <p>Cura, neutralização e lavagem especial para preservação do tecido.</p>
-            </div>
-            <div className="processo-step reveal reveal-delay-3">
-              <div className="step-num">04</div>
-              <h3>Enviamos</h3>
-              <p>Envio seguro via transportadora com rastreamento.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
     </>
   );
 }
