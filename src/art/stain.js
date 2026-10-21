@@ -86,6 +86,13 @@ export function createStain(w, h, seed = 1) {
   for (let i = 0; i < n; i++) cond[i] = Math.pow(cond[i], 2.2) * 1.6;
 
   let active = 0;
+  // Blocos com líquido: só eles (e os vizinhos, pra onde ele pode andar) são simulados.
+  // As manchas ficam espalhadas, então a maior parte do pano está seca a cada passo.
+  const T = 16;
+  const tw = Math.ceil(w / T);
+  const th = Math.ceil(h / T);
+  const wet = new Uint8Array(tw * th);
+  const sim = new Uint8Array(tw * th);
   // Faixa de linhas com líquido (só ela é simulada) e faixa a redesenhar: numa grade alta
   // (o fundo da página inteira) o resto do pano fica parado de graça
   let y0 = h;
@@ -109,12 +116,15 @@ export function createStain(w, h, seed = 1) {
         const ang = Math.atan2(y - cy, x - cx);
         const edge = r * (1 + 0.28 * Math.sin(ang * k1 + ph1) * wobble + 0.18 * Math.sin(ang * k2 + ph2));
         const d = Math.hypot(x - cx, y - cy);
-        if (d <= edge) bleach[y * w + x] += amount * (1 - (d / edge) * 0.5);
+        if (d <= edge) {
+          bleach[y * w + x] += amount * (1 - (d / edge) * 0.5);
+          wet[((y / T) | 0) * tw + ((x / T) | 0)] = 1;
+        }
       }
     }
     y0 = Math.max(0, Math.min(y0, Math.floor(cy - r * 1.6)));
     y1 = Math.min(h - 1, Math.max(y1, Math.ceil(cy + r * 1.6)));
-    active = 120;
+    active = 30;
   }
 
   // Respingo: gota principal + satélites espalhados
@@ -198,6 +208,9 @@ export function createStain(w, h, seed = 1) {
     dirty1 = h - 1;
   }
 
+  // Abaixo disso o alvejante já não muda a cor de forma visível: dá o pano por seco
+  const DRY = 0.005;
+
   function step(iterations = 1) {
     for (let it = 0; it < iterations; it++) {
       if (y1 < y0) break;
@@ -206,36 +219,89 @@ export function createStain(w, h, seed = 1) {
       y1 = Math.min(h - 1, y1 + 1);
       dirty0 = Math.min(dirty0, y0);
       dirty1 = Math.max(dirty1, y1);
-      let total = 0;
-      for (let y = y0; y <= y1; y++) {
-        for (let x = 0; x < w; x++) {
-          const i = y * w + x;
-          const b = bleach[i];
-          let flow = 0;
-          const c = cond[i];
-          // Mobilidade ~ quantidade de líquido: tecido seco segura a frente (borda nítida)
-          const m = (j) => Math.min(c, cond[j]) * Math.min(1, (b + bleach[j]) * 1.6);
-          if (x > 0) flow += (bleach[i - 1] - b) * m(i - 1);
-          if (x < w - 1) flow += (bleach[i + 1] - b) * m(i + 1);
-          if (y > 0) flow += (bleach[i - w] - b) * m(i - w);
-          if (y < h - 1) flow += (bleach[i + w] - b) * m(i + w);
-          next[i] = b + flow * 0.22;
+      const ty0 = (y0 / T) | 0;
+      const ty1 = (y1 / T) | 0;
+      // Bloco seco sem vizinho molhado não muda: pula
+      for (let ty = ty0; ty <= ty1; ty++) {
+        for (let tx = 0; tx < tw; tx++) {
+          let s = 0;
+          for (let dy = -1; dy <= 1 && !s; dy++) {
+            const yy = ty + dy;
+            if (yy < 0 || yy >= th) continue;
+            for (let dx = -1; dx <= 1; dx++) {
+              const xx = tx + dx;
+              if (xx >= 0 && xx < tw && wet[yy * tw + xx]) {
+                s = 1;
+                break;
+              }
+            }
+          }
+          sim[ty * tw + tx] = s;
         }
       }
-      for (let i = y0 * w, end = (y1 + 1) * w; i < end; i++) {
-        const b = next[i];
-        if (b > 0.002) {
-          // O alvejante come o corante e vai sendo consumido/absorvido
-          dye[i] -= dye[i] * Math.min(1, b * 1.2) * 0.042;
-          bleach[i] = b * 0.982;
-          total += b;
-        } else {
-          bleach[i] = 0;
+      for (let ty = ty0; ty <= ty1; ty++) {
+        const ya = ty * T;
+        const yb = Math.min(h, ya + T);
+        for (let tx = 0; tx < tw; tx++) {
+          if (!sim[ty * tw + tx]) continue;
+          const xa = tx * T;
+          const xb = Math.min(w, xa + T);
+          for (let y = ya; y < yb; y++) {
+            for (let x = xa; x < xb; x++) {
+              const i = y * w + x;
+              const b = bleach[i];
+              const c = cond[i];
+              let flow = 0;
+              // Mobilidade ~ quantidade de líquido: tecido seco segura a frente (borda nítida)
+              if (x > 0) flow += (bleach[i - 1] - b) * Math.min(c, cond[i - 1]) * Math.min(1, (b + bleach[i - 1]) * 1.6);
+              if (x < w - 1) flow += (bleach[i + 1] - b) * Math.min(c, cond[i + 1]) * Math.min(1, (b + bleach[i + 1]) * 1.6);
+              if (y > 0) flow += (bleach[i - w] - b) * Math.min(c, cond[i - w]) * Math.min(1, (b + bleach[i - w]) * 1.6);
+              if (y < h - 1) flow += (bleach[i + w] - b) * Math.min(c, cond[i + w]) * Math.min(1, (b + bleach[i + w]) * 1.6);
+              next[i] = b + flow * 0.22;
+            }
+          }
         }
       }
-      if (total < 0.5) active = Math.max(0, active - 1);
-      if (!active) {
-        bleach.fill(0, y0 * w, (y1 + 1) * w);
+      let max = 0;
+      let wy0 = h;
+      let wy1 = -1;
+      for (let ty = ty0; ty <= ty1; ty++) {
+        const ya = ty * T;
+        const yb = Math.min(h, ya + T);
+        for (let tx = 0; tx < tw; tx++) {
+          const t = ty * tw + tx;
+          if (!sim[t]) continue;
+          const xa = tx * T;
+          const xb = Math.min(w, xa + T);
+          let any = 0;
+          for (let y = ya; y < yb; y++) {
+            for (let i = y * w + xa, end = y * w + xb; i < end; i++) {
+              const b = next[i];
+              if (b > 0.002) {
+                // O alvejante come o corante e vai sendo consumido/absorvido
+                dye[i] -= dye[i] * Math.min(1, b * 1.2) * 0.042;
+                bleach[i] = b * 0.982;
+                any = 1;
+                if (b > max) max = b;
+              } else {
+                bleach[i] = 0;
+              }
+            }
+          }
+          wet[t] = any;
+          if (any) {
+            if (ya < wy0) wy0 = ya;
+            if (yb - 1 > wy1) wy1 = yb - 1;
+          }
+        }
+      }
+      y0 = wy0;
+      y1 = wy1;
+      if (max < DRY) active = Math.max(0, active - 1);
+      if (!active || y1 < y0) {
+        if (y1 >= y0) bleach.fill(0, y0 * w, (y1 + 1) * w);
+        wet.fill(0);
+        active = 0;
         y0 = h;
         y1 = -1;
       }
@@ -264,6 +330,7 @@ export function createStain(w, h, seed = 1) {
 
   function reset() {
     bleach.fill(0);
+    wet.fill(0);
     dye.fill(1);
     active = 0;
     y0 = h;
@@ -282,7 +349,8 @@ export function createStain(w, h, seed = 1) {
       }
     }
     if (other.busy) {
-      active = 120;
+      active = 30;
+      wet.fill(1, 0, Math.ceil(Math.min(h, other.h) / T) * tw);
       y0 = 0;
       y1 = Math.min(h, other.h) - 1;
     }
