@@ -1306,7 +1306,7 @@ footer {
    Todo texto corrido tem a textura das letras alvejadas, parada: um ladrilho quase branco com manchas
    alaranjadas multiplicado pela cor do próprio texto e recortado na letra. Serve pra qualquer cor
    (branco ganha mancha laranja, laranja ganha ferrugem). Fica de fora o que tem fundo próprio. */
-:where(p, li, label, small, em, blockquote, td, th, dd, dt, figcaption,
+:where(p, li, label, small, em, strong, b, blockquote, td, th, dd, dt, figcaption,
   span:not(.tag, #cart-count, [style*="background"]), a:not(.btn, [style*="background"])) {
   background-image: linear-gradient(currentColor, currentColor), url('../assets/text-stain.png');
   background-blend-mode: multiply;

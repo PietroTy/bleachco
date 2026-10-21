@@ -25,7 +25,9 @@ import NotFoundPage from './components/pages/NotFoundPage';
 import { bleachIn, prepareBleach } from './art/bleachIn';
 import BleachBackground from './art/BleachBackground';
 
-const BLEACH = 'h1, h2, h3, h4, strong, .product-tile-name, .product-card-name, .product-price, .contact-channel-value, .nav-logo-img, .footer-logo-img';
+// strong fica de fora: é inline e quebra linha, e a mancha animada (uma imagem do tamanho da caixa toda)
+// sai esticada e deslocada nos pedaços de linha. Ele usa a textura parada do texto corrido.
+const BLEACH = 'h1, h2, h3, h4, .product-tile-name, .product-card-name, .product-price, .contact-channel-value, .nav-logo-img, .footer-logo-img';
 
 // Rótulos pequenos que não precisam do efeito
 const NO_BLEACH = '.footer-col h4';
