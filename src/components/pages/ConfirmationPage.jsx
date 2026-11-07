@@ -73,7 +73,7 @@ export default function ConfirmationPage() {
                 {order.payer?.comp ? ` - ${order.payer.comp}` : ''} — {order.payer?.cidade}/{order.payer?.estado}
               </div>
               <div><strong>Itens:</strong> {order.items?.map((i) => `${i.qty}x ${i.name} (${i.size})`).join(', ')}</div>
-              {order.shipping && <div><strong>Frete:</strong> {order.shipping.company} {order.shipping.name} — {fmt(order.shipping.price)}</div>}
+              {order.shipping && <div><strong>Frete:</strong> {order.shipping.company} {order.shipping.name} — {order.shipping.price === 0 ? 'Grátis' : fmt(order.shipping.price)}</div>}
               <div className="confirm-total">Total pago: {fmt(order.total)}</div>
             </div>
           )}

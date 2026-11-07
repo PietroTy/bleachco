@@ -341,7 +341,7 @@ export default function ProductPage() {
                         <div style={{ color: 'var(--gray)', fontSize: '0.95rem' }}>{opt.deliveryRange}</div>
                       </div>
                       <span style={{ fontWeight: 600, color: 'var(--orange)' }}>
-                        R$ {opt.price.toFixed(2).replace('.', ',')}
+                        {opt.price === 0 ? 'Grátis' : `R$ ${opt.price.toFixed(2).replace('.', ',')}`}
                       </span>
                     </div>
                   ))}

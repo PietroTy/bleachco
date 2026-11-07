@@ -214,6 +214,7 @@ export default function CheckoutPage() {
   const fmtPrice = (value) => {
     return 'R$ ' + value.toFixed(2).replace('.', ',');
   };
+  const fmtShipping = (value) => (value === 0 ? 'Grátis' : fmtPrice(value));
 
   return (
     <>
@@ -427,7 +428,7 @@ export default function CheckoutPage() {
                               </div>
                             </div>
                             <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--orange)' }}>
-                              {fmtPrice(opt.price)}
+                              {fmtShipping(opt.price)}
                             </div>
                           </label>
                         );
@@ -536,7 +537,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '1rem', color: 'var(--gray)' }}>
                   <span>Frete {selectedShipping ? `(${selectedShipping.company} - ${selectedShipping.name})` : ''}</span>
                   <span style={{ color: selectedShipping ? 'var(--bone)' : 'var(--orange)', fontWeight: 500 }}>
-                    {selectedShipping ? fmtPrice(selectedShipping.price) : 'Consulte pelo CEP'}
+                    {selectedShipping ? fmtShipping(selectedShipping.price) : 'Consulte pelo CEP'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 600, color: 'var(--bone)', borderTop: '1px dashed var(--gray-lt)', paddingTop: '16px' }}>
